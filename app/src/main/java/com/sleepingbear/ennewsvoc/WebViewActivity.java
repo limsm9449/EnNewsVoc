@@ -23,7 +23,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -38,6 +40,8 @@ public class WebViewActivity extends AppCompatActivity {
     public SQLiteDatabase mDb;
     public ArrayAdapter urlAdapter;
     private WebView webView;
+    private TextView mean;
+    private RelativeLayout meanRl;
     private Bundle param;
     private String oldUrl = "";
 
@@ -64,6 +68,11 @@ public class WebViewActivity extends AppCompatActivity {
 
         mDb = (new DbHelper(this)).getWritableDatabase();
 
+        //하단 뜻 영역을 숨김
+        meanRl = (RelativeLayout) this.findViewById(R.id.my_c_webview_rl);
+        meanRl.setVisibility(View.GONE);
+        mean = (TextView) this.findViewById(R.id.my_c_webview_mean);
+
         webView = (WebView) this.findViewById(R.id.my_c_webview_wv);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.addJavascriptInterface(new AndroidBridge(), "HybridApp");
@@ -79,7 +88,7 @@ public class WebViewActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                DicUtils.dicLog(url);
+                DicUtils.dicLog("onPageFinished : " + url);
 
                 //중복으로 호출이 되지 않도록
                 if ( oldUrl.equals(url) ) {
@@ -94,11 +103,11 @@ public class WebViewActivity extends AppCompatActivity {
                             ".replace(/\\n/g, '<br>')});" +
                             "$('.word').click(function(event) { window.HybridApp.setWord(event.target.innerHTML) });";
 
-                    //제목
-                    webView.loadUrl("javascript:" + param.getString("titleClass") + js);
-
-                    //content
-                    webView.loadUrl("javascript:" + param.getString("contentClass") + js);
+                    //html 변경
+                    String[] changeClass = param.getStringArray("changeClass");
+                    for ( int i = 0; i < changeClass.length; i++ ) {
+                        webView.loadUrl("javascript:" + changeClass[i] + js);
+                    }
                 }
             }
         });
@@ -198,7 +207,10 @@ public class WebViewActivity extends AppCompatActivity {
         public void setWord(final String arg) { // must be final
             handler.post(new Runnable() {
                 public void run() {
-                    Toast.makeText(WebViewActivity.this, arg, Toast.LENGTH_SHORT).show();
+                    meanRl.setVisibility(View.VISIBLE);
+
+                    mean.setText(arg + " : " + DicDb.getMean(mDb, arg));
+                    //Toast.makeText(WebViewActivity.this, arg + " : " + DicDb.getMean(mDb, arg), Toast.LENGTH_SHORT).show();
                 }
             });
         }

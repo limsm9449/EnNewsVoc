@@ -268,4 +268,54 @@ public class DicDb {
         DicUtils.dicSqlLog(sql.toString());
         db.execSQL(sql.toString());
     }
+
+    public static String getMean(SQLiteDatabase db, String word) {
+        String rtn = "";
+        StringBuffer sql = new StringBuffer();
+        sql.append("SELECT MEAN  " + CommConstants.sqlCR);
+        sql.append("  FROM DIC " + CommConstants.sqlCR);
+        sql.append(" WHERE WORD = '" + word.toLowerCase().replaceAll("'", " ") + "' OR TENSE LIKE '% " + word.toLowerCase().replaceAll("'", " ") + " %'" + CommConstants.sqlCR);
+        DicUtils.dicSqlLog(sql.toString());
+
+        Cursor cursor = db.rawQuery(sql.toString(), null);
+        if ( cursor.moveToNext() ) {
+            rtn = cursor.getString(cursor.getColumnIndexOrThrow("MEAN"));
+        } else {
+            rtn = getMeanOther(db, word);
+        }
+        cursor.close();
+
+        return rtn;
+    }
+
+    public static String getMeanOther(SQLiteDatabase db, String word) {
+        String rtn = "";
+        String findWord = "";
+
+        if ( "s".indexOf(word.substring(word.length() - 1)) > -1 ) {
+            findWord = word.substring(0, word.length() - 1);
+        } else if ( "es,ed,ly".indexOf(word.substring(word.length() - 2)) > -1 ) {
+            findWord = word.substring(0, word.length() - 2);
+        } else if ( "ing".indexOf(word.substring(word.length() - 3))  > -1 ) {
+            findWord = word.substring(0, word.length() - 3);
+        } else {
+            findWord = word;
+        }
+        DicUtils.dicLog("findWord : " + findWord);
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("SELECT MEAN  " + CommConstants.sqlCR);
+        sql.append("  FROM DIC " + CommConstants.sqlCR);
+        sql.append(" WHERE WORD = '" + findWord.toLowerCase().replaceAll("'", " ") + "'" +  CommConstants.sqlCR);
+        DicUtils.dicSqlLog(sql.toString());
+
+        Cursor cursor = db.rawQuery(sql.toString(), null);
+        if ( cursor.moveToNext() ) {
+            rtn = cursor.getString(cursor.getColumnIndexOrThrow("MEAN"));
+        }
+        cursor.close();
+
+        return rtn;
+    }
+
 }

@@ -39,18 +39,30 @@ public class NewsFragment extends Fragment {
         listView = (ListView)mainView.findViewById(R.id.my_f_news_lv);
 
         ArrayList<NewsVo> items = new ArrayList<>();
-        items.add(new NewsVo("ABC","http://abcnews.go.com","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_abcnews));
-        items.add(new NewsVo("BBC","abc뉴스","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_bbc));
-        items.add(new NewsVo("Chosun","http://english.chosun.com","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_chosunilbo));
-        items.add(new NewsVo("CNN","http://edition.cnn.com","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_cnn));
-        items.add(new NewsVo("Joongang Daily","http://mengnews.joins.com/","$($('h4')[0])","$('.en')", R.drawable.img_joongangdaily));
-        items.add(new NewsVo("Korea Herald","http://www.koreaherald.com","$($('#detail h2')[0])","$('.article')", R.drawable.img_koreaherald));
-        items.add(new NewsVo("Korea Times","http://www.koreatimes.co.kr","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_koreatimes));
-        items.add(new NewsVo("LA Times","http://www.latimes.com","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_losangelestimes));
-        items.add(new NewsVo("Newwork Times","http://www.nytimes.com","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_newworktimes));
-        items.add(new NewsVo("Reuters","http://www.reuters.com/","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_reuters));
-        items.add(new NewsVo("WallStreet Journal","http://asia.wsj.com/home-page","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_wallstreetjournal));
-        items.add(new NewsVo("Washingtone Post","http://www.washingtonpost.com","$('#first_big_news strong .english_mode')","$('#startts div .english_mode')", R.drawable.img_washingtonepost));
+        items.add(new NewsVo("ABC","http://abcnews.go.com",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_abcnews));
+        items.add(new NewsVo("BBC","abc뉴스",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_bbc));
+        items.add(new NewsVo("Chosun","http://english.chosun.com",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_chosunilbo));
+        items.add(new NewsVo("CNN","http://edition.cnn.com",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_cnn));
+        items.add(new NewsVo("Joongang Daily","http://mengnews.joins.com/",
+                new String[]{"$($('h4')[0])","$('.en')"}, new String[]{}, R.drawable.img_joongangdaily));
+        items.add(new NewsVo("Korea Herald","http://www.koreaherald.com",
+                new String[]{"$($('#detail h2')[0])","$('.article')"}, new String[]{}, R.drawable.img_koreaherald));
+        items.add(new NewsVo("Korea Times","http://www.koreatimes.co.kr",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_koreatimes));
+        items.add(new NewsVo("LA Times","http://www.latimes.com",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_losangelestimes));
+        items.add(new NewsVo("Newwork Times","http://www.nytimes.com",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_newworktimes));
+        items.add(new NewsVo("Reuters","http://www.reuters.com/",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_reuters));
+        items.add(new NewsVo("WallStreet Journal","http://asia.wsj.com/home-page",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_wallstreetjournal));
+        items.add(new NewsVo("Washingtone Post","http://www.washingtonpost.com",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_washingtonepost));
 
         adapter = new NewsAdapter(getContext(), 0, items);
         listView.setAdapter(adapter);
@@ -76,8 +88,8 @@ public class NewsFragment extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putString("name", cur.getName());
             bundle.putString("url", cur.getUrl());
-            bundle.putString("titleClass", cur.getTitleClass());
-            bundle.putString("contentClass", cur.getContentClass());
+            bundle.putStringArray("changeClass", cur.getChangeClass());
+            bundle.putStringArray("removeClass", cur.getRemoveClass());
             intent.putExtras(bundle);
 
             startActivity(intent);
@@ -87,15 +99,15 @@ public class NewsFragment extends Fragment {
     private class NewsVo {
         private String name;
         private String url;
-        private String titleClass;
-        private String contentClass;
+        private String[] changeClass;
+        private String[] removeClass;
         private int imageRes;
 
-        public NewsVo(String name, String url, String titleClass, String contentClass, int imageRes) {
+        public NewsVo(String name, String url, String[] changeClass, String[] removeClass, int imageRes) {
             this.name = name;
             this.url = url;
-            this.titleClass = titleClass;
-            this.contentClass = contentClass;
+            this.changeClass = changeClass;
+            this.removeClass = removeClass;
             this.imageRes = imageRes;
         }
 
@@ -115,20 +127,20 @@ public class NewsFragment extends Fragment {
             this.url = url;
         }
 
-        public String getTitleClass() {
-            return titleClass;
+        public String[] getChangeClass() {
+            return changeClass;
         }
 
-        public void setTitleClass(String titleClass) {
-            this.titleClass = titleClass;
+        public void setChangeClass(String[] changeClass) {
+            this.changeClass = changeClass;
         }
 
-        public String getContentClass() {
-            return contentClass;
+        public String[] getRemoveClass() {
+            return removeClass;
         }
 
-        public void setContentClass(String contentClass) {
-            this.contentClass = contentClass;
+        public void setRemoveClass(String[] removeClass) {
+            this.removeClass = removeClass;
         }
 
         public int getImageRes() {

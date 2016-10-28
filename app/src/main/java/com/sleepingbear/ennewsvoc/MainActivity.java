@@ -391,7 +391,7 @@ class MainPagerAdapter extends FragmentPagerAdapter {
         mFragmentTitleList.add("뉴스");
 
         mFragmentList.add(new MarkFragment());
-        mFragmentTitleList.add("단어/북마크");
+        mFragmentTitleList.add("선택단어/북마크");
 
         mFragmentList.add(new VocabularyFragment());
         mFragmentTitleList.add("단어장");
