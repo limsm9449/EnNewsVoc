@@ -39,36 +39,33 @@ public class NewsFragment extends Fragment {
         listView = (ListView)mainView.findViewById(R.id.my_f_news_lv);
 
         ArrayList<NewsVo> items = new ArrayList<>();
-        items.add(new NewsVo("ABC","http://abcnews.go.com",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_abcnews));
-        items.add(new NewsVo("BBC","abc뉴스",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_bbc));
         items.add(new NewsVo("Chosun","http://english.chosun.com",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_chosunilbo));
-        items.add(new NewsVo("CNN","http://edition.cnn.com",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_cnn));
+                new String[]{"$('.art_headline')","$('.news_body .par')"}, new String[]{}, R.drawable.img_chosunilbo));
         items.add(new NewsVo("Joongang Daily","http://mengnews.joins.com/",
                 new String[]{"$($('h4')[0])","$('.en')"}, new String[]{}, R.drawable.img_joongangdaily));
         items.add(new NewsVo("Korea Herald","http://www.koreaherald.com",
                 new String[]{"$($('#detail h2')[0])","$('.article')"}, new String[]{}, R.drawable.img_koreaherald));
-        items.add(new NewsVo("Korea Times","http://www.koreatimes.co.kr",
+        items.add(new NewsVo("Korea Times","http://m.koreatimes.co.kr/phone/",
                 new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_koreatimes));
-        items.add(new NewsVo("LA Times","http://www.latimes.com",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_losangelestimes));
-        items.add(new NewsVo("Newwork Times","http://www.nytimes.com",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_newworktimes));
-        items.add(new NewsVo("Reuters","http://www.reuters.com/",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_reuters));
-        items.add(new NewsVo("WallStreet Journal","http://asia.wsj.com/home-page",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_wallstreetjournal));
+        items.add(new NewsVo("ABC","http://abcnews.go.com",
+                new String[]{"$('.container .article-header h1')","$('.container .article-body')"}, new String[]{}, R.drawable.img_abcnews));
+        items.add(new NewsVo("BBC","http://www.bbc.com/news",
+                new String[]{"$('.story-body .story-body__h1')","$('.story-body .story-body__inner p')"}, new String[]{}, R.drawable.img_bbc));
+        items.add(new NewsVo("CNN","http://edition.cnn.com",
+                new String[]{"jQuery('.pg-headline')","jQuery('.l-container .zn-body__paragraph')"}, new String[]{}, R.drawable.img_cnn));
+        items.add(new NewsVo("Los Angeles Times","http://www.latimes.com",
+                new String[]{"$('.trb_ar_hl_t')","$('.trb_ar_page p')"}, new String[]{}, R.drawable.img_losangelestimes));
+        items.add(new NewsVo("The New Work Times","http://mobile.nytimes.com/?referer=",
+                new String[]{"$('.headline')","$('.article-body p')"}, new String[]{}, R.drawable.img_newworktimes));
+        items.add(new NewsVo("Reuters","http://mobile.reuters.com/",
+                new String[]{"$('.article-info h1')","$('#articleText p')"}, new String[]{}, R.drawable.img_reuters));
         items.add(new NewsVo("Washingtone Post","http://www.washingtonpost.com",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_washingtonepost));
+                new String[]{"$('#topper-headline-wrapper h1')","$('#article-body article p')"}, new String[]{}, R.drawable.img_washingtonepost));
 
         adapter = new NewsAdapter(getContext(), 0, items);
         listView.setAdapter(adapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setOnItemClickListener(itemClickListener);
-
 
         AdView av = (AdView)mainView.findViewById(R.id.adView);
         AdRequest adRequest = new  AdRequest.Builder().build();

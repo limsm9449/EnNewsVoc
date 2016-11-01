@@ -1,9 +1,12 @@
 package com.sleepingbear.ennewsvoc;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -19,6 +22,8 @@ import android.view.Window;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -44,6 +49,8 @@ public class WebViewActivity extends AppCompatActivity {
     private RelativeLayout meanRl;
     private Bundle param;
     private String oldUrl = "";
+
+    private ProgressDialog mProgress;
 
     private final Handler handler = new Handler();
 
@@ -79,39 +86,9 @@ public class WebViewActivity extends AppCompatActivity {
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
-        webView.setWebViewClient(new MyWebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                DicUtils.dicLog("onPageFinished : " + url);
-
-                //중복으로 호출이 되지 않도록
-                if ( oldUrl.equals(url) ) {
-                    return;
-                } else {
-                    oldUrl = url;
-
-                    String js = ".html(function(index, oldHtml) {return oldHtml.replace(/<br *\\/?>/gi, '\\n')" +
-                            ".replace(/<[^>]*>/g, '')" +
-                            ".replace(/(<br>)/g, '\\n')" + "" +
-                            ".replace(/\\b(\\w+?)\\b/g,'<span class=\"word\">$1</span>')" +
-                            ".replace(/\\n/g, '<br>')});" +
-                            "$('.word').click(function(event) { window.HybridApp.setWord(event.target.innerHTML) });";
-
-                    //html 변경
-                    String[] changeClass = param.getStringArray("changeClass");
-                    for ( int i = 0; i < changeClass.length; i++ ) {
-                        webView.loadUrl("javascript:" + changeClass[i] + js);
-                    }
-                }
-            }
-        });
+        webView.setWebViewClient(new MyWebViewClient());
         webView.loadUrl(param.getString("url"));
+        DicUtils.dicLog("First : " + param.getString("url"));
 
         AdView av = (AdView)this.findViewById(R.id.adView);
         AdRequest adRequest = new  AdRequest.Builder().build();
@@ -195,10 +172,92 @@ public class WebViewActivity extends AppCompatActivity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             //return super.shouldOverrideUrlLoading(view, url);
-            DicUtils.dicLog("url = "+ url);
-            view.loadUrl(url);
 
-            return true;
+            //The New Work Times 에서 다음 url을 호출할때 화면이 안나오는 문제가 있음
+            if ( "data:text/html,".equals(url) ) {
+                return false;
+            } else {
+                DicUtils.dicLog("url = " + url);
+                view.loadUrl(url);
+
+                return true;
+            }
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+
+            if (mProgress == null) {
+                mProgress = new ProgressDialog(WebViewActivity.this);
+                mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                mProgress.setTitle("알림");
+                mProgress.setMessage("페이지 로딩 및 변환 중입니다.\n잠시만 기다려 주세요.");
+                mProgress.setCancelable(false);
+                mProgress.setButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        mProgress.dismiss();
+                        mProgress = null;
+                    }
+                });
+                mProgress.show();
+            }
+
+            DicUtils.dicLog("onPageStarted : " + url);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            super.onReceivedError(view, request, error);
+
+            if (mProgress.isShowing()) {
+                mProgress.dismiss();
+                mProgress = null;
+            }
+
+            DicUtils.dicLog("onReceivedError : " + error.toString());
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            DicUtils.dicLog("onPageFinished : " + url);
+
+            //중복으로 호출이 되지 않도록
+            if ( oldUrl.equals(url) ) {
+                return;
+            } else {
+                if ( !"data:text/html,".equals(url) ) {
+                    oldUrl = url;
+                    DicUtils.dicLog("onPageFinished : " + url);
+
+                    // CNN은 $를 사용안하고 jQuery를 사용한다.
+                    String js1 = ".html(function(index, oldHtml) {return oldHtml.replace(/<br *\\/?>/gi, '\\n')" +
+                            ".replace(/<[^>]*>/g, '')" +
+                            ".replace(/(<br>)/g, '\\n')" + "" +
+                            ".replace(/\\b(\\w+?)\\b/g,'<span class=\"word\">$1</span>')" +
+                            ".replace(/\\n/g, '<br>')});";
+                    String js2 = "('.word').click(function(event) { window.HybridApp.setWord(event.target.innerHTML) });";
+
+                    //html 변경
+                    String[] changeClass = param.getStringArray("changeClass");
+                    for (int i = 0; i < changeClass.length; i++) {
+                        if ( "$".equals(changeClass[i].substring(0, 1)) ) {
+                            webView.loadUrl("javascript:" + changeClass[i] + js1 + "$" + js2);
+                            DicUtils.dicLog("javascript:" + changeClass[i] + js1 + "$" + js2);
+                        } else {
+                            webView.loadUrl("javascript:" + changeClass[i] + js1 + "jQuery" + js2);
+                            DicUtils.dicLog("javascript:" + changeClass[i] + js1 + "jQuery" + js2);
+                        }
+                    }
+
+                    if (mProgress.isShowing()) {
+                        mProgress.dismiss();
+                        mProgress = null;
+                    }
+                }
+            }
         }
     }
 
