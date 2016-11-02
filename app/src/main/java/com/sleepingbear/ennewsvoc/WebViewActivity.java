@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.ClipboardManager;
+import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -53,6 +54,8 @@ public class WebViewActivity extends AppCompatActivity {
     private String oldUrl = "";
 
     private ProgressDialog mProgress;
+
+    private ActionMode mActionMode = null;
 
     private final Handler handler = new Handler();
 
@@ -94,7 +97,7 @@ public class WebViewActivity extends AppCompatActivity {
         webView.loadUrl(param.getString("url"));
         DicUtils.dicLog("First : " + param.getString("url"));
 
-        registerForContextMenu(webView);
+        //registerForContextMenu(webView);
 
         AdView av = (AdView)this.findViewById(R.id.adView);
         AdRequest adRequest = new  AdRequest.Builder().build();
@@ -115,6 +118,7 @@ public class WebViewActivity extends AppCompatActivity {
         return true;
     }
 
+    /*
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -135,7 +139,9 @@ public class WebViewActivity extends AppCompatActivity {
             menu.getItem(i).setOnMenuItemClickListener(listener);
         }
     }
+    */
 
+    /*
     @Override
     public boolean onContextItemSelected(MenuItem item){
         super.onContextItemSelected(item);
@@ -159,6 +165,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         return false;
     }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -217,6 +224,77 @@ public class WebViewActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    @Override
+    public void onActionModeStarted(ActionMode mode) {
+        DicUtils.dicLog("onActionModeStarted");
+        if (mActionMode == null) {
+            mActionMode = mode;
+            Menu menu = mode.getMenu();
+            // Remove the default menu items (select all, copy, paste, search)
+            menu.clear();
+
+            // If you want to keep any of the defaults,
+            // remove the items you don't want individually:
+            // menu.removeItem(android.R.id.[id_of_item_to_remove])
+
+            // Inflate your own menu items
+            mode.getMenuInflater().inflate(R.menu.menu_webview, menu);
+
+            //클릭시 onContextItemSelected를 호출해주도록 이벤트를 걸어준다.
+            MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    onContextualMenuItemClicked(item);
+                    return true;
+                }
+            };
+            for (int i = 0, n = menu.size(); i < n; i++) {
+                menu.getItem(i).setOnMenuItemClickListener(listener);
+            }
+        }
+
+        super.onActionModeStarted(mode);
+    }
+
+    // This method is what you should set as your item's onClick
+    // <item android:onClick="onContextualMenuItemClicked" />
+    public void onContextualMenuItemClicked(MenuItem item) {
+        DicUtils.dicLog("onContextualMenuItemClicked");
+        switch (item.getItemId()) {
+            case R.id.action_copy:
+                Toast.makeText(this,"action_copy",Toast.LENGTH_SHORT).show();
+                // do some stuff
+                break;
+            case R.id.action_word_view:
+                Toast.makeText(this,"action_word_view",Toast.LENGTH_SHORT).show();
+                // do some different stuff
+                break;
+            case R.id.action_sentence_view:
+                Toast.makeText(this,"action_sentence_view",Toast.LENGTH_SHORT).show();
+                // do some different stuff
+                break;
+            case R.id.action_tts:
+                Toast.makeText(this,"action_tts",Toast.LENGTH_SHORT).show();
+                // do some different stuff
+                break;
+            default:
+                // ...
+                break;
+        }
+
+        // This will likely always be true, but check it anyway, just in case
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+    }
+
+    @Override
+    public void onActionModeFinished(ActionMode mode) {
+        DicUtils.dicLog("onActionModeFinished");
+        mActionMode = null;
+        super.onActionModeFinished(mode);
     }
 
     private class MyWebViewClient extends WebViewClient {
