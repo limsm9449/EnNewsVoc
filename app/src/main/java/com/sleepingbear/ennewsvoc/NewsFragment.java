@@ -42,7 +42,8 @@ public class NewsFragment extends Fragment {
         items.add(new NewsVo("Chosun","http://english.chosun.com",
                 new String[]{"$('.art_headline')","$('.news_body .par')"}, new String[]{}, R.drawable.img_chosunilbo));
         items.add(new NewsVo("Joongang Daily","http://mengnews.joins.com/",
-                new String[]{"$($('h4')[0])","$('.en')"}, new String[]{}, R.drawable.img_joongangdaily));
+                new String[]{"$($('h4')[0])","$('.en')"},
+                new String[]{"$('.ad_h50')"}, R.drawable.img_joongangdaily));
         items.add(new NewsVo("Korea Herald","http://www.koreaherald.com",
                 new String[]{"$($('#detail h2')[0])","$('.article')"}, new String[]{}, R.drawable.img_koreaherald));
         items.add(new NewsVo("Korea Times","http://m.koreatimes.co.kr/phone/",

@@ -13,6 +13,11 @@
     <string name="action_study">단어 학습</string>
     <string name="action_other">기타 기능</string>
 
+    <string name="action_copy">복사</string>
+    <string name="action_word_view">단어보기</string>
+    <string name="action_sentence_view">문장보기</string>
+    <string name="action_tts">TTS</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_word_view">WordViewActivity</string>

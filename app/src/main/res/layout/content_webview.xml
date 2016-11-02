@@ -34,18 +34,20 @@
         android:id="@+id/my_c_webview_rl"
         android:layout_above="@+id/adView"
         android:layout_height="50dp"
-        android:background="@color/webViewMean">
+        android:background="@color/webViewMean"
+        android:clickable="false">
 
         <TextView
             android:text="TextView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:layout_marginStart="5dp"
             android:id="@+id/my_c_webview_mean"
             android:textColor="@color/textColorPrimary"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/my_c_webview_ib" />
+            android:layout_toLeftOf="@+id/my_c_webview_ib"
+            android:clickable="false" />
 
         <ImageButton
             android:layout_width="wrap_content"

@@ -14,8 +14,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.ClipboardManager;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -78,17 +80,21 @@ public class WebViewActivity extends AppCompatActivity {
         //하단 뜻 영역을 숨김
         meanRl = (RelativeLayout) this.findViewById(R.id.my_c_webview_rl);
         meanRl.setVisibility(View.GONE);
+        meanRl.setClickable(true);  //클릭시 하단 광고가 클릭되는 문제로 rl이 클릭이 되게 해준다.
         mean = (TextView) this.findViewById(R.id.my_c_webview_mean);
 
         webView = (WebView) this.findViewById(R.id.my_c_webview_wv);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.addJavascriptInterface(new AndroidBridge(), "HybridApp");
-        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setBuiltInZoomControls(false);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
+        //webView.setContextClickable(true);
         webView.setWebViewClient(new MyWebViewClient());
         webView.loadUrl(param.getString("url"));
         DicUtils.dicLog("First : " + param.getString("url"));
+
+        registerForContextMenu(webView);
 
         AdView av = (AdView)this.findViewById(R.id.adView);
         AdRequest adRequest = new  AdRequest.Builder().build();
@@ -107,6 +113,51 @@ public class WebViewActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu){
         super.onPrepareOptionsMenu(menu);
         return true;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        //Webview Context Menu를 가져온다.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_webview, menu);
+
+        //클릭시 onContextItemSelected를 호출해주도록 이벤트를 걸어준다.
+        MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                onContextItemSelected(item);
+                return true;
+            }
+        };
+        for (int i = 0, n = menu.size(); i < n; i++) {
+            menu.getItem(i).setOnMenuItemClickListener(listener);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item){
+        super.onContextItemSelected(item);
+
+        switch(item.getItemId()){
+            case R.id.action_copy:
+                Toast.makeText(this,"action_copy",Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_word_view:
+                Toast.makeText(this,"action_word_view",Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_sentence_view:
+                Toast.makeText(this,"action_sentence_view",Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_tts:
+                Toast.makeText(this,"action_tts",Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                super.onContextItemSelected(item);
+        }
+
+        return false;
     }
 
     @Override
@@ -190,18 +241,11 @@ public class WebViewActivity extends AppCompatActivity {
 
             if (mProgress == null) {
                 mProgress = new ProgressDialog(WebViewActivity.this);
-                mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                mProgress.setTitle("알림");
-                mProgress.setMessage("페이지 로딩 및 변환 중입니다.\n잠시만 기다려 주세요.");
+                mProgress.setIndeterminate(true);
                 mProgress.setCancelable(false);
-                mProgress.setButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        mProgress.dismiss();
-                        mProgress = null;
-                    }
-                });
                 mProgress.show();
+                mProgress.setContentView(R.layout.custom_progress);
+                mProgress.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             }
 
             DicUtils.dicLog("onPageStarted : " + url);
@@ -240,7 +284,7 @@ public class WebViewActivity extends AppCompatActivity {
                             ".replace(/\\n/g, '<br>')});";
                     String js2 = "('.word').click(function(event) { window.HybridApp.setWord(event.target.innerHTML) });";
 
-                    //html 변경
+                    //html 단어 기능 변경
                     String[] changeClass = param.getStringArray("changeClass");
                     for (int i = 0; i < changeClass.length; i++) {
                         if ( "$".equals(changeClass[i].substring(0, 1)) ) {
@@ -249,6 +293,18 @@ public class WebViewActivity extends AppCompatActivity {
                         } else {
                             webView.loadUrl("javascript:" + changeClass[i] + js1 + "jQuery" + js2);
                             DicUtils.dicLog("javascript:" + changeClass[i] + js1 + "jQuery" + js2);
+                        }
+                    }
+
+                    //광고 제거
+                    String[] removeClass = param.getStringArray("removeClass");
+                    for (int i = 0; i < removeClass.length; i++) {
+                        if ( "$".equals(removeClass[i].substring(0, 1)) ) {
+                            webView.loadUrl("javascript:" + removeClass[i] + ".html('')");
+                            DicUtils.dicLog("javascript:" + removeClass[i] + ".html('')");
+                        } else {
+                            webView.loadUrl("javascript:" + removeClass[i] + ".html('')");
+                            DicUtils.dicLog("javascript:" + removeClass[i] + ".html('')");
                         }
                     }
 
