@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -95,7 +96,7 @@ public class DicUtils {
 
     public static void dicSqlLog(String str) {
         if (BuildConfig.DEBUG) {
-            Log.d("VhDictAndVoc Sql ====>", str);
+            Log.d(CommConstants.tag + " ====>", str);
         }
     }
 
@@ -104,7 +105,7 @@ public class DicUtils {
             Calendar cal = Calendar.getInstance();
             String time = cal.get(Calendar.HOUR_OF_DAY) + "시 " + cal.get(Calendar.MINUTE) + "분 " + cal.get(Calendar.SECOND) + "초";
 
-            Log.d("VhDictAndVoc ====>", time + " : " + str);
+            Log.d(CommConstants.tag + " ====>", time + " : " + str);
         }
     }
 
@@ -204,9 +205,9 @@ public class DicUtils {
                 fis = ctx.openFileInput(CommConstants.infoFileName);
             } else {
                 //데이타 초기화
-                DicDb.initToday(db);
+                //DicDb.initToday(db);
                 DicDb.initVocabulary(db);
-                DicDb.initSample(db);
+                //DicDb.initSample(db);
 
                 fis = new FileInputStream(new File(fileName));
             }
@@ -221,11 +222,6 @@ public class DicUtils {
 
                 String[] row = readString.split(":");
                 switch (row[0]) {
-                    case "TODAY":
-                        //오늘의 단어장
-                        //DicUtils. writeInfoToFile(getContext(), "TODAY" + ":" + today + ":" + todayCursor.getString(todayCursor.getColumnIndexOrThrow("ENTRY_ID")));
-                        DicDb.insToday(db, row[2], row[1]);
-                        break;
                     case "MYWORD_INSERT":
                         //단어장 추가
                         //DicUtils.writeInfoToFile(context, "MYWORD_INSERT" + ":" + "MY" + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".") + ":" + viewHolder.entryId);
@@ -257,13 +253,6 @@ public class DicUtils {
                     case "MEMORY":
                         //DicUtils.writeInfoToFile(context, "MEMORY" + ":" + entryId + ":" + (((CheckBox) v.findViewById(R.id.my_c_vi_cb_memorization)).isChecked() ? "Y" : "N"));
                         DicDb.updMemory(db, row[1], row[2]);
-                        break;
-                    case "MYSAMPLE_INSERT":
-                        DicDb.insDicMySample(db, row[1], row[2], row[3]);
-                        break;
-                    case "MYSAMPLE_DELETE":
-                        //DicUtils.writeInfoToFile(context, "MEMORY" + ":" + entryId + ":" + (((CheckBox) v.findViewById(R.id.my_c_vi_cb_memorization)).isChecked() ? "Y" : "N"));
-                        DicDb.delDicMySample(db, row[1]);
                         break;
                 }
                 readString = buffreader.readLine();
@@ -380,6 +369,7 @@ public class DicUtils {
         return isHangule;
     }
 
+    /*
     public static ArrayList gatherCategory(SQLiteDatabase db, String url, String codeGroup) {
         ArrayList wordAl = new ArrayList();
         try {
@@ -484,6 +474,7 @@ public class DicUtils {
 
         return wordAl;
     }
+    */
 
     public static Document getDocument(String url) throws Exception {
         Document doc = null;

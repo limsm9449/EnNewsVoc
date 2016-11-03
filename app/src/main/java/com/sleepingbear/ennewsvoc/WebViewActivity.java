@@ -1,26 +1,33 @@
 package com.sleepingbear.ennewsvoc;
 
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.ClipboardManager;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
@@ -31,6 +38,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -43,8 +53,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Locale;
 
-public class WebViewActivity extends AppCompatActivity {
+public class WebViewActivity extends AppCompatActivity implements View.OnClickListener, TextToSpeech.OnInitListener {
+    private TextToSpeech myTTS;
+
     public SQLiteDatabase mDb;
     public ArrayAdapter urlAdapter;
     private WebView webView;
@@ -52,6 +66,8 @@ public class WebViewActivity extends AppCompatActivity {
     private RelativeLayout meanRl;
     private Bundle param;
     private String oldUrl = "";
+    private String entryId = "";
+    public int mSelect = 0;
 
     private ProgressDialog mProgress;
 
@@ -62,15 +78,17 @@ public class WebViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_webview);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        myTTS = new TextToSpeech(this, this);
+
         param = getIntent().getExtras();
 
         ActionBar ab = (ActionBar) getSupportActionBar();
+        //ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
         ab.setTitle(param.getString("name"));
         ab.setHomeButtonEnabled(true);
         ab.setDisplayHomeAsUpEnabled(true);
@@ -84,11 +102,28 @@ public class WebViewActivity extends AppCompatActivity {
         meanRl = (RelativeLayout) this.findViewById(R.id.my_c_webview_rl);
         meanRl.setVisibility(View.GONE);
         meanRl.setClickable(true);  //클릭시 하단 광고가 클릭되는 문제로 rl이 클릭이 되게 해준다.
+
+        //뜻 롱클릭시 단어 상세 보기
         mean = (TextView) this.findViewById(R.id.my_c_webview_mean);
+        mean.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(getApplication(), WordViewActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("entryId", entryId);
+                intent.putExtras(bundle);
+
+                startActivity(intent);
+
+                return false;
+            }
+        });
+
+        ((ImageButton) this.findViewById(R.id.my_c_webview_ib)).setOnClickListener(this);
 
         webView = (WebView) this.findViewById(R.id.my_c_webview_wv);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new AndroidBridge(), "HybridApp");
+        webView.addJavascriptInterface(new AndroidBridge(), "android");
         webView.getSettings().setBuiltInZoomControls(false);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
@@ -117,55 +152,6 @@ public class WebViewActivity extends AppCompatActivity {
         super.onPrepareOptionsMenu(menu);
         return true;
     }
-
-    /*
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        //Webview Context Menu를 가져온다.
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_webview, menu);
-
-        //클릭시 onContextItemSelected를 호출해주도록 이벤트를 걸어준다.
-        MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                onContextItemSelected(item);
-                return true;
-            }
-        };
-        for (int i = 0, n = menu.size(); i < n; i++) {
-            menu.getItem(i).setOnMenuItemClickListener(listener);
-        }
-    }
-    */
-
-    /*
-    @Override
-    public boolean onContextItemSelected(MenuItem item){
-        super.onContextItemSelected(item);
-
-        switch(item.getItemId()){
-            case R.id.action_copy:
-                Toast.makeText(this,"action_copy",Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.action_word_view:
-                Toast.makeText(this,"action_word_view",Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.action_sentence_view:
-                Toast.makeText(this,"action_sentence_view",Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.action_tts:
-                Toast.makeText(this,"action_tts",Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                super.onContextItemSelected(item);
-        }
-
-        return false;
-    }
-    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -232,15 +218,12 @@ public class WebViewActivity extends AppCompatActivity {
         if (mActionMode == null) {
             mActionMode = mode;
             Menu menu = mode.getMenu();
+
             // Remove the default menu items (select all, copy, paste, search)
             menu.clear();
 
-            // If you want to keep any of the defaults,
-            // remove the items you don't want individually:
-            // menu.removeItem(android.R.id.[id_of_item_to_remove])
-
             // Inflate your own menu items
-            mode.getMenuInflater().inflate(R.menu.menu_webview, menu);
+            mode.getMenuInflater().inflate(R.menu.menu_webview_cm, menu);
 
             //클릭시 onContextItemSelected를 호출해주도록 이벤트를 걸어준다.
             MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
@@ -258,26 +241,32 @@ public class WebViewActivity extends AppCompatActivity {
         super.onActionModeStarted(mode);
     }
 
-    // This method is what you should set as your item's onClick
-    // <item android:onClick="onContextualMenuItemClicked" />
     public void onContextualMenuItemClicked(MenuItem item) {
         DicUtils.dicLog("onContextualMenuItemClicked");
         switch (item.getItemId()) {
             case R.id.action_copy:
-                Toast.makeText(this,"action_copy",Toast.LENGTH_SHORT).show();
-                // do some stuff
+                webView.loadUrl("javascript:window.android.action('COPY', window.getSelection().toString())");
+
+                break;
+            case R.id.action_all_copy:
+                webView.loadUrl("javascript:window.android.action('COPY', $('body').text().replace(/(')/gi, '\\'\\''))");
+
                 break;
             case R.id.action_word_view:
-                Toast.makeText(this,"action_word_view",Toast.LENGTH_SHORT).show();
-                // do some different stuff
+                webView.loadUrl("javascript:window.android.action('WORD', window.getSelection().toString())");
+
                 break;
             case R.id.action_sentence_view:
-                Toast.makeText(this,"action_sentence_view",Toast.LENGTH_SHORT).show();
-                // do some different stuff
+                webView.loadUrl("javascript:window.android.action('SENTENCE', window.getSelection().toString())");
+
                 break;
             case R.id.action_tts:
-                Toast.makeText(this,"action_tts",Toast.LENGTH_SHORT).show();
-                // do some different stuff
+                webView.loadUrl("javascript:window.android.action('TTS', window.getSelection().toString())");
+
+                break;
+            case R.id.action_bookmark:
+                webView.loadUrl("javascript:window.android.action('BOOKMARK', window.getSelection().toString())");
+
                 break;
             default:
                 // ...
@@ -290,11 +279,68 @@ public class WebViewActivity extends AppCompatActivity {
         }
     }
 
+    public void onInit(int status) {
+        Locale loc = new Locale("en");
+
+        if (status == TextToSpeech.SUCCESS) {
+            int result = myTTS.setLanguage(Locale.ENGLISH);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "This Language is not supported");
+            }
+        } else {
+            Log.e("TTS", "Initilization Failed!");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myTTS.shutdown();
+    }
+
     @Override
     public void onActionModeFinished(ActionMode mode) {
         DicUtils.dicLog("onActionModeFinished");
         mActionMode = null;
         super.onActionModeFinished(mode);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if ( v.getId() == R.id.my_c_webview_ib ) {
+            //메뉴 선택 다이얼로그 생성
+            Cursor cursor = mDb.rawQuery(DicQuery.getSentenceViewContextMenu(), null);
+            final String[] kindCodes = new String[cursor.getCount()];
+            final String[] kindCodeNames = new String[cursor.getCount()];
+
+            int idx = 0;
+            while ( cursor.moveToNext() ) {
+                kindCodes[idx] = cursor.getString(cursor.getColumnIndexOrThrow("KIND"));
+                kindCodeNames[idx] = cursor.getString(cursor.getColumnIndexOrThrow("KIND_NAME"));
+                idx++;
+            }
+            cursor.close();
+
+            final AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+            dlg.setTitle("메뉴 선택");
+            dlg.setSingleChoiceItems(kindCodeNames, mSelect, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    mSelect = arg1;
+                }
+            });
+            dlg.setNegativeButton("취소", null);
+            dlg.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    DicDb.insDicVoc(mDb, entryId, kindCodes[mSelect]);
+                    DicUtils. writeInfoToFile(getApplicationContext(), "MYWORD_INSERT" + ":" + kindCodes[mSelect] + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(),".") + ":" + entryId);
+
+                    Toast.makeText(getApplicationContext(), "단어장에 등록했습니다. 메인화면의 '단어장' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
+                }
+            });
+            dlg.show();
+        }
     }
 
     private class MyWebViewClient extends WebViewClient {
@@ -319,11 +365,17 @@ public class WebViewActivity extends AppCompatActivity {
 
             if (mProgress == null) {
                 mProgress = new ProgressDialog(WebViewActivity.this);
-                mProgress.setIndeterminate(true);
+                mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                mProgress.setMessage("페이지 로딩 및 변환 중입니다.\n로딩이 완료후 단어를 클릭하시면 뜻을 보실 수 있습니다.");
                 mProgress.setCancelable(false);
+                mProgress.setButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        mProgress.dismiss();
+                        mProgress = null;
+                    }
+                });
                 mProgress.show();
-                mProgress.setContentView(R.layout.custom_progress);
-                mProgress.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             }
 
             DicUtils.dicLog("onPageStarted : " + url);
@@ -360,7 +412,7 @@ public class WebViewActivity extends AppCompatActivity {
                             ".replace(/(<br>)/g, '\\n')" + "" +
                             ".replace(/\\b(\\w+?)\\b/g,'<span class=\"word\">$1</span>')" +
                             ".replace(/\\n/g, '<br>')});";
-                    String js2 = "('.word').click(function(event) { window.HybridApp.setWord(event.target.innerHTML) });";
+                    String js2 = "('.word').click(function(event) { window.android.setWord(event.target.innerHTML) });";
 
                     //html 단어 기능 변경
                     String[] changeClass = param.getStringArray("changeClass");
@@ -402,8 +454,52 @@ public class WebViewActivity extends AppCompatActivity {
                 public void run() {
                     meanRl.setVisibility(View.VISIBLE);
 
-                    mean.setText(arg + " : " + DicDb.getMean(mDb, arg));
-                    //Toast.makeText(WebViewActivity.this, arg + " : " + DicDb.getMean(mDb, arg), Toast.LENGTH_SHORT).show();
+                    HashMap info = DicDb.getMean(mDb, arg);
+                    mean.setText(arg + " " + DicUtils.getString((String)info.get("SPELLING")) + " : " + DicUtils.getString((String)info.get("MEAN")));
+
+                    entryId = DicUtils.getString((String)info.get("ENTRY_ID"));
+
+                    DicDb.insDicMark(mDb, "WORD", arg, "");
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void action(final String kind, final String arg) { // must be final
+            handler.post(new Runnable() {
+                public void run() {
+                    if ( "COPY".equals(kind) ) {
+                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("simple text", arg);
+                        clipboard.setPrimaryClip(clip);
+                    } else if ( "WORD".equals(kind) ) {
+                        HashMap info = DicDb.getMean(mDb, arg);
+
+                        if ( info.containsKey("ENTRY_ID") ) {
+                            Intent intent = new Intent(getApplication(), WordViewActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("entryId", (String) info.get("ENTRY_ID"));
+                            intent.putExtras(bundle);
+
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "등록된 단어가 아닙니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else if ( "SENTENCE".equals(kind) ) {
+                        Intent intent = new Intent(getApplication(), SentenceViewActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("foreign", arg);
+                        bundle.putString("han", "");
+                        intent.putExtras(bundle);
+
+                        startActivity(intent);
+                    } else if ( "TTS".equals(kind) ) {
+                        myTTS.speak(arg, TextToSpeech.QUEUE_FLUSH, null);
+                    } else if ( "BOOKMARK".equals(kind) ) {
+                        DicDb.insDicMark(mDb, "BOOKMARK", oldUrl, "");
+
+                        Toast.makeText(getApplicationContext(), "북마크에 등록했습니다. 메인화면의 '북마크' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }

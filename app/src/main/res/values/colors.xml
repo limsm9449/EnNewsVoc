@@ -3,7 +3,7 @@
     <color name="colorPrimary">#ff4142</color>
     <color name="tabIndicatorColor">#42ffc7</color>
 
-    <color name="webViewMean">#fa437a</color>
+    <color name="webViewMean">#ff4142</color>
 
     <color name="colorPrimaryDark">#00A0B4</color>
     <color name="textColorPrimary">#FFFFFF</color>
@@ -17,15 +17,15 @@
     <color name="my_divider">#f17116</color>
     <color name="my_dividerL">#c1590e</color>
 
-    <color name="my_toggle_outline">#ec4a04</color>
-    <color name="my_toggle">#ec4a04</color>
+    <color name="my_toggle_outline">#ff4142</color>
+    <color name="my_toggle">#ff4142</color>
     <color name="my_toggle_dark">#742604</color>
     <color name="my_toggle_transparent">#030303</color>
 
-    <color name="my_button_outline">#ec4a04</color>
-    <color name="my_button_outline_disabled">#7b6e68</color>
+    <color name="my_button_outline">#ff4142</color>
+    <color name="my_button_outline_disabled">#ff4142</color>
     <color name="my_button_dark">#742604</color>
-    <color name="my_button_transparent">#ec4a04</color>
+    <color name="my_button_transparent">#030303</color>
 
     <color name="my_spinner">#ec4a04</color>
     <color name="my_spinner_outline">#ec4a04</color>

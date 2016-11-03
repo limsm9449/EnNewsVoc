@@ -39,12 +39,12 @@ public class NewsFragment extends Fragment {
         listView = (ListView)mainView.findViewById(R.id.my_f_news_lv);
 
         ArrayList<NewsVo> items = new ArrayList<>();
-        items.add(new NewsVo("Chosun","http://english.chosun.com",
+        items.add(new NewsVo("Chosun","http://english.chosun.com/m/",
                 new String[]{"$('.art_headline')","$('.news_body .par')"}, new String[]{}, R.drawable.img_chosunilbo));
         items.add(new NewsVo("Joongang Daily","http://mengnews.joins.com/",
                 new String[]{"$($('h4')[0])","$('.en')"},
-                new String[]{"$('.ad_h50')"}, R.drawable.img_joongangdaily));
-        items.add(new NewsVo("Korea Herald","http://www.koreaherald.com",
+                new String[]{"$('.ad_h50')","$('.ad_320x250')","$('.share_article')"}, R.drawable.img_joongangdaily));
+        items.add(new NewsVo("Korea Herald","http://m.koreaherald.com/?zad=",
                 new String[]{"$($('#detail h2')[0])","$('.article')"}, new String[]{}, R.drawable.img_koreaherald));
         items.add(new NewsVo("Korea Times","http://m.koreatimes.co.kr/phone/",
                 new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_koreatimes));
@@ -60,7 +60,7 @@ public class NewsFragment extends Fragment {
                 new String[]{"$('.headline')","$('.article-body p')"}, new String[]{}, R.drawable.img_newworktimes));
         items.add(new NewsVo("Reuters","http://mobile.reuters.com/",
                 new String[]{"$('.article-info h1')","$('#articleText p')"}, new String[]{}, R.drawable.img_reuters));
-        items.add(new NewsVo("Washingtone Post","http://www.washingtonpost.com",
+        items.add(new NewsVo("Washingtone Post","https://www.washingtonpost.com",
                 new String[]{"$('#topper-headline-wrapper h1')","$('#article-body article p')"}, new String[]{}, R.drawable.img_washingtonepost));
 
         adapter = new NewsAdapter(getContext(), 0, items);
