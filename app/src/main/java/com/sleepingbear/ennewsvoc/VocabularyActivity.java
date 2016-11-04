@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -19,9 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -269,17 +266,17 @@ class VocabularyCursorAdapter extends CursorAdapter {
 
         ViewHolder viewHolder = new ViewHolder();
         //암기 체크
-        viewHolder.memorizationCheck = (CheckBox) view.findViewById(R.id.my_c_vi_cb_memorization);
+        viewHolder.memorizationCheck = (CheckBox) view.findViewById(R.id.my_f_ci_cb_check);
         viewHolder.memorizationCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 HashMap hm = (HashMap) v.getTag();
                 String entryId = (String) hm.get("entryId");
 
-                DicDb.updMemory(mDb, entryId, (((CheckBox) v.findViewById(R.id.my_c_vi_cb_memorization)).isChecked() ? "Y" : "N"));
+                DicDb.updMemory(mDb, entryId, (((CheckBox) v.findViewById(R.id.my_f_ci_cb_check)).isChecked() ? "Y" : "N"));
 
                 //기록...
-                DicUtils.writeInfoToFile(context, "MEMORY" + ":" + entryId + ":" + (((CheckBox) v.findViewById(R.id.my_c_vi_cb_memorization)).isChecked() ? "Y" : "N"));
+                DicUtils.writeInfoToFile(context, "MEMORY" + ":" + entryId + ":" + (((CheckBox) v.findViewById(R.id.my_f_ci_cb_check)).isChecked() ? "Y" : "N"));
 
                 dataChange();
             }
@@ -303,14 +300,14 @@ class VocabularyCursorAdapter extends CursorAdapter {
         viewHolder.enrtyId = cursor.getString(cursor.getColumnIndexOrThrow("ENTRY_ID"));
         viewHolder.seq = cursor.getString(cursor.getColumnIndexOrThrow("SEQ"));
 
-        ((TextView) view.findViewById(R.id.my_c_vi_tv_word)).setText(DicUtils.getString(cursor.getString(cursor.getColumnIndexOrThrow("WORD"))));
+        ((TextView) view.findViewById(R.id.my_f_bi_tv_bookmark)).setText(DicUtils.getString(cursor.getString(cursor.getColumnIndexOrThrow("WORD"))));
         ((TextView) view.findViewById(R.id.my_c_vi_tv_spelling)).setText(DicUtils.getString(cursor.getString(cursor.getColumnIndexOrThrow("SPELLING"))));
-        ((TextView) view.findViewById(R.id.my_c_vi_tv_date)).setText(DicUtils.getString(cursor.getString(cursor.getColumnIndexOrThrow("INS_DATE"))));
+        ((TextView) view.findViewById(R.id.my_f_bi_tv_date)).setText(DicUtils.getString(cursor.getString(cursor.getColumnIndexOrThrow("INS_DATE"))));
         ((TextView) view.findViewById(R.id.my_c_vi_tv_mean)).setText(DicUtils.getString(cursor.getString(cursor.getColumnIndexOrThrow("MEAN"))));
 
         //암기 체크박스
         String memorization = cursor.getString(cursor.getColumnIndexOrThrow("MEMORIZATION"));
-        CheckBox cb_memorization = (CheckBox)view.findViewById(R.id.my_c_vi_cb_memorization);
+        CheckBox cb_memorization = (CheckBox)view.findViewById(R.id.my_f_ci_cb_check);
         cb_memorization.setTag(param);
         if ( "Y".equals(memorization) ) {
             cb_memorization.setChecked(true);

@@ -128,7 +128,7 @@ public class DicDb {
 
         sql.delete(0, sql.length());
         sql.append("INSERT INTO DIC_CODE(CODE_GROUP, CODE, CODE_NAME)" + CommConstants.sqlCR);
-        sql.append("VALUES('MY', 'MY000', 'MY 단어장')" + CommConstants.sqlCR);
+        sql.append("VALUES('MY', 'MY0000', 'MY 단어장')" + CommConstants.sqlCR);
         DicUtils.dicSqlLog(sql.toString());
         db.execSQL(sql.toString());
     }
@@ -309,9 +309,9 @@ public class DicDb {
 
         if ( "s".indexOf(word.substring(word.length() - 1)) > -1 ) {
             findWord = word.substring(0, word.length() - 1);
-        } else if ( "es,ed,ly".indexOf(word.substring(word.length() - 2)) > -1 ) {
+        } else if ( word.length() > 2 && "es,ed,ly".indexOf(word.substring(word.length() - 2)) > -1 ) {
             findWord = word.substring(0, word.length() - 2);
-        } else if ( "ing".indexOf(word.substring(word.length() - 3))  > -1 ) {
+        } else if ( word.length() > 3 && "ing".indexOf(word.substring(word.length() - 3))  > -1 ) {
             findWord = word.substring(0, word.length() - 3);
         } else {
             findWord = word;

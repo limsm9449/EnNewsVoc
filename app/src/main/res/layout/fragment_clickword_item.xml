@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
     android:paddingLeft="10dp"
-    android:paddingRight="5dp"
     android:paddingTop="8dp"
-    android:descendantFocusability="blocksDescendants"
-    android:paddingBottom="8dp">
+    android:paddingRight="5dp"
+    android:paddingBottom="8dp"
+    android:background="#ffffff">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Word"
-            android:id="@+id/my_f_bi_tv_bookmark"
+            android:id="@+id/my_f_ci_tv_word"
             android:layout_alignParentTop="false"
             android:layout_alignParentLeft="true"
             android:textColor="@color/my_text_word"
@@ -28,18 +28,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Spelling"
-            android:id="@+id/my_c_vi_tv_spelling"
+            android:id="@+id/my_f_ci_tv_spelling"
             android:textSize="13dp"
-            android:layout_toRightOf="@+id/my_f_bi_tv_bookmark"
+            android:layout_toRightOf="@+id/my_f_ci_tv_word"
             android:layout_marginLeft="10dp"
-            android:layout_toLeftOf="@+id/my_f_bi_tv_date"
+            android:layout_toLeftOf="@+id/my_f_ci_tv_date"
             android:textColor="#FF9E9C9C" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Date"
-            android:id="@+id/my_f_bi_tv_date"
+            android:id="@+id/my_f_ci_tv_date"
             android:textSize="11dp"
             android:layout_marginLeft="10dp"
             android:layout_alignParentRight="true"
@@ -50,7 +50,7 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/my_c_vi_ll_2"
+        android:id="@+id/my_f_ci_ll_2"
         android:layout_below="@+id/my_f_ci_ll"
         android:gravity="center"
         android:layout_alignParentBottom="true">
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mean"
-            android:id="@+id/my_c_vi_tv_mean"
+            android:id="@+id/my_f_ci_tv_mean"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="false"
             android:layout_alignParentEnd="false"

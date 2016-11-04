@@ -336,4 +336,32 @@ public class DicQuery {
 
         return sql.toString();
     }
+
+    public static String getClickword() {
+        StringBuffer sql = new StringBuffer();
+
+        sql.append("SELECT B.SEQ _id, B.WORD, B.MEAN, B.SPELLING, A.INS_DATE" + CommConstants.sqlCR);
+        sql.append("FROM   DIC_MARK A, DIC B" + CommConstants.sqlCR);
+        sql.append("WHERE  A.KIND = 'WORD'" + CommConstants.sqlCR);
+        sql.append("AND    A.CONTENTS = B.WORD " + CommConstants.sqlCR);
+        sql.append("ORDER  BY A.INS_DATE DESC, B.WORD" + CommConstants.sqlCR);
+
+        DicUtils.dicSqlLog(sql.toString());
+
+        return sql.toString();
+    }
+
+    public static String getBookmark() {
+        StringBuffer sql = new StringBuffer();
+
+        sql.append("SELECT 0 _id, CONTENTS, INS_DATE" + CommConstants.sqlCR);
+        sql.append("FROM   DIC_MARK" + CommConstants.sqlCR);
+        sql.append("WHERE  KIND = 'BOOKMARK'" + CommConstants.sqlCR);
+        sql.append("ORDER  BY INS_DATE DESC, CONTENTS" + CommConstants.sqlCR);
+
+        DicUtils.dicSqlLog(sql.toString());
+
+        return sql.toString();
+    }
+
 }

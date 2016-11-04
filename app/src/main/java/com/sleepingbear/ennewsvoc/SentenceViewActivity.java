@@ -422,10 +422,10 @@ class SentenceViewCursorAdapter extends CursorAdapter {
                     // 기록..
                     DicUtils.writeInfoToFile(context, "MYWORD_DELETE_ALL" + ":" + viewHolder.entryId);
                 } else {
-                    DicDb.insDicVoc(mDb, viewHolder.entryId, "MY000");
+                    DicDb.insDicVoc(mDb, viewHolder.entryId, "MY0000");
 
                     // 기록..
-                    DicUtils.writeInfoToFile(context, "MYWORD_INSERT" + ":" + "MY000" + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".") + ":" + viewHolder.entryId);
+                    DicUtils.writeInfoToFile(context, "MYWORD_INSERT" + ":" + "MY0000" + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".") + ":" + viewHolder.entryId);
                 }
 
                 dataChange();

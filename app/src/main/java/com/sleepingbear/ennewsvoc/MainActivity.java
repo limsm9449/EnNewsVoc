@@ -244,9 +244,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (position == 0) {
                 fab.setVisibility(View.INVISIBLE);
             } else if (position == 1) {
-                //사전/북마크
+                //클릭단어
                 fab.setVisibility(View.INVISIBLE);
             } else if (position == 2) {
+                //북마크
+                fab.setVisibility(View.INVISIBLE);
+            } else if (position == 3) {
                 //단어장
                 if ( ((VocabularyFragment) adapter.getItem(position)) != null ) {
                     ((VocabularyFragment) adapter.getItem(position)).changeListView();
@@ -284,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onPrepareOptionsMenu(Menu menu) {
         ((MenuItem)menu.findItem(R.id.action_delete)).setVisible(false);
 
-        if ( selectedTab == 2 ) {
+        if ( selectedTab == 3 ) {
             ((MenuItem)menu.findItem(R.id.action_delete)).setVisible(true);
         }
 
@@ -295,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int id = item.getItemId();
 
         if (id == R.id.action_delete) {
-            if (selectedTab == 2) {
+            if (selectedTab == 3) {
                 new AlertDialog.Builder(this)
                         .setTitle("알림")
                         .setMessage("단어장을 초기화 하시겠습니까?")
@@ -317,8 +320,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if ( selectedTab == 0 ) {
                 bundle.putString("SCREEN", "NEWS");
             } else if ( selectedTab == 1 ) {
-                bundle.putString("SCREEN", "MARK");
+                bundle.putString("SCREEN", "CLICKWORD");
             } else if ( selectedTab == 2 ) {
+                bundle.putString("SCREEN", "BOOKMARK");
+            } else if ( selectedTab == 3 ) {
                 bundle.putString("SCREEN", "VOCABULARY");
             }
 
@@ -341,13 +346,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch ( requestCode ) {
             case CommConstants.a_other :
                 if ( resultCode == Activity.RESULT_OK && "Y".equals(data.getStringExtra("isChange")) ) {
-                    if ( selectedTab == 2 ) {
+                    if ( selectedTab == 3 ) {
                         ((VocabularyFragment) adapter.getItem(0)).changeListView();
                     }
                 }
                 break;
             case CommConstants.a_vocabulary :
-                ((VocabularyFragment) adapter.getItem(2)).changeListView();
+                ((VocabularyFragment) adapter.getItem(3)).changeListView();
                 break;
             case CommConstants.a_news :
                 ((VocabularyFragment) adapter.getItem(0)).changeListView();
@@ -362,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                   .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                       @Override
                       public void onClick(DialogInterface dialog, int which) {
-                          if (selectedTab == 2) {
+                          if (selectedTab == 3) {
                               DicDb.initVocabulary(db);
 
                               DicUtils.writeNewInfoToFile(getApplicationContext(), db);
@@ -390,8 +395,11 @@ class MainPagerAdapter extends FragmentPagerAdapter {
         mFragmentList.add(new NewsFragment());
         mFragmentTitleList.add("뉴스");
 
-        mFragmentList.add(new MarkFragment());
-        mFragmentTitleList.add("선택단어/북마크");
+        mFragmentList.add(new ClickwordFragment());
+        mFragmentTitleList.add("클릭 단어");
+
+        mFragmentList.add(new BookmarkFragment());
+        mFragmentTitleList.add("북마크");
 
         mFragmentList.add(new VocabularyFragment());
         mFragmentTitleList.add("단어장");

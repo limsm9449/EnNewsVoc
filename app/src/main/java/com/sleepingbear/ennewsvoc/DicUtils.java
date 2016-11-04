@@ -314,7 +314,7 @@ public class DicUtils {
             //DicUtils. writeInfoToFile(getContext(), "CATEGORY_INSERT" + ":" + insCategoryCode + ":" + et_ins.getText().toString());
             cursor = db.rawQuery(DicQuery.getVocabularyCategoryCount(), null);
             while (cursor.moveToNext()) {
-                if (!"MY000".equals(cursor.getString(cursor.getColumnIndexOrThrow("KIND")))) {
+                if (!"MY0000".equals(cursor.getString(cursor.getColumnIndexOrThrow("KIND")))) {
                     fos.write(("CATEGORY_INSERT" + ":" + cursor.getString(cursor.getColumnIndexOrThrow("KIND")) + ":" + cursor.getString(cursor.getColumnIndexOrThrow("KIND_NAME"))).getBytes());
                     fos.write("\n".getBytes());
                 }

@@ -129,7 +129,7 @@ public class VocabularyFragment extends Fragment implements View.OnClickListener
                     public void onClick(View v) {
                         final String code = (String) v.getTag();
 
-                        if ("MY000".equals(code)) {
+                        if ("MY0000".equals(code)) {
                             Toast.makeText(getContext(), "기본 단어장은 삭제할 수 없습니다.", Toast.LENGTH_SHORT).show();
                             alertDialog.dismiss();
                         } else {
@@ -296,10 +296,6 @@ public class VocabularyFragment extends Fragment implements View.OnClickListener
         });
 
         listView.setSelection(0);
-    }
-
-    public void setActionBarTitle() {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("  단어장");
     }
 
     @Override
