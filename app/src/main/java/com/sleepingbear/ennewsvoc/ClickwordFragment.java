@@ -1,6 +1,7 @@
 package com.sleepingbear.ennewsvoc;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -58,8 +60,29 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
         adapter = new ClickwordCursorAdapter(getContext(), listCursor, 0);
         listView.setAdapter(adapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        listView.setOnItemClickListener(itemClickListener);
         listView.setSelection(0);
     }
+
+    AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Cursor cur = (Cursor) adapter.getItem(position);
+            cur.moveToPosition(position);
+
+            final String entryId = cur.getString(cur.getColumnIndexOrThrow("ENTRY_ID"));
+            final String word = cur.getString(cur.getColumnIndexOrThrow("WORD"));
+            final String seq = cur.getString(cur.getColumnIndexOrThrow("_id"));
+
+            Intent intent = new Intent(getActivity(), WordViewActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("entryId", entryId);
+            bundle.putString("seq", seq);
+            intent.putExtras(bundle);
+
+            startActivity(intent);
+        }
+    };
 
     @Override
     public void onClick(View v) {
