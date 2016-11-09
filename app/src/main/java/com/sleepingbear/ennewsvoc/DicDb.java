@@ -335,21 +335,38 @@ public class DicDb {
         return rtn;
     }
 
-    public static void insDicMark(SQLiteDatabase db, String kind, String contents, String insDate) {
+    public static void insDicClickWord(SQLiteDatabase db, String word, String insDate) {
         if ( "".equals(insDate) ) {
             insDate = DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".");
         }
 
         StringBuffer sql = new StringBuffer();
-        sql.append("DELETE FROM DIC_MARK " + CommConstants.sqlCR);
-        sql.append(" WHERE KIND = '" + kind + "'" + CommConstants.sqlCR);
-        sql.append("   AND CONTENTS = '" + contents + "'" + CommConstants.sqlCR);
+        sql.append("DELETE FROM DIC_CLICK_WORD " + CommConstants.sqlCR);
+        sql.append(" WHERE WORD = '" + word + "'" + CommConstants.sqlCR);
         DicUtils.dicSqlLog(sql.toString());
         db.execSQL(sql.toString());
 
         sql.setLength(0);
-        sql.append("INSERT INTO DIC_MARK (KIND, CONTENTS, INS_DATE) " + CommConstants.sqlCR);
-        sql.append("VALUES('" + kind + "', '" + contents + "', '" + insDate + "') " + CommConstants.sqlCR);
+        sql.append("INSERT INTO DIC_CLICK_WORD (WORD, INS_DATE) " + CommConstants.sqlCR);
+        sql.append("VALUES('" + word + "', '" + insDate + "') " + CommConstants.sqlCR);
+        DicUtils.dicSqlLog(sql.toString());
+        db.execSQL(sql.toString());
+    }
+
+    public static void insDicBoolmark(SQLiteDatabase db, String kind, String title, String url, String insDate) {
+        if ( "".equals(insDate) ) {
+            insDate = DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".");
+        }
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("DELETE FROM DIC_BOOKMARK " + CommConstants.sqlCR);
+        sql.append(" WHERE URL = '" + url + "'" + CommConstants.sqlCR);
+        DicUtils.dicSqlLog(sql.toString());
+        db.execSQL(sql.toString());
+
+        sql.setLength(0);
+        sql.append("INSERT INTO DIC_BOOKMARK (KIND, TITLE, URL, INS_DATE) " + CommConstants.sqlCR);
+        sql.append("VALUES('" + kind + "', '" + title + "', '" + url + "', '" + insDate + "') " + CommConstants.sqlCR);
         DicUtils.dicSqlLog(sql.toString());
         db.execSQL(sql.toString());
     }

@@ -53,6 +53,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -75,6 +76,10 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
     private final Handler handler = new Handler();
 
+    private ArrayList<NewsVo> enUrls;
+    private NewsVo currItem;
+    private String newsUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,11 +90,73 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         myTTS = new TextToSpeech(this, this);
 
+        // 영자신문 정보
+        enUrls = new ArrayList<>();
+        enUrls.add(new NewsVo("E001", "Chosun","http://english.chosun.com/m/",
+                new String[]{"$('.art_headline')","$('.news_body .par')"},
+                new String[]{},
+                "$('.art_headline')"));
+        enUrls.add(new NewsVo("E002", "Joongang Daily","http://mengnews.joins.com/",
+                new String[]{"$($('h4')[0])","$('.en')"},
+                new String[]{"$('.ad_h50')","$('.ad_320x250')","$('.share_article')"},
+                "$($('h4')[0])"));
+        enUrls.add(new NewsVo("E003", "Korea Herald","http://m.koreaherald.com/?zad=",
+                new String[]{"$($('#detail h2')[0])","$('.article')"},
+                new String[]{},
+                "$($('#detail h2')[0])"));
+        enUrls.add(new NewsVo("E004", "Korea Times","http://m.koreatimes.co.kr/phone/",
+                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"},
+                new String[]{},
+                "$('#first_big_news strong .english_mode')"));
+        enUrls.add(new NewsVo("E005", "ABC","http://abcnews.go.com",
+                new String[]{"$('.container .article-header h1')","$('.container .article-body')"},
+                new String[]{},
+                "$('.container .article-header h1')"));
+        enUrls.add(new NewsVo("E006", "BBC","http://www.bbc.com/news",
+                new String[]{"$('.story-body .story-body__h1')","$('.story-body .story-body__inner p')"},
+                new String[]{},
+                "$('.story-body .story-body__h1')"));
+        enUrls.add(new NewsVo("E007", "CNN","http://edition.cnn.com",
+                new String[]{"jQuery('.pg-headline')","jQuery('.l-container .zn-body__paragraph')"},
+                new String[]{},
+                "jQuery('.pg-headline')"));
+        enUrls.add(new NewsVo("E008", "Los Angeles Times","http://www.latimes.com",
+                new String[]{"$('.trb_ar_hl_t')","$('.trb_ar_page p')"},
+                new String[]{},
+                "$('.trb_ar_hl_t')"));
+        enUrls.add(new NewsVo("E009", "The New Work Times","http://mobile.nytimes.com/?referer=",
+                new String[]{"$('.headline')","$('.article-body p')"},
+                new String[]{},
+                "$('.headline')"));
+        enUrls.add(new NewsVo("E010", "Reuters","http://mobile.reuters.com/",
+                new String[]{"$('.article-info h1')","$('#articleText p')"},
+                new String[]{},
+                "$('.article-info h1')"));
+        enUrls.add(new NewsVo("E011", "Washingtone Post","https://www.washingtonpost.com",
+                new String[]{"$('#topper-headline-wrapper h1')","$('#article-body article p')"},
+                new String[]{},
+                "$('#topper-headline-wrapper h1')"));
+
+        String currUrl = "";
         param = getIntent().getExtras();
+        for ( int i = 0; i < enUrls.size(); i++ ) {
+            DicUtils.dicLog(enUrls.get(i).getKind() + " : " + param.getString("kind"));
+            if ( enUrls.get(i).getKind().equals(param.getString("kind")) ) {
+                currItem = enUrls.get(i);
+                currUrl = currItem.getUrl();
+                break;
+            }
+        }
+        if ( !"".equals(DicUtils.getString(param.getString("url"))) ) {
+            DicUtils.dicLog("url param");
+            currUrl = param.getString("url");
+        }
+
+        DicUtils.dicLog(currUrl);
 
         ActionBar ab = (ActionBar) getSupportActionBar();
         //ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
-        ab.setTitle(param.getString("name"));
+        ab.setTitle(currItem.getName());
         ab.setHomeButtonEnabled(true);
         ab.setDisplayHomeAsUpEnabled(true);
 
@@ -129,8 +196,8 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         //webView.setContextClickable(true);
         webView.setWebViewClient(new MyWebViewClient());
-        webView.loadUrl(param.getString("url"));
-        DicUtils.dicLog("First : " + param.getString("url"));
+        webView.loadUrl(currUrl);
+        DicUtils.dicLog("First : " + currUrl);
 
         //registerForContextMenu(webView);
 
@@ -265,7 +332,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
                 break;
             case R.id.action_bookmark:
-                webView.loadUrl("javascript:window.android.action('BOOKMARK', window.getSelection().toString())");
+                webView.loadUrl("javascript:window.android.action('BOOKMARK',  " + currItem.getTitleClass() + ".text())");
 
                 break;
             default:
@@ -343,6 +410,72 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private class NewsVo {
+        private String kind;
+        private String name;
+        private String url;
+        private String[] changeClass;
+        private String[] removeClass;
+        private String titleClass;
+
+        public NewsVo(String kind, String name, String url, String[] changeClass, String[] removeClass, String titleClass) {
+            this.kind = kind;
+            this.name = name;
+            this.url = url;
+            this.changeClass = changeClass;
+            this.removeClass = removeClass;
+            this.titleClass = titleClass;
+        }
+
+        public String getKind() {
+            return kind;
+        }
+
+        public void setKind(String kind) {
+            this.kind = kind;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String[] getChangeClass() {
+            return changeClass;
+        }
+
+        public void setChangeClass(String[] changeClass) {
+            this.changeClass = changeClass;
+        }
+
+        public String[] getRemoveClass() {
+            return removeClass;
+        }
+
+        public void setRemoveClass(String[] removeClass) {
+            this.removeClass = removeClass;
+        }
+
+        public String getTitleClass() {
+            return titleClass;
+        }
+
+        public void setTitleClass(String titleClass) {
+            this.titleClass = titleClass;
+        }
+    }
+
     private class MyWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -415,7 +548,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                     String js2 = "('.word').click(function(event) { window.android.setWord(event.target.innerHTML) });";
 
                     //html 단어 기능 변경
-                    String[] changeClass = param.getStringArray("changeClass");
+                    String[] changeClass = currItem.getChangeClass();
                     for (int i = 0; i < changeClass.length; i++) {
                         if ( "$".equals(changeClass[i].substring(0, 1)) ) {
                             webView.loadUrl("javascript:" + changeClass[i] + js1 + "$" + js2);
@@ -427,7 +560,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                     }
 
                     //광고 제거
-                    String[] removeClass = param.getStringArray("removeClass");
+                    String[] removeClass = currItem.getRemoveClass();
                     for (int i = 0; i < removeClass.length; i++) {
                         if ( "$".equals(removeClass[i].substring(0, 1)) ) {
                             webView.loadUrl("javascript:" + removeClass[i] + ".html('')");
@@ -437,6 +570,8 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                             DicUtils.dicLog("javascript:" + removeClass[i] + ".html('')");
                         }
                     }
+
+                    webView.loadUrl("javascript:window.android.action('URL', window.location.href)");
 
                     if (mProgress.isShowing()) {
                         mProgress.dismiss();
@@ -458,8 +593,9 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                     mean.setText(arg + " " + DicUtils.getString((String)info.get("SPELLING")) + " : " + DicUtils.getString((String)info.get("MEAN")));
 
                     entryId = DicUtils.getString((String)info.get("ENTRY_ID"));
-
-                    DicDb.insDicMark(mDb, "WORD", arg, "");
+                    if ( !"".equals(entryId) ) {
+                        DicDb.insDicClickWord(mDb, arg, "");
+                    }
                 }
             });
         }
@@ -495,8 +631,10 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                         startActivity(intent);
                     } else if ( "TTS".equals(kind) ) {
                         myTTS.speak(arg, TextToSpeech.QUEUE_FLUSH, null);
+                    } else if ( "URL".equals(kind) ) {
+                        newsUrl = arg;
                     } else if ( "BOOKMARK".equals(kind) ) {
-                        DicDb.insDicMark(mDb, "BOOKMARK", oldUrl, "");
+                        DicDb.insDicBoolmark(mDb, currItem.getKind(), arg, newsUrl, "");
 
                         Toast.makeText(getApplicationContext(), "북마크에 등록했습니다. 메인화면의 '북마크' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
                     }

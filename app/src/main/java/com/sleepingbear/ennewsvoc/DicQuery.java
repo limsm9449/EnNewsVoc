@@ -340,10 +340,9 @@ public class DicQuery {
     public static String getClickword() {
         StringBuffer sql = new StringBuffer();
 
-        sql.append("SELECT B.SEQ _id, B.WORD, B.MEAN, B.SPELLING, A.INS_DATE" + CommConstants.sqlCR);
-        sql.append("FROM   DIC_MARK A, DIC B" + CommConstants.sqlCR);
-        sql.append("WHERE  A.KIND = 'WORD'" + CommConstants.sqlCR);
-        sql.append("AND    A.CONTENTS = B.WORD " + CommConstants.sqlCR);
+        sql.append("SELECT B.SEQ _id, B.ENTRY_ID, B.WORD, B.MEAN, B.SPELLING, A.INS_DATE" + CommConstants.sqlCR);
+        sql.append("FROM   DIC_CLICK_WORD A, DIC B" + CommConstants.sqlCR);
+        sql.append("WHERE  A.WORD = B.WORD " + CommConstants.sqlCR);
         sql.append("ORDER  BY A.INS_DATE DESC, B.WORD" + CommConstants.sqlCR);
 
         DicUtils.dicSqlLog(sql.toString());
@@ -354,10 +353,9 @@ public class DicQuery {
     public static String getBookmark() {
         StringBuffer sql = new StringBuffer();
 
-        sql.append("SELECT 0 _id, CONTENTS, INS_DATE" + CommConstants.sqlCR);
-        sql.append("FROM   DIC_MARK" + CommConstants.sqlCR);
-        sql.append("WHERE  KIND = 'BOOKMARK'" + CommConstants.sqlCR);
-        sql.append("ORDER  BY INS_DATE DESC, CONTENTS" + CommConstants.sqlCR);
+        sql.append("SELECT SEQ _id, KIND, TITLE, URL, INS_DATE" + CommConstants.sqlCR);
+        sql.append("FROM   DIC_BOOKMARK" + CommConstants.sqlCR);
+        sql.append("ORDER  BY INS_DATE DESC, TITLE" + CommConstants.sqlCR);
 
         DicUtils.dicSqlLog(sql.toString());
 

@@ -53,8 +53,6 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
     }
 
     public void changeListView() {
-        DicUtils.dicLog(this.getClass().toString() + " changeListView");
-
         Cursor listCursor = db.rawQuery(DicQuery.getClickword(), null);
         ListView listView = (ListView) mainView.findViewById(R.id.my_f_clickword_lv);
         adapter = new ClickwordCursorAdapter(getContext(), listCursor, 0);
@@ -68,7 +66,6 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Cursor cur = (Cursor) adapter.getItem(position);
-            cur.moveToPosition(position);
 
             final String entryId = cur.getString(cur.getColumnIndexOrThrow("ENTRY_ID"));
             final String word = cur.getString(cur.getColumnIndexOrThrow("WORD"));

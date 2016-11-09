@@ -39,29 +39,17 @@ public class NewsFragment extends Fragment {
         listView = (ListView)mainView.findViewById(R.id.my_f_news_lv);
 
         ArrayList<NewsVo> items = new ArrayList<>();
-        items.add(new NewsVo("Chosun","http://english.chosun.com/m/",
-                new String[]{"$('.art_headline')","$('.news_body .par')"}, new String[]{}, R.drawable.img_chosunilbo));
-        items.add(new NewsVo("Joongang Daily","http://mengnews.joins.com/",
-                new String[]{"$($('h4')[0])","$('.en')"},
-                new String[]{"$('.ad_h50')","$('.ad_320x250')","$('.share_article')"}, R.drawable.img_joongangdaily));
-        items.add(new NewsVo("Korea Herald","http://m.koreaherald.com/?zad=",
-                new String[]{"$($('#detail h2')[0])","$('.article')"}, new String[]{}, R.drawable.img_koreaherald));
-        items.add(new NewsVo("Korea Times","http://m.koreatimes.co.kr/phone/",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"}, new String[]{}, R.drawable.img_koreatimes));
-        items.add(new NewsVo("ABC","http://abcnews.go.com",
-                new String[]{"$('.container .article-header h1')","$('.container .article-body')"}, new String[]{}, R.drawable.img_abcnews));
-        items.add(new NewsVo("BBC","http://www.bbc.com/news",
-                new String[]{"$('.story-body .story-body__h1')","$('.story-body .story-body__inner p')"}, new String[]{}, R.drawable.img_bbc));
-        items.add(new NewsVo("CNN","http://edition.cnn.com",
-                new String[]{"jQuery('.pg-headline')","jQuery('.l-container .zn-body__paragraph')"}, new String[]{}, R.drawable.img_cnn));
-        items.add(new NewsVo("Los Angeles Times","http://www.latimes.com",
-                new String[]{"$('.trb_ar_hl_t')","$('.trb_ar_page p')"}, new String[]{}, R.drawable.img_losangelestimes));
-        items.add(new NewsVo("The New Work Times","http://mobile.nytimes.com/?referer=",
-                new String[]{"$('.headline')","$('.article-body p')"}, new String[]{}, R.drawable.img_newworktimes));
-        items.add(new NewsVo("Reuters","http://mobile.reuters.com/",
-                new String[]{"$('.article-info h1')","$('#articleText p')"}, new String[]{}, R.drawable.img_reuters));
-        items.add(new NewsVo("Washingtone Post","https://www.washingtonpost.com",
-                new String[]{"$('#topper-headline-wrapper h1')","$('#article-body article p')"}, new String[]{}, R.drawable.img_washingtonepost));
+        items.add(new NewsVo("E001", "Chosun",R.drawable.img_chosunilbo));
+        items.add(new NewsVo("E002", "Joongang Daily",R.drawable.img_joongangdaily));
+        items.add(new NewsVo("E003", "Korea Herald",R.drawable.img_koreaherald));
+        items.add(new NewsVo("E004", "Korea Times",R.drawable.img_koreatimes));
+        items.add(new NewsVo("E005", "ABC",R.drawable.img_abcnews));
+        items.add(new NewsVo("E006", "BBC",R.drawable.img_bbc));
+        items.add(new NewsVo("E007", "CNN",R.drawable.img_cnn));
+        items.add(new NewsVo("E008", "Los Angeles Times",R.drawable.img_losangelestimes));
+        items.add(new NewsVo("E009", "The New Work Times",R.drawable.img_newworktimes));
+        items.add(new NewsVo("E010", "Reuters",R.drawable.img_reuters));
+        items.add(new NewsVo("E011", "Washingtone Post",R.drawable.img_washingtonepost));
 
         adapter = new NewsAdapter(getContext(), 0, items);
         listView.setAdapter(adapter);
@@ -84,10 +72,7 @@ public class NewsFragment extends Fragment {
 
             Intent intent = new Intent(getActivity().getApplication(), WebViewActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString("name", cur.getName());
-            bundle.putString("url", cur.getUrl());
-            bundle.putStringArray("changeClass", cur.getChangeClass());
-            bundle.putStringArray("removeClass", cur.getRemoveClass());
+            bundle.putString("kind", cur.getKind());
             intent.putExtras(bundle);
 
             startActivity(intent);
@@ -95,18 +80,22 @@ public class NewsFragment extends Fragment {
     };
 
     private class NewsVo {
+        private String kind;
         private String name;
-        private String url;
-        private String[] changeClass;
-        private String[] removeClass;
         private int imageRes;
 
-        public NewsVo(String name, String url, String[] changeClass, String[] removeClass, int imageRes) {
+        public NewsVo(String kind, String name, int imageRes) {
+            this.kind = kind;
             this.name = name;
-            this.url = url;
-            this.changeClass = changeClass;
-            this.removeClass = removeClass;
             this.imageRes = imageRes;
+        }
+
+        public String getKind() {
+            return kind;
+        }
+
+        public void setKind(String kind) {
+            this.kind = kind;
         }
 
         public String getName() {
@@ -115,30 +104,6 @@ public class NewsFragment extends Fragment {
 
         public void setName(String name) {
             this.name = name;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public String[] getChangeClass() {
-            return changeClass;
-        }
-
-        public void setChangeClass(String[] changeClass) {
-            this.changeClass = changeClass;
-        }
-
-        public String[] getRemoveClass() {
-            return removeClass;
-        }
-
-        public void setRemoveClass(String[] removeClass) {
-            this.removeClass = removeClass;
         }
 
         public int getImageRes() {

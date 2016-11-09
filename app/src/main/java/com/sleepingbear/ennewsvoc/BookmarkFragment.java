@@ -63,7 +63,7 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
     }
 
     /**
-     * 단어가 선택되면은 단어 상세창을 열어준다.
+     * 북마크가 선택되면은 뉴스 상세창을 열어준다.
      */
     AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
         @Override
@@ -71,13 +71,15 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
             Cursor cur = (Cursor) adapter.getItem(position);
             //cur.moveToPosition(position);
 
-            String entryId = cur.getString(cur.getColumnIndexOrThrow("ENTRY_ID"));
-            String seq = cur.getString(cur.getColumnIndexOrThrow("_id"));
+            String kind = cur.getString(cur.getColumnIndexOrThrow("KIND"));
+            String title = cur.getString(cur.getColumnIndexOrThrow("TITLE"));
+            String url = cur.getString(cur.getColumnIndexOrThrow("URL"));
 
-            Intent intent = new Intent(getActivity().getApplication(), WordViewActivity.class);
+            Intent intent = new Intent(getActivity().getApplication(), WebViewActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString("entryId", entryId);
-            bundle.putString("seq", seq);
+            bundle.putString("kind", kind);
+            bundle.putString("title", title);
+            bundle.putString("url", url);
             intent.putExtras(bundle);
 
             startActivity(intent);
@@ -104,7 +106,7 @@ class BookmarkCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ((TextView) view.findViewById(R.id.my_f_bi_tv_bookmark)).setText(cursor.getString(cursor.getColumnIndexOrThrow("CONTENTS")));
+        ((TextView) view.findViewById(R.id.my_f_bi_tv_bookmark)).setText(cursor.getString(cursor.getColumnIndexOrThrow("TITLE")));
         ((TextView) view.findViewById(R.id.my_f_bi_tv_date)).setText(cursor.getString(cursor.getColumnIndexOrThrow("INS_DATE")));
     }
 }
