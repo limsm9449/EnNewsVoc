@@ -518,7 +518,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             super.onReceivedError(view, request, error);
 
-            if (mProgress.isShowing()) {
+            if (mProgress != null && mProgress.isShowing()) {
                 mProgress.dismiss();
                 mProgress = null;
             }
@@ -573,7 +573,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
                     webView.loadUrl("javascript:window.android.action('URL', window.location.href)");
 
-                    if (mProgress.isShowing()) {
+                    if (mProgress != null && mProgress.isShowing()) {
                         mProgress.dismiss();
                         mProgress = null;
                     }
