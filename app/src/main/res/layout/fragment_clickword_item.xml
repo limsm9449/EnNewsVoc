@@ -77,10 +77,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/my_f_ci_cb_check"
             android:layout_alignParentRight="true"
-            android:button="@drawable/my_checkbox_img"
+            android:button="@android:drawable/checkbox_off_background"
             android:textSize="10dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true" />
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="10dp" />
 
     </RelativeLayout>
 

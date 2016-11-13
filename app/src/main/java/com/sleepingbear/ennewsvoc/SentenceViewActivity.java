@@ -75,8 +75,6 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
         if ( "".equals(b.getString("foreign")) ) {
             ((TextView) findViewById(R.id.my_c_sv_tv_foreign)).setText("");
             ((TextView) findViewById(R.id.my_c_sv_tv_han)).setText("");
-
-            getNewSentence();
         } else {
             notHan = b.getString("foreign");
             han = b.getString("han");
@@ -162,7 +160,7 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
             sql.append("SELECT SEQ _id, ORD,  WORD, MEAN, ENTRY_ID, SPELLING, (SELECT COUNT(*) FROM DIC_VOC WHERE ENTRY_ID = A.ENTRY_ID) MY_VOC FROM DIC A WHERE KIND = 'F' AND WORD IN ('" + word.substring(0, word.length() -1).toLowerCase().replaceAll(",","','") + "')" + CommConstants.sqlCR);
             sql.append("UNION" + CommConstants.sqlCR);
             sql.append("SELECT SEQ _id, ORD,  WORD, MEAN, ENTRY_ID, SPELLING, (SELECT COUNT(*) FROM DIC_VOC WHERE ENTRY_ID = A.ENTRY_ID) MY_VOC FROM DIC A WHERE KIND = 'F' AND WORD IN (SELECT DISTINCT WORD FROM DIC_TENSE WHERE WORD_TENSE IN ('" + oneWord.substring(0, oneWord.length() -1).toLowerCase().replaceAll(",","','") + "'))" + CommConstants.sqlCR);
-            sql.append(" ORDER BY ORD" + CommConstants.sqlCR);
+            sql.append(" ORDER BY WORD" + CommConstants.sqlCR);
         }
         DicUtils.dicSqlLog(sql.toString());
         wordCursor = db.rawQuery(sql.toString(), null);
@@ -290,8 +288,6 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
             setResult(RESULT_OK, intent);
 
             finish();
-        } else if (id == R.id.action_sentence_write) {
-            getNewSentence();
         } else if (id == R.id.action_help) {
             Bundle bundle = new Bundle();
             bundle.putString("SCREEN", "SENTENCEVIEW");
@@ -302,54 +298,6 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void getNewSentence() {
-        LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        LinearLayout newSentenceLayout = (LinearLayout) li.inflate(R.layout.dialog_new_sentence, null);
-
-        final EditText newSentece = (EditText) newSentenceLayout.findViewById(R.id.my_d_ns_et1);
-
-        new AlertDialog.Builder(this)
-                .setTitle("문장을 입력해 주세요.")
-                .setView(newSentenceLayout)
-                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if ( "".equals(newSentece.getText().toString()) ) {
-                            new android.app.AlertDialog.Builder(SentenceViewActivity.this)
-                                    .setTitle("알림")
-                                    .setMessage("번역할 문장을 입력해 주세요.")
-                                    .setPositiveButton("번역", null)
-                                    .show();
-                        } else {
-                            notHan = newSentece.getText().toString().trim();
-                            han = "";
-
-                            new Thread() {
-                                public void run() {
-                                    Translate.setClientId("limsm9449");
-                                    Translate.setClientSecret("4uv10iwHn+rZrUr9reTDRBML5l1JdpgHXOlgfaKYOjQ=");
-
-                                    try {
-                                        han = Translate.execute(notHan, Language.AUTO_DETECT, Language.KOREAN);
-
-                                        Bundle bundle = new Bundle();
-                                        bundle.putString("han", han);
-
-                                        Message msg = handler.obtainMessage();
-                                        msg.setData(bundle);
-                                        handler.sendMessage(msg);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }.start();
-                        }
-                    }
-                })
-                .setNegativeButton("취소",null)
-                .show();
     }
 
     final Handler handler = new Handler() {

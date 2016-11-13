@@ -1,10 +1,9 @@
 <resources>
-    <string name="app_name">영어신문 읽기와 단어학습</string>
+    <string name="app_name">최고의 영어신문 어플</string>
     <string name="action_delete">데이타 삭제</string>
     <string name="action_email">Email</string>
     <string name="action_help">도움말</string>
     <string name="action_refresh">Refresh</string>
-    <string name="action_sentence_write">Help</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="action_patch">패치 정보</string>
 
@@ -14,10 +13,11 @@
     <string name="action_other">기타 기능</string>
 
     <string name="action_copy">복사</string>
-    <string name="action_all_copy">전체 복사</string>
+    <string name="action_all_copy">복사(전체)</string>
     <string name="action_word_view">단어보기</string>
     <string name="action_sentence_view">문장보기</string>
     <string name="action_tts">TTS</string>
+    <string name="action_tts_all">TTS(전체)</string>
     <string name="action_bookmark">페이지 북마크</string>
 
     <!-- TODO: Remove or change this placeholder text -->

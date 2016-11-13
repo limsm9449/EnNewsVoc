@@ -22,7 +22,7 @@
         android:id="@+id/my_c_webview_wv"
         android:layout_alignParentBottom="false"
         android:layout_below="@+id/my_c_webview_ll"
-        android:layout_above="@+id/adView" >
+        android:layout_above="@+id/my_c_webview_rl" >
 
     </WebView>
 

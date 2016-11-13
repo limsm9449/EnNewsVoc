@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     tools:context="com.sleepingbear.ennewsvoc.BookmarkFragment">
@@ -15,6 +16,20 @@
             android:layout_alignParentTop="true"
             android:id="@+id/my_f_bookmark_rl">
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/ic_done_all_black_24dp"
+                android:id="@+id/my_f_bm_all"
+                android:layout_marginLeft="10dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/ic_delete_black_24dp"
+                android:id="@+id/my_f_bm_delete"
+                android:layout_toRightOf="@+id/my_f_bm_all"
+                android:layout_marginLeft="10dp" />
         </RelativeLayout>
 
         <LinearLayout

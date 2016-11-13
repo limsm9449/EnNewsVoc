@@ -90,52 +90,84 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         myTTS = new TextToSpeech(this, this);
 
+        String js1 = ".html(function(index, oldHtml) {return oldHtml.replace(/<br *\\/?>/gi, '\\n')" +
+                ".replace(/<[^>]*>/g, '')" +
+                ".replace(/(<br>)/g, '\\n')" + "" +
+                ".replace(/\\b(\\w+?)\\b/g,'<span class=\"word\">$1</span>')" +
+                ".replace(/\\n/g, '<br>')});";
+        String js2 = "('.word').click(function(event) { window.android.setWord(event.target.innerHTML) });";
+
         // 영자신문 정보
         enUrls = new ArrayList<>();
         enUrls.add(new NewsVo("E001", "Chosun","http://english.chosun.com/m/",
-                new String[]{"$('.art_headline')","$('.news_body .par')"},
+                new String[]{   "$('.art_headline')" + js1 + "$" + js2,
+                                "$('.news_body .par')" + js1 + "$" + js2},
                 new String[]{},
-                "$('.art_headline')"));
+                "$('.art_headline').text()",
+                "$('.news_body').text()"));
         enUrls.add(new NewsVo("E002", "Joongang Daily","http://mengnews.joins.com/",
-                new String[]{"$($('h4')[0])","$('.en')"},
-                new String[]{"$('.ad_h50')","$('.ad_320x250')","$('.share_article')"},
-                "$($('h4')[0])"));
-        enUrls.add(new NewsVo("E003", "Korea Herald","http://m.koreaherald.com/?zad=",
-                new String[]{"$($('#detail h2')[0])","$('.article')"},
-                new String[]{},
-                "$($('#detail h2')[0])"));
-        enUrls.add(new NewsVo("E004", "Korea Times","http://m.koreatimes.co.kr/phone/",
-                new String[]{"$('#first_big_news strong .english_mode')","$('#startts div .english_mode')"},
-                new String[]{},
-                "$('#first_big_news strong .english_mode')"));
+                new String[]{   "$($('h4')[0])" + js1 + "$" + js2,
+                                "$('.en')" + js1 + "$" + js2},
+                new String[]{   "$('.ad_h50').html('')",
+                                "$('.ad_320x250').html('')",
+                                "$('.share_article').html('')"},
+                "$($('h4')[0]).text()",
+                "$('div.en').text()"));
+        enUrls.add(new NewsVo("E003", "Korea Herald","http://m.koreaherald.com/",
+                new String[]{   "$($('#detail h2')[0])" + js1 + "$" + js2,
+                                "$('.article')" + js1 + "$" + js2},
+                new String[]{   "$('.DetailBottom').html('')"},
+                "$($('#detail h2')[0]).text()",
+                "$('div.article').text()"));
+        enUrls.add(new NewsVo("E004", "The Korea Times","http://m.koreatimes.co.kr/phone/",
+                new String[]{   "$('#first_big_news strong .english_mode')" + js1 + "$" + js2,
+                                "$('#startts div .english_mode')" + js1 + "$" + js2},
+                new String[]{   "$('div#wp_wrap').html('')"},
+                "$('#first_big_news strong .english_mode').text()",
+                "$('div.english_mode').text()"));
         enUrls.add(new NewsVo("E005", "ABC","http://abcnews.go.com",
-                new String[]{"$('.container .article-header h1')","$('.container .article-body')"},
+                new String[]{   "$('.container .article-header h1')" + js1 + "$" + js2,
+                                "$('.container .article-body')" + js1 + "$" + js2},
                 new String[]{},
-                "$('.container .article-header h1')"));
+                "$('.container .article-header h1').text()",
+                "$('div.article-body').text()"));
         enUrls.add(new NewsVo("E006", "BBC","http://www.bbc.com/news",
-                new String[]{"$('.story-body .story-body__h1')","$('.story-body .story-body__inner p')"},
+                new String[]{   "$('.story-body .story-body__h1')" + js1 + "$" + js2,
+                                "$('.story-body .story-body__inner p')" + js1 + "$" + js2},
                 new String[]{},
-                "$('.story-body .story-body__h1')"));
+                "$('.story-body .story-body__h1').text()",
+                "$('div.story-body').text()"));
         enUrls.add(new NewsVo("E007", "CNN","http://edition.cnn.com",
-                new String[]{"jQuery('.pg-headline')","jQuery('.l-container .zn-body__paragraph')"},
-                new String[]{},
-                "jQuery('.pg-headline')"));
+                new String[]{   "jQuery('.pg-headline')" + js1 + "jQuery" + js2,
+                                "jQuery('.l-container .zn-body__paragraph')" + js1 + "jQuery" + js2},
+                new String[]{   "jQuery('div.user-msg.headerless.user-msg-flexbox').css('display','none')"},
+                "jQuery('.pg-headline').text()",
+                "jQuery('div.zn-body__paragraph').text()"));
         enUrls.add(new NewsVo("E008", "Los Angeles Times","http://www.latimes.com",
-                new String[]{"$('.trb_ar_hl_t')","$('.trb_ar_page p')"},
-                new String[]{},
-                "$('.trb_ar_hl_t')"));
+                new String[]{   "$('.trb_ar_hl_t')" + js1 + "$" + js2,
+                                "$('.trb_ar_page p')" + js1 + "$" + js2},
+                new String[]{   "$('div.trb_bnn').html('')",
+                                "$('div.met-promo').css('display','none')"},
+                "$('.trb_ar_hl_t').text()",
+                "$('div.trb_ar_page p').text()"));
         enUrls.add(new NewsVo("E009", "The New Work Times","http://mobile.nytimes.com/?referer=",
-                new String[]{"$('.headline')","$('.article-body p')"},
+                new String[]{   "$('.headline')" + js1 + "$" + js2,
+                                "$('.article-body p')" + js1 + "$" + js2},
                 new String[]{},
-                "$('.headline')"));
+                "$('.headline').text()",
+                "$('.article-body p').text()"));
         enUrls.add(new NewsVo("E010", "Reuters","http://mobile.reuters.com/",
-                new String[]{"$('.article-info h1')","$('#articleText p')"},
+                new String[]{   "$('.article-info h1')" + js1 + "$" + js2,
+                                "$('#articleText p')" + js1 + "$" + js2},
                 new String[]{},
-                "$('.article-info h1')"));
+                "$('.article-info h1').text()",
+                "$('#articleText p').text()"));
         enUrls.add(new NewsVo("E011", "Washingtone Post","https://www.washingtonpost.com",
-                new String[]{"$('#topper-headline-wrapper h1')","$('#article-body article p')"},
+                new String[]{   "$('#topper-headline-wrapper h1')" + js1 + "$" + js2,
+                                "$('#article-body article p')" + js1 + "$" + js2},
                 new String[]{},
-                "$('#topper-headline-wrapper h1')"));
+                "$('#topper-headline-wrapper h1').text()",
+                "$('article p').text()"));
 
         String currUrl = "";
         param = getIntent().getExtras();
@@ -243,6 +275,8 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_BACK:
+                    myTTS.shutdown();
+
                     if ( webView.canGoBack() ) {
                         webView.goBack();
                     } else {
@@ -316,7 +350,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
                 break;
             case R.id.action_all_copy:
-                webView.loadUrl("javascript:window.android.action('COPY', $('body').text().replace(/(')/gi, '\\'\\''))");
+                webView.loadUrl("javascript:window.android.action('COPY', " + currItem.getBodyClass() + ")");
 
                 break;
             case R.id.action_word_view:
@@ -327,12 +361,16 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                 webView.loadUrl("javascript:window.android.action('SENTENCE', window.getSelection().toString())");
 
                 break;
+            case R.id.action_tts_all:
+                webView.loadUrl("javascript:window.android.action('TTS', " + currItem.getBodyClass() + ")");
+
+                break;
             case R.id.action_tts:
                 webView.loadUrl("javascript:window.android.action('TTS', window.getSelection().toString())");
 
                 break;
             case R.id.action_bookmark:
-                webView.loadUrl("javascript:window.android.action('BOOKMARK',  " + currItem.getTitleClass() + ".text())");
+                webView.loadUrl("javascript:window.android.action('BOOKMARK',  " + currItem.getTitleClass() + ")");
 
                 break;
             default:
@@ -417,14 +455,16 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         private String[] changeClass;
         private String[] removeClass;
         private String titleClass;
+        private String bodyClass;
 
-        public NewsVo(String kind, String name, String url, String[] changeClass, String[] removeClass, String titleClass) {
+        public NewsVo(String kind, String name, String url, String[] changeClass, String[] removeClass, String titleClass, String bodyClass) {
             this.kind = kind;
             this.name = name;
             this.url = url;
             this.changeClass = changeClass;
             this.removeClass = removeClass;
             this.titleClass = titleClass;
+            this.bodyClass = bodyClass;
         }
 
         public String getKind() {
@@ -473,6 +513,14 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         public void setTitleClass(String titleClass) {
             this.titleClass = titleClass;
+        }
+
+        public String getBodyClass() {
+            return bodyClass;
+        }
+
+        public void setBodyClass(String bodyClass) {
+            this.bodyClass = bodyClass;
         }
     }
 
@@ -539,6 +587,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                     oldUrl = url;
                     DicUtils.dicLog("onPageFinished : " + url);
 
+                    /*
                     // CNN은 $를 사용안하고 jQuery를 사용한다.
                     String js1 = ".html(function(index, oldHtml) {return oldHtml.replace(/<br *\\/?>/gi, '\\n')" +
                             ".replace(/<[^>]*>/g, '')" +
@@ -546,29 +595,19 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                             ".replace(/\\b(\\w+?)\\b/g,'<span class=\"word\">$1</span>')" +
                             ".replace(/\\n/g, '<br>')});";
                     String js2 = "('.word').click(function(event) { window.android.setWord(event.target.innerHTML) });";
-
+*/
                     //html 단어 기능 변경
                     String[] changeClass = currItem.getChangeClass();
                     for (int i = 0; i < changeClass.length; i++) {
-                        if ( "$".equals(changeClass[i].substring(0, 1)) ) {
-                            webView.loadUrl("javascript:" + changeClass[i] + js1 + "$" + js2);
-                            DicUtils.dicLog("javascript:" + changeClass[i] + js1 + "$" + js2);
-                        } else {
-                            webView.loadUrl("javascript:" + changeClass[i] + js1 + "jQuery" + js2);
-                            DicUtils.dicLog("javascript:" + changeClass[i] + js1 + "jQuery" + js2);
-                        }
+                        webView.loadUrl("javascript:" + changeClass[i]);
+                        DicUtils.dicLog("javascript:" + changeClass[i]);
                     }
 
                     //광고 제거
                     String[] removeClass = currItem.getRemoveClass();
                     for (int i = 0; i < removeClass.length; i++) {
-                        if ( "$".equals(removeClass[i].substring(0, 1)) ) {
-                            webView.loadUrl("javascript:" + removeClass[i] + ".html('')");
-                            DicUtils.dicLog("javascript:" + removeClass[i] + ".html('')");
-                        } else {
-                            webView.loadUrl("javascript:" + removeClass[i] + ".html('')");
-                            DicUtils.dicLog("javascript:" + removeClass[i] + ".html('')");
-                        }
+                        webView.loadUrl("javascript:" + removeClass[i]);
+                        DicUtils.dicLog("javascript:" + removeClass[i]);
                     }
 
                     webView.loadUrl("javascript:window.android.action('URL', window.location.href)");
@@ -604,6 +643,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         public void action(final String kind, final String arg) { // must be final
             handler.post(new Runnable() {
                 public void run() {
+                    DicUtils.dicLog(arg);
                     if ( "COPY".equals(kind) ) {
                         android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
                         ClipData clip = ClipData.newPlainText("simple text", arg);
@@ -630,7 +670,12 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
                         startActivity(intent);
                     } else if ( "TTS".equals(kind) ) {
-                        myTTS.speak(arg, TextToSpeech.QUEUE_FLUSH, null);
+                        if ( arg.length() > 4000 ) {
+                            Toast.makeText(getApplicationContext(), "TTS는 4,000자 까지만 가능합니다.", Toast.LENGTH_SHORT).show();
+                            myTTS.speak(arg.substring(0, 3900), TextToSpeech.QUEUE_FLUSH, null);
+                        } else {
+                            myTTS.speak(arg, TextToSpeech.QUEUE_FLUSH, null);
+                        }
                     } else if ( "URL".equals(kind) ) {
                         newsUrl = arg;
                     } else if ( "BOOKMARK".equals(kind) ) {
