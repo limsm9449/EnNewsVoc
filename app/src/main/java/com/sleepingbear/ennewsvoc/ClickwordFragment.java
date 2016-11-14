@@ -1,19 +1,28 @@
 package com.sleepingbear.ennewsvoc;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -23,6 +32,9 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
     private SQLiteDatabase db;
     private View mainView;
     private ClickwordCursorAdapter adapter;
+    private boolean isAllCheck = false;
+
+    public int mSelect = 0;
 
     private AppCompatActivity mMainActivity;
 
@@ -83,26 +95,182 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.my_f_cw_all :
+                adapter.allCheck(isAllCheck);
+                break;
+            case R.id.my_f_cw_delete :
+                adapter.delete();
+                break;
+            case R.id.my_f_cw_new_save :
+                LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
+                final View dialog_layout = inflater.inflate(R.layout.dialog_category_add, (ViewGroup) mainView.findViewById(R.id.my_d_category_root));
+
+                //dialog 생성..
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
+                builder.setView(dialog_layout);
+                final android.app.AlertDialog alertDialog = builder.create();
+
+                ((TextView) dialog_layout.findViewById(R.id.my_d_category_add_tv_title)).setText("단어장 추가");
+                final EditText et_ins = ((EditText) dialog_layout.findViewById(R.id.my_d_category_add_et_ins));
+                ((Button) dialog_layout.findViewById(R.id.my_d_category_add_b_ins)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if ("".equals(et_ins.getText().toString())) {
+                            Toast.makeText(getContext(), "단어장 이름을 입력하세요.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            alertDialog.dismiss();
+
+                            String insCategoryCode = DicQuery.getInsCategoryCode(db);
+                            db.execSQL(DicQuery.getInsNewCategory("MY", insCategoryCode, et_ins.getText().toString()));
+
+                            adapter.save(insCategoryCode);
+
+                            Toast.makeText(getContext(), "단어장에 추가하였습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                ((Button) dialog_layout.findViewById(R.id.my_d_category_add_b_close)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
+                    }
+                });
+
+                alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.show();
+
+                break;
+            case R.id.my_f_cw_save :
+                //메뉴 선택 다이얼로그 생성
+                Cursor cursor = db.rawQuery(DicQuery.getSentenceViewContextMenu(), null);
+                final String[] kindCodes = new String[cursor.getCount()];
+                final String[] kindCodeNames = new String[cursor.getCount()];
+
+                int idx = 0;
+                while ( cursor.moveToNext() ) {
+                    kindCodes[idx] = cursor.getString(cursor.getColumnIndexOrThrow("KIND"));
+                    kindCodeNames[idx] = cursor.getString(cursor.getColumnIndexOrThrow("KIND_NAME"));
+                    idx++;
+                }
+                cursor.close();
+
+                final AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
+                dlg.setTitle("메뉴 선택");
+                dlg.setSingleChoiceItems(kindCodeNames, mSelect, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        mSelect = arg1;
+                    }
+                });
+                dlg.setNegativeButton("취소", null);
+                dlg.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        adapter.save(kindCodes[mSelect]);
+
+                        Toast.makeText(getContext(), "단어장에 추가하였습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                dlg.show();
+                break;
+        }
     }
 
 }
 
 class ClickwordCursorAdapter extends CursorAdapter {
+    private SQLiteDatabase mDb;
+    public boolean[] isCheck;
+    public int[] seq;
+    public String[] entryId;
+
     public ClickwordCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, 0);
+        mDb = ((SentenceViewActivity)context).db;
+
+        isCheck = new boolean[cursor.getCount()];
+        seq = new int[cursor.getCount()];
+        entryId = new String[cursor.getCount()];
+        for ( int i = 0; i < cursor.getCount(); i++ ) {
+            isCheck[i] = false;
+            seq[i] = -1;
+            entryId[i] = "";
+        }
+    }
+
+    static class ViewHolder {
+        protected int position;
+        protected CheckBox cb;
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.fragment_clickword_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.fragment_clickword_item, parent, false);
+
+        ViewHolder viewHolder = new ViewHolder();
+        viewHolder.cb = (CheckBox) view.findViewById(R.id.my_f_ci_cb_check);
+        viewHolder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                ViewHolder viewHolder = (ViewHolder)buttonView.getTag();
+                isCheck[viewHolder.position] = isChecked;
+            }
+        });
+
+        view.setTag(viewHolder);
+
+        return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
+        viewHolder.position = cursor.getPosition();
+        viewHolder.cb.setTag(viewHolder);
+
+        seq[cursor.getPosition()] = cursor.getInt(cursor.getColumnIndexOrThrow("SEQ"));
+        entryId[cursor.getPosition()] = cursor.getString(cursor.getColumnIndexOrThrow("ENTRY_ID"));
+
         ((TextView) view.findViewById(R.id.my_f_ci_tv_word)).setText(cursor.getString(cursor.getColumnIndexOrThrow("WORD")));
         ((TextView) view.findViewById(R.id.my_f_ci_tv_spelling)).setText(cursor.getString(cursor.getColumnIndexOrThrow("SPELLING")));
         ((TextView) view.findViewById(R.id.my_f_ci_tv_date)).setText(cursor.getString(cursor.getColumnIndexOrThrow("INS_DATE")));
         ((TextView) view.findViewById(R.id.my_f_ci_tv_mean)).setText(cursor.getString(cursor.getColumnIndexOrThrow("MEAN")));
+
+        if ( isCheck[cursor.getPosition()] ) {
+            ((CheckBox)view.findViewById(R.id.my_f_ci_cb_check)).setButtonDrawable(android.R.drawable.checkbox_on_background);
+        } else {
+            ((CheckBox)view.findViewById(R.id.my_f_ci_cb_check)).setButtonDrawable(android.R.drawable.checkbox_off_background);
+        }
+    }
+
+    public void allCheck(boolean chk) {
+        for ( int i = 0; i < isCheck.length; i++ ) {
+            isCheck[i] = chk;
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void delete() {
+        for ( int i = 0; i < isCheck.length; i++ ) {
+            if ( isCheck[i] ) {
+                DicDb.delDicClickWord(mDb, seq[i]);
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void save(String kind) {
+        for ( int i = 0; i < isCheck.length; i++ ) {
+            if ( isCheck[i] ) {
+                DicDb.insDicVoc(mDb, entryId[i], kind);
+                DicDb.delDicClickWord(mDb, seq[i]);
+            }
+        }
+        DicUtils. writeNewInfoToFile(mContext, mDb);
     }
 }
 

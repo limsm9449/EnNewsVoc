@@ -370,4 +370,21 @@ public class DicDb {
         DicUtils.dicSqlLog(sql.toString());
         db.execSQL(sql.toString());
     }
+
+    public static void delDicClickWord(SQLiteDatabase db, int seq) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("DELETE FROM DIC_CLICK_WORD " + CommConstants.sqlCR);
+        sql.append(" WHERE SEQ = " + seq + "" + CommConstants.sqlCR);
+        DicUtils.dicSqlLog(sql.toString());
+        db.execSQL(sql.toString());
+    }
+
+    public static void delDicBookmark(SQLiteDatabase db, int seq) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("DELETE FROM DIC_BOOKMARK " + CommConstants.sqlCR);
+        sql.append(" WHERE SEQ = " + seq + "" + CommConstants.sqlCR);
+        DicUtils.dicSqlLog(sql.toString());
+        db.execSQL(sql.toString());
+    }
+
 }
