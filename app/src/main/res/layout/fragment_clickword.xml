@@ -30,7 +30,7 @@
                 app:srcCompat="@mipmap/ic_delete_black_24dp"
                 android:id="@+id/my_f_cw_delete"
                 android:layout_toRightOf="@+id/my_f_cw_all"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="15dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
                 android:layout_alignParentBottom="false"
                 android:id="@+id/my_f_cw_new_save"
                 android:layout_alignParentEnd="true"
-                android:layout_marginRight="10dp" />
+                android:layout_marginRight="15dp" />
 
             <ImageView
                 android:layout_width="wrap_content"

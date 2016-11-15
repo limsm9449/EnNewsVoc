@@ -20,7 +20,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +56,11 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
         dbHelper = new DbHelper(getContext());
         db = dbHelper.getWritableDatabase();
 
+        ((ImageView) mainView.findViewById(R.id.my_f_cw_all)).setOnClickListener(this);
+        ((ImageView) mainView.findViewById(R.id.my_f_cw_delete)).setOnClickListener(this);
+        ((ImageView) mainView.findViewById(R.id.my_f_cw_save)).setOnClickListener(this);
+        ((ImageView) mainView.findViewById(R.id.my_f_cw_new_save)).setOnClickListener(this);
+
         //리스트 내용 변경
         changeListView();
 
@@ -67,7 +74,7 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
     public void changeListView() {
         Cursor listCursor = db.rawQuery(DicQuery.getClickword(), null);
         ListView listView = (ListView) mainView.findViewById(R.id.my_f_clickword_lv);
-        adapter = new ClickwordCursorAdapter(getContext(), listCursor, 0);
+        adapter = new ClickwordCursorAdapter(getContext(), listCursor, db, 0);
         listView.setAdapter(adapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setOnItemClickListener(itemClickListener);
@@ -95,12 +102,34 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
+        DicUtils.dicLog("onClick");
         switch (v.getId()) {
             case R.id.my_f_cw_all :
+                if ( isAllCheck ) {
+                    isAllCheck = false;
+                } else {
+                    isAllCheck = true;
+                }
                 adapter.allCheck(isAllCheck);
                 break;
             case R.id.my_f_cw_delete :
-                adapter.delete();
+                new android.app.AlertDialog.Builder(getActivity())
+                        .setTitle("알림")
+                        .setMessage("삭제하시겠습니까?")
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                adapter.delete();
+                                changeListView();
+                            }
+                        })
+                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .show();
+
                 break;
             case R.id.my_f_cw_new_save :
                 LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
@@ -125,6 +154,7 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
                             db.execSQL(DicQuery.getInsNewCategory("MY", insCategoryCode, et_ins.getText().toString()));
 
                             adapter.save(insCategoryCode);
+                            changeListView();
 
                             Toast.makeText(getContext(), "단어장에 추가하였습니다.", Toast.LENGTH_SHORT).show();
                         }
@@ -168,6 +198,7 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         adapter.save(kindCodes[mSelect]);
+                        changeListView();
 
                         Toast.makeText(getContext(), "단어장에 추가하였습니다.", Toast.LENGTH_SHORT).show();
                     }
@@ -185,9 +216,9 @@ class ClickwordCursorAdapter extends CursorAdapter {
     public int[] seq;
     public String[] entryId;
 
-    public ClickwordCursorAdapter(Context context, Cursor cursor, int flags) {
+    public ClickwordCursorAdapter(Context context, Cursor cursor, SQLiteDatabase db, int flags) {
         super(context, cursor, 0);
-        mDb = ((SentenceViewActivity)context).db;
+        mDb = db;
 
         isCheck = new boolean[cursor.getCount()];
         seq = new int[cursor.getCount()];
@@ -216,6 +247,9 @@ class ClickwordCursorAdapter extends CursorAdapter {
                                          boolean isChecked) {
                 ViewHolder viewHolder = (ViewHolder)buttonView.getTag();
                 isCheck[viewHolder.position] = isChecked;
+                notifyDataSetChanged();
+
+                DicUtils.dicLog("onCheckedChanged : " + viewHolder.position);
             }
         });
 
@@ -259,8 +293,6 @@ class ClickwordCursorAdapter extends CursorAdapter {
                 DicDb.delDicClickWord(mDb, seq[i]);
             }
         }
-
-        notifyDataSetChanged();
     }
 
     public void save(String kind) {
@@ -270,7 +302,6 @@ class ClickwordCursorAdapter extends CursorAdapter {
                 DicDb.delDicClickWord(mDb, seq[i]);
             }
         }
-        DicUtils. writeNewInfoToFile(mContext, mDb);
     }
 }
 

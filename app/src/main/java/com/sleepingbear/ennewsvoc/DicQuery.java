@@ -340,7 +340,7 @@ public class DicQuery {
     public static String getClickword() {
         StringBuffer sql = new StringBuffer();
 
-        sql.append("SELECT B.SEQ _id, B.ENTRY_ID, B.WORD, B.MEAN, B.SPELLING, A.INS_DATE" + CommConstants.sqlCR);
+        sql.append("SELECT B.SEQ _id, A.SEQ, B.ENTRY_ID, B.WORD, B.MEAN, B.SPELLING, A.INS_DATE" + CommConstants.sqlCR);
         sql.append("FROM   DIC_CLICK_WORD A, DIC B" + CommConstants.sqlCR);
         sql.append("WHERE  A.WORD = B.WORD " + CommConstants.sqlCR);
         sql.append("ORDER  BY A.INS_DATE DESC, B.WORD" + CommConstants.sqlCR);
@@ -353,7 +353,7 @@ public class DicQuery {
     public static String getBookmark() {
         StringBuffer sql = new StringBuffer();
 
-        sql.append("SELECT SEQ _id, KIND, TITLE, URL, INS_DATE" + CommConstants.sqlCR);
+        sql.append("SELECT SEQ _id, SEQ, KIND, TITLE, URL, INS_DATE" + CommConstants.sqlCR);
         sql.append("FROM   DIC_BOOKMARK" + CommConstants.sqlCR);
         sql.append("ORDER  BY INS_DATE DESC, TITLE" + CommConstants.sqlCR);
 

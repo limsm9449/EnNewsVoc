@@ -8,22 +8,30 @@
     android:descendantFocusability="blocksDescendants"
     android:background="#ffffff">
 
-    <CheckBox
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/my_f_ci_cb_check"
-        android:button="@android:drawable/checkbox_off_background"
-        android:textSize="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="false"
-        android:gravity="center_vertical|center_horizontal" />
+        android:layout_height="match_parent"
+        android:id="@+id/my_f_ci_rl"
+        android:gravity="center_vertical|center_horizontal">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/my_f_ci_cb_check"
+            android:button="@android:drawable/checkbox_off_background"
+            android:textSize="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="false"
+            android:textAlignment="center"
+            android:gravity="start" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/my_f_ci_cb_check">
+        android:layout_toRightOf="@+id/my_f_ci_rl">
 
         <RelativeLayout
             android:layout_width="wrap_content"

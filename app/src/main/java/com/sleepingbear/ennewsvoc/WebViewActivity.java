@@ -265,6 +265,8 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
             Intent intent = new Intent(getApplication(), HelpActivity.class);
             intent.putExtras(bundle);
             startActivity(intent);
+        } else if (id == R.id.action_bookmark) {
+            webView.loadUrl("javascript:window.android.action('BOOKMARK',  " + currItem.getTitleClass() + ")");
         }
 
         return super.onOptionsItemSelected(item);
