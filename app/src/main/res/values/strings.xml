@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">최고의 영어신문 어플</string>
+    <string name="app_name">최고의 영어신문</string>
     <string name="action_delete">데이타 삭제</string>
     <string name="action_email">Email</string>
     <string name="action_help">도움말</string>
     <string name="action_refresh">Refresh</string>
-    <string name="title_activity_main2">Main2Activity</string>
     <string name="action_patch">패치 정보</string>
+    <string name="action_backup">백업/복구</string>
 
     <string name="action_dictionary">사전</string>
     <string name="action_vocabulary">나의 단어장</string>

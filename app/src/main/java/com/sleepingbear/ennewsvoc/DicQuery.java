@@ -342,7 +342,7 @@ public class DicQuery {
 
         sql.append("SELECT B.SEQ _id, A.SEQ, B.ENTRY_ID, B.WORD, B.MEAN, B.SPELLING, A.INS_DATE" + CommConstants.sqlCR);
         sql.append("FROM   DIC_CLICK_WORD A, DIC B" + CommConstants.sqlCR);
-        sql.append("WHERE  A.WORD = B.WORD " + CommConstants.sqlCR);
+        sql.append("WHERE  A.ENTRY_ID = B.ENTRY_ID " + CommConstants.sqlCR);
         sql.append("ORDER  BY A.INS_DATE DESC, B.WORD" + CommConstants.sqlCR);
 
         DicUtils.dicSqlLog(sql.toString());
@@ -362,4 +362,41 @@ public class DicQuery {
         return sql.toString();
     }
 
+    public static String getWriteData() {
+        StringBuffer sql = new StringBuffer();
+
+        sql.append("SELECT 'CATEGORY_INSERT' + ':' + A.CODE + ':' +  A.CODE_NAME WRITE_DATA," + CommConstants.sqlCR);
+        sql.append("            COALESCE((SELECT COUNT(*)" + CommConstants.sqlCR);
+        sql.append("                        FROM DIC_VOC" + CommConstants.sqlCR);
+        sql.append("                       WHERE KIND = A.CODE),0) CNT" + CommConstants.sqlCR);
+        sql.append("  FROM DIC_CODE A" + CommConstants.sqlCR);
+        sql.append(" WHERE CODE_GROUP = 'MY'" + CommConstants.sqlCR);
+        sql.append("UNION" + CommConstants.sqlCR);
+
+        sql.append("SELECT 'MYWORD_INSERT' + ':' + A.KIND + ':' + A.INS_DATE + ':' + A.ENTRY_ID WRITE_DATA " + CommConstants.sqlCR);
+        sql.append(" FROM DIC_VOC A, DIC B" + CommConstants.sqlCR);
+        sql.append(" WHERE A.ENTRY_ID = B.ENTRY_ID" + CommConstants.sqlCR);
+        sql.append("UNION" + CommConstants.sqlCR);
+
+        sql.append("SELECT 'MEMORY' + ':' + A.ENTRY_ID + 'Y' WRITE_DATA " + CommConstants.sqlCR);
+        sql.append("  FROM DIC_VOC A, DIC B" + CommConstants.sqlCR);
+        sql.append(" WHERE A.ENTRY_ID = B.ENTRY_ID" + CommConstants.sqlCR);
+        sql.append("   AND A.MEMORIZATION = 'Y'" + CommConstants.sqlCR);
+        sql.append("UNION" + CommConstants.sqlCR);
+
+        sql.append("SELECT 'MYSAMPLE_INSERT' + ':' + SENTENCE1 + ':' + SENTENCE2 + ':' + TODAY WRITE_DATA " + CommConstants.sqlCR);
+        sql.append("  FROM DIC_MY_SAMPLE" + CommConstants.sqlCR);
+        sql.append("UNION" + CommConstants.sqlCR);
+
+        sql.append("SELECT 'CLICK_WORD' + ':' + ENTRY_ID + ':' + INS_DATE WRITE_DATA " + CommConstants.sqlCR);
+        sql.append("  FROM DIC_CLICK_WORD" + CommConstants.sqlCR);
+        sql.append("UNION" + CommConstants.sqlCR);
+
+        sql.append("SELECT 'BOOKMARK' + ':' + KIND + ':' + TITLE + ':' + URL + ':' + INS_DATE WRITE_DATA " + CommConstants.sqlCR);
+        sql.append("  FROM DIC_BOOKMARK" + CommConstants.sqlCR);
+
+        DicUtils.dicSqlLog(sql.toString());
+
+        return sql.toString();
+    }
 }

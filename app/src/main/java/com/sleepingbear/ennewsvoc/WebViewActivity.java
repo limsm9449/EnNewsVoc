@@ -635,7 +635,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
                     entryId = DicUtils.getString((String)info.get("ENTRY_ID"));
                     if ( !"".equals(entryId) ) {
-                        DicDb.insDicClickWord(mDb, arg, "");
+                        DicDb.insDicClickWord(mDb, entryId, "");
                     }
                 }
             });
@@ -681,7 +681,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                     } else if ( "URL".equals(kind) ) {
                         newsUrl = arg;
                     } else if ( "BOOKMARK".equals(kind) ) {
-                        DicDb.insDicBoolmark(mDb, currItem.getKind(), arg, newsUrl, "");
+                        DicDb.insDicBoolmark(mDb, currItem.getKind(), arg.replaceAll("[':]",""), newsUrl, "");
 
                         Toast.makeText(getApplicationContext(), "북마크에 등록했습니다. 메인화면의 '북마크' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
                     }

@@ -288,6 +288,7 @@ public class DicDb {
         sql.append("SELECT SPELLING, MEAN, ENTRY_ID  " + CommConstants.sqlCR);
         sql.append("  FROM DIC " + CommConstants.sqlCR);
         sql.append(" WHERE WORD = '" + word.toLowerCase().replaceAll("'", " ") + "' OR TENSE LIKE '% " + word.toLowerCase().replaceAll("'", " ") + " %'" + CommConstants.sqlCR);
+        sql.append("ORDER  BY SPELLING DESC " + CommConstants.sqlCR);
         DicUtils.dicSqlLog(sql.toString());
 
         Cursor cursor = db.rawQuery(sql.toString(), null);
@@ -322,6 +323,7 @@ public class DicDb {
         sql.append("SELECT SPELLING, MEAN, ENTRY_ID  " + CommConstants.sqlCR);
         sql.append("  FROM DIC " + CommConstants.sqlCR);
         sql.append(" WHERE WORD = '" + findWord.toLowerCase().replaceAll("'", " ") + "'" +  CommConstants.sqlCR);
+        sql.append("ORDER  BY SPELLING DESC " + CommConstants.sqlCR);
         DicUtils.dicSqlLog(sql.toString());
 
         Cursor cursor = db.rawQuery(sql.toString(), null);
@@ -335,20 +337,21 @@ public class DicDb {
         return rtn;
     }
 
-    public static void insDicClickWord(SQLiteDatabase db, String word, String insDate) {
+    public static void insDicClickWord(SQLiteDatabase db, String entryId, String insDate) {
         if ( "".equals(insDate) ) {
             insDate = DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".");
         }
 
         StringBuffer sql = new StringBuffer();
         sql.append("DELETE FROM DIC_CLICK_WORD " + CommConstants.sqlCR);
-        sql.append(" WHERE WORD = '" + word + "'" + CommConstants.sqlCR);
+        sql.append(" WHERE ENTRY_ID = '" + entryId + "'" + CommConstants.sqlCR);
         DicUtils.dicSqlLog(sql.toString());
         db.execSQL(sql.toString());
 
         sql.setLength(0);
-        sql.append("INSERT INTO DIC_CLICK_WORD (WORD, INS_DATE) " + CommConstants.sqlCR);
-        sql.append("VALUES('" + word + "', '" + insDate + "') " + CommConstants.sqlCR);
+        sql.append("INSERT INTO DIC_CLICK_WORD (ENTRY_ID, INS_DATE) " + CommConstants.sqlCR);
+        sql.append("VALUES ( '" + entryId + "','" + insDate + "') " + CommConstants.sqlCR);
+
         DicUtils.dicSqlLog(sql.toString());
         db.execSQL(sql.toString());
     }

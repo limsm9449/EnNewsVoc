@@ -254,6 +254,16 @@ public class DicUtils {
                         //DicUtils.writeInfoToFile(context, "MEMORY" + ":" + entryId + ":" + (((CheckBox) v.findViewById(R.id.my_c_vi_cb_memorization)).isChecked() ? "Y" : "N"));
                         DicDb.updMemory(db, row[1], row[2]);
                         break;
+                    case "MYSAMPLE_INSERT":
+                        DicDb.insDicMySample(db, row[1], row[2], row[3]);
+                        break;
+                    case "CLICK_WORD":
+                        DicDb.insDicClickWord(db, row[1], row[2]);
+                        break;
+                    case "BOOKMARK":
+                        DicDb.insDicBoolmark(db, row[1], row[2], row[3], "");
+                        DicDb.updMemory(db, row[1], row[2]);
+                        break;
                 }
                 readString = buffreader.readLine();
             }
@@ -301,48 +311,9 @@ public class DicUtils {
 
             Cursor cursor = null;
 
-            //Today 기록
-            //DicUtils. writeInfoToFile(getContext(), "TODAY" + ":" + today + ":" + todayCursor.getString(todayCursor.getColumnIndexOrThrow("ENTRY_ID")));
-            cursor = db.rawQuery(DicQuery.getToday(), null);
+            cursor = db.rawQuery(DicQuery.getWriteData(), null);
             while (cursor.moveToNext()) {
-                fos.write(("TODAY" + ":" + cursor.getString(cursor.getColumnIndexOrThrow("TODAY")) + ":" + cursor.getString(cursor.getColumnIndexOrThrow("ENTRY_ID"))).getBytes());
-                fos.write("\n".getBytes());
-            }
-            cursor.close();
-
-            //카테고리 기록
-            //DicUtils. writeInfoToFile(getContext(), "CATEGORY_INSERT" + ":" + insCategoryCode + ":" + et_ins.getText().toString());
-            cursor = db.rawQuery(DicQuery.getVocabularyCategoryCount(), null);
-            while (cursor.moveToNext()) {
-                if (!"MY0000".equals(cursor.getString(cursor.getColumnIndexOrThrow("KIND")))) {
-                    fos.write(("CATEGORY_INSERT" + ":" + cursor.getString(cursor.getColumnIndexOrThrow("KIND")) + ":" + cursor.getString(cursor.getColumnIndexOrThrow("KIND_NAME"))).getBytes());
-                    fos.write("\n".getBytes());
-                }
-            }
-            cursor.close();
-
-            //단어 기록
-            //DicUtils.writeInfoToFile(context, "MYWORD_INSERT" + ":" + "MY" + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".") + ":" + viewHolder.entryId);
-            cursor = db.rawQuery(DicQuery.getMyDic(), null);
-            while (cursor.moveToNext()) {
-                fos.write(("MYWORD_INSERT" + ":" + cursor.getString(cursor.getColumnIndexOrThrow("KIND")) + ":" + cursor.getString(cursor.getColumnIndexOrThrow("INS_DATE")) + ":" + cursor.getString(cursor.getColumnIndexOrThrow("ENTRY_ID"))).getBytes());
-                fos.write("\n".getBytes());
-            }
-            cursor.close();
-
-            //암기 기록
-            //DicUtils.writeInfoToFile(context, "MEMORY" + ":" + entryId + ":" + (((CheckBox) v.findViewById(R.id.my_c_vi_cb_memorization)).isChecked() ? "Y" : "N"));
-            cursor = db.rawQuery(DicQuery.getMyMemoryDic(), null);
-            while (cursor.moveToNext()) {
-                fos.write(("MEMORY" + ":" + cursor.getString(cursor.getColumnIndexOrThrow("ENTRY_ID")) + ":" + "Y").getBytes());
-                fos.write("\n".getBytes());
-            }
-            cursor.close();
-
-            //나의 예문 기록
-            cursor = db.rawQuery(DicQuery.getMySample(), null);
-            while (cursor.moveToNext()) {
-                fos.write(("MYSAMPLE_INSERT" + ":" + cursor.getString(cursor.getColumnIndexOrThrow("SENTENCE1")) + ":" + cursor.getString(cursor.getColumnIndexOrThrow("SENTENCE2")) + ":" + cursor.getString(cursor.getColumnIndexOrThrow("TODAY"))).getBytes());
+                fos.write((cursor.getString(cursor.getColumnIndexOrThrow("WRITE_DATA")).getBytes()));
                 fos.write("\n".getBytes());
             }
             cursor.close();
@@ -368,113 +339,6 @@ public class DicUtils {
 
         return isHangule;
     }
-
-    /*
-    public static ArrayList gatherCategory(SQLiteDatabase db, String url, String codeGroup) {
-        ArrayList wordAl = new ArrayList();
-        try {
-            int cnt = 1;
-            boolean isBreak = false;
-            while (true) {
-                Document doc = getDocument(url + "&page=" + cnt);
-                Element table_e = findElementSelect(doc, "table", "class", "tbl_wordbook");
-                Element tbody_e = findElementForTag(table_e, "tbody", 0);
-                for (int m = 0; m < tbody_e.children().size(); m++) {
-                    HashMap row = new HashMap();
-
-                    Element category = findElementForTag(tbody_e.child(m), "td", 1);
-
-                    String categoryId = "W" + getUrlParamValue(category.child(0).attr("href"), "id").replace("\n", "");
-                    String categoryName = category.text();
-                    String wordCnt = findElementForTag(tbody_e.child(m), "td", 3).text();
-                    String bookmarkCnt = findElementForTag(tbody_e.child(m), "td", 4).text();
-                    String updDate = findElementForTag(tbody_e.child(m), "td", 5).text();
-                    dicLog(codeGroup + " : " + categoryName + " : " + categoryId + " : " + categoryName + " : " + wordCnt + " : " + bookmarkCnt + " : " + updDate) ;
-                    Cursor cursor = db.rawQuery(DicQuery.getCategory(codeGroup, categoryId), null);
-                    if (cursor.moveToNext()) {
-                        if ( categoryId.equals(cursor.getString(cursor.getColumnIndexOrThrow("CODE"))) && updDate.equals(cursor.getString(cursor.getColumnIndexOrThrow("UPD_DATE"))) ) {
-                            isBreak = true;
-                            break;
-                        } else {
-                            //수정
-                            DicDb.updDicCategoryInfo(db, categoryId, categoryName, updDate, bookmarkCnt);
-                        }
-                    } else {
-                        //입력
-                        DicDb.insDicCategoryInfo(db, codeGroup, categoryId, categoryName, updDate, wordCnt, bookmarkCnt);
-                    }
-                }
-
-                if ( isBreak ) {
-                    break;
-                }
-
-                HashMap pageHm = new HashMap();
-                Element div_paging = findElementSelect(doc, "div", "class", "paging_comm paging_type1");
-                for (int is = 0; is < div_paging.children().size(); is++) {
-                    if ("a".equals(div_paging.child(is).tagName())) {
-                        HashMap row = new HashMap();
-
-                        String page = getUrlParamValue(div_paging.child(is).attr("href"), "page");
-                        pageHm.put(page, page);
-                    }
-                }
-                // 페이지 정보중에 다음 페이지가 없으면 종료...
-                if (!pageHm.containsKey(Integer.toString(cnt + 1))) {
-                    break;
-                } else {
-                    dicLog("cnt : " + cnt);
-                    cnt++;
-                }
-            }
-        } catch ( Exception e ) {
-            Log.d(CommConstants.tag, e.getMessage());
-        }
-
-        return wordAl;
-    }
-
-    public static ArrayList gatherCategoryWord(String url) {
-        ArrayList wordAl = new ArrayList();
-        try {
-            int cnt = 1;
-            while (true) {
-                Document doc = getDocument(url + "&page=" + cnt);
-                Element div_e = findElementSelect(doc, "div", "class", "list_word on");
-                for (int is = 0; is < div_e.children().size(); is++) {
-                    if ("div".equals(div_e.child(is).tagName())) {
-                        HashMap row = new HashMap();
-
-                        Element wordDiv = findElementForTagAttr(div_e.child(is), "div", "class", "txt_word");
-
-                        row.put("WORD", wordDiv.child(0).child(0).text());
-                        wordAl.add(row);
-                    }
-                }
-                HashMap pageHm = new HashMap();
-                Element div_paging = findElementSelect(doc, "div", "class", "paging_comm paging_type1");
-                for (int is = 0; is < div_paging.children().size(); is++) {
-                    if ("a".equals(div_paging.child(is).tagName())) {
-                        HashMap row = new HashMap();
-
-                        String page = getUrlParamValue(div_paging.child(is).attr("href"), "page");
-                        pageHm.put(page, page);
-                    }
-                }
-                // 페이지 정보중에 다음 페이지가 없으면 종료...
-                if (!pageHm.containsKey(Integer.toString(cnt + 1))) {
-                    break;
-                } else {
-                    cnt++;
-                }
-            }
-        } catch ( Exception e ) {
-            Log.d(CommConstants.tag, e.getMessage());
-        }
-
-        return wordAl;
-    }
-    */
 
     public static Document getDocument(String url) throws Exception {
         Document doc = null;

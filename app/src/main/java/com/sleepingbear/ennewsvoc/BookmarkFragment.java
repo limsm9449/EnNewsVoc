@@ -113,22 +113,28 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
                 adapter.allCheck(isAllCheck);
                 break;
             case R.id.my_f_bm_delete :
-                new android.app.AlertDialog.Builder(getActivity())
-                        .setTitle("알림")
-                        .setMessage("삭제하시겠습니까?")
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                adapter.delete();
-                                changeListView();
-                            }
-                        })
-                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .show();
+                if ( !adapter.isCheck() ) {
+                    Toast.makeText(getContext(), "선택된 데이타가 없습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    new android.app.AlertDialog.Builder(getActivity())
+                            .setTitle("알림")
+                            .setMessage("삭제하시겠습니까?")
+                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    adapter.delete();
+                                    changeListView();
+
+                                    DicUtils.writeNewInfoToFile(getContext(), db);
+                                }
+                            })
+                            .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .show();
+                }
 
                 break;
         }
@@ -146,10 +152,11 @@ class BookmarkCursorAdapter extends CursorAdapter {
 
         isCheck = new boolean[cursor.getCount()];
         seq = new int[cursor.getCount()];
-        for ( int i = 0; i < cursor.getCount(); i++ ) {
-            isCheck[i] = false;
-            seq[i] = -1;
+        while ( cursor.moveToNext() ) {
+            isCheck[cursor.getPosition()] = false;
+            seq[cursor.getPosition()] = cursor.getInt(cursor.getColumnIndexOrThrow("SEQ"));
         }
+        cursor.moveToFirst();
     }
 
     static class ViewHolder {
@@ -186,8 +193,6 @@ class BookmarkCursorAdapter extends CursorAdapter {
         viewHolder.position = cursor.getPosition();
         viewHolder.cb.setTag(viewHolder);
 
-        seq[cursor.getPosition()] = cursor.getInt(cursor.getColumnIndexOrThrow("SEQ"));
-
         ((TextView) view.findViewById(R.id.my_f_bi_tv_bookmark)).setText(cursor.getString(cursor.getColumnIndexOrThrow("TITLE")));
         ((TextView) view.findViewById(R.id.my_f_bi_tv_date)).setText(cursor.getString(cursor.getColumnIndexOrThrow("INS_DATE")));
 
@@ -212,6 +217,18 @@ class BookmarkCursorAdapter extends CursorAdapter {
                 DicDb.delDicBookmark(mDb, seq[i]);
             }
         }
+    }
+
+    public boolean isCheck() {
+        boolean rtn = false;
+        for ( int i = 0; i < isCheck.length; i++ ) {
+            if ( isCheck[i] ) {
+                rtn = true;
+                break;
+            }
+        }
+
+        return rtn;
     }
 }
 
