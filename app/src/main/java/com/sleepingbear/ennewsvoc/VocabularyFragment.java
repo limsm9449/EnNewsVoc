@@ -64,9 +64,8 @@ public class VocabularyFragment extends Fragment implements View.OnClickListener
         AdRequest adRequest =new  AdRequest.Builder().build();
         av.loadAd(adRequest);
 
-        ((Button) mainView.findViewById(R.id.my_f_dic_b_1)).setOnClickListener(this);
-        ((Button) mainView.findViewById(R.id.my_f_dic_b_2)).setOnClickListener(this);
-        ((Button) mainView.findViewById(R.id.my_f_dic_b_3)).setOnClickListener(this);
+        ((Button) mainView.findViewById(R.id.my_f_voc_b_1)).setOnClickListener(this);
+        ((Button) mainView.findViewById(R.id.my_f_voc_b_2)).setOnClickListener(this);
 
         return mainView;
     }
@@ -163,7 +162,7 @@ public class VocabularyFragment extends Fragment implements View.OnClickListener
                 });
 
                 final EditText et_saveName = ((EditText) dialog_layout.findViewById(R.id.my_dc_et_voc_name));
-                et_saveName.setText("vocabulary.txt");
+                et_saveName.setText(cur.getString(cur.getColumnIndexOrThrow("KIND_NAME")));
                 ((Button) dialog_layout.findViewById(R.id.my_dc__b_save)).setTag(cur.getString(cur.getColumnIndexOrThrow("KIND")));
                 ((Button) dialog_layout.findViewById(R.id.my_dc__b_save)).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -300,7 +299,10 @@ public class VocabularyFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
-        if ( v.getId() == R.id.my_f_dic_b_3 ) {
+        if ( v.getId() == R.id.my_f_voc_b_1 ) {
+            Intent intent = new Intent(this.getActivity().getApplication(), MySampleActivity.class);
+            startActivity(intent);
+        } else if ( v.getId() == R.id.my_f_voc_b_2 ) {
             Intent intent = new Intent(this.getActivity().getApplication(), StudyActivity.class);
             startActivity(intent);
         }

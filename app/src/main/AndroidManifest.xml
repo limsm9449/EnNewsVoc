@@ -76,6 +76,11 @@
             android:label="@string/title_activity_patch"
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
+        <activity
+            android:name=".MySampleActivity"
+            android:label="@string/title_activity_my_sample"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyMaterialTheme" />
 
         <meta-data
             android:name="com.google.android.gms.version"

@@ -76,18 +76,6 @@ public class DicDb {
         db.execSQL(sql.toString());
     }
 
-    /*
-    public static void insToday(SQLiteDatabase db, String entryId, String today) {
-        StringBuffer sql = new StringBuffer();
-        sql.append("INSERT INTO DIC_TODAY(TODAY, ENTRY_ID) " + CommConstants.sqlCR);
-        sql.append("SELECT '" + today + "', ENTRY_ID " + CommConstants.sqlCR);
-        sql.append("  FROM DIC " + CommConstants.sqlCR);
-        sql.append(" WHERE ENTRY_ID = '" + entryId + "'" + CommConstants.sqlCR);
-        DicUtils.dicSqlLog(sql.toString());
-        db.execSQL(sql.toString());
-    }
-    */
-
     public static void updMemory(SQLiteDatabase db, String entryId, String memoryYn) {
         StringBuffer sql = new StringBuffer();
         sql.append("UPDATE DIC_VOC " + CommConstants.sqlCR);
@@ -96,19 +84,6 @@ public class DicDb {
         DicUtils.dicSqlLog(sql.toString());
         db.execSQL(sql.toString());
     }
-
-    /**
-     * 오늘이 단어 초기화
-     * @param db
-     */
-    /*
-    public static void initToday(SQLiteDatabase db) {
-        StringBuffer sql = new StringBuffer();
-        sql.append("DELETE FROM DIC_TODAY" + CommConstants.sqlCR);
-        DicUtils.dicSqlLog(sql.toString());
-        db.execSQL(sql.toString());
-    }
-    */
 
     /**
      * 단어장 초기화
@@ -132,26 +107,6 @@ public class DicDb {
         DicUtils.dicSqlLog(sql.toString());
         db.execSQL(sql.toString());
     }
-
-    /*
-    public static boolean isExistWord(SQLiteDatabase db, String word) {
-        boolean rtn = false;
-        StringBuffer sql = new StringBuffer();
-        sql.append("SELECT COUNT(*) CNT FROM DIC " + CommConstants.sqlCR);
-        sql.append(" WHERE WORD = '" + word + "'" + CommConstants.sqlCR);
-        DicUtils.dicSqlLog(sql.toString());
-
-        Cursor cursor = db.rawQuery(sql.toString(), null);
-        if ( cursor.moveToNext() ) {
-            if ( cursor.getInt(cursor.getColumnIndexOrThrow("CNT")) > 0 ) {
-                rtn = true;
-            }
-        }
-        cursor.close();
-
-        return rtn;
-    }
-    */
 
     public static String getEntryIdForWord(SQLiteDatabase db, String word) {
         String rtn = "";
@@ -215,72 +170,6 @@ public class DicDb {
         DicUtils.dicLog(sql.toString());
         db.execSQL(sql.toString());
     }
-
-    /*
-    public static void delDicCategoryWord(SQLiteDatabase db, String code) {
-        StringBuffer sql = new StringBuffer();
-        sql.append("DELETE FROM DIC_CATEGORY_WORD " + CommConstants.sqlCR);
-        sql.append(" WHERE CODE = '" + code + "'" + CommConstants.sqlCR);
-        DicUtils.dicSqlLog(sql.toString());
-        db.execSQL(sql.toString());
-    }
-
-    public static void insDicCategoryWord(SQLiteDatabase db, String code, ArrayList wordAl) {
-        StringBuffer sql = new StringBuffer();
-
-        String words = "";
-        for ( int i = 0; i < wordAl.size(); i++ ) {
-            if ( i == 0 ) {
-                words += ((String)((HashMap)wordAl.get(i)).get("WORD")).replaceAll("'","");
-            } else {
-                words += "," + ((String)((HashMap)wordAl.get(i)).get("WORD")).replaceAll("'","");
-            }
-        }
-
-        sql.delete(0, sql.length());
-        sql.append("INSERT INTO DIC_CATEGORY_WORD (CODE, ENTRY_ID) " + CommConstants.sqlCR);
-        sql.append("SELECT '" + code + "' CODE, ENTRY_ID" + CommConstants.sqlCR);
-        sql.append("FROM   DIC " + CommConstants.sqlCR);
-        sql.append("WHERE  KIND = 'F'" + CommConstants.sqlCR);
-        sql.append("AND    WORD IN ('" + words.replaceAll(",","','") + "')" + CommConstants.sqlCR);
-        DicUtils.dicSqlLog(sql.toString());
-        db.execSQL(sql.toString());
-    }
-    */
-
-    /*
-    public static void updDicCategoryInfo(SQLiteDatabase db, String code) {
-        StringBuffer sql = new StringBuffer();
-        sql.append("UPDATE DIC_CODE " + CommConstants.sqlCR);
-        sql.append("SET    W_CNT = (SELECT COUNT(*) FROM DIC_CATEGORY_WORD WHERE CODE = '" + code + "')" + CommConstants.sqlCR);
-        sql.append("WHERE  CODE = '" + code + "'" + CommConstants.sqlCR);
-        DicUtils.dicSqlLog(sql.toString());
-        db.execSQL(sql.toString());
-    }
-    */
-
-    /*
-    public static void updDicCategoryInfo(SQLiteDatabase db, String code, String codeName, String updDate, String bookmarkCnt) {
-        StringBuffer sql = new StringBuffer();
-        sql.append("UPDATE DIC_CODE " + CommConstants.sqlCR);
-        sql.append("SET    CODE_NAME = '" + codeName + "'" + CommConstants.sqlCR);
-        sql.append("       ,UPD_DATE = '" + updDate + "'" + CommConstants.sqlCR);
-        sql.append("       ,BOOKMARK_CNT = '" + bookmarkCnt + "'" + CommConstants.sqlCR);
-        sql.append("WHERE  CODE = '" + code + "'" + CommConstants.sqlCR);
-        DicUtils.dicSqlLog(sql.toString());
-        db.execSQL(sql.toString());
-    }
-    */
-
-    /*
-    public static void insDicCategoryInfo(SQLiteDatabase db, String codeGroup, String code, String codeName, String updDate, String wCnt, String bookmarkCnt) {
-        StringBuffer sql = new StringBuffer();
-        sql.append("INSERT INTO DIC_CODE(CODE_GROUP, CODE, CODE_NAME, UPD_DATE, W_CNT, S_CNT, BOOKMARK_CNT) " + CommConstants.sqlCR);
-        sql.append("VALUES ('" + codeGroup + "','" + code + "','" + codeName + "','" + updDate + "'," + wCnt + ",0," + bookmarkCnt + ")" + CommConstants.sqlCR);
-        DicUtils.dicSqlLog(sql.toString());
-        db.execSQL(sql.toString());
-    }
-    */
 
     public static HashMap getMean(SQLiteDatabase db, String word) {
         HashMap rtn = new HashMap();

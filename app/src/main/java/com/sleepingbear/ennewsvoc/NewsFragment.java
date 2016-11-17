@@ -75,7 +75,7 @@ public class NewsFragment extends Fragment {
             bundle.putString("kind", cur.getKind());
             intent.putExtras(bundle);
 
-            startActivity(intent);
+            getActivity().startActivityForResult(intent, CommConstants.a_news);
         }
     };
 

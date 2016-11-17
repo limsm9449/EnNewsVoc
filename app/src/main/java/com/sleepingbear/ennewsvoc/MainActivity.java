@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -36,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,7 +174,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //tab 변경
                 mPager.setCurrentItem(selectedTab);
 
-                //setChangeViewPaper(selectedTab, CommConstants.changeKind_title);
+                /*
+                if ( selectedTab == 1 ) {
+                    ((ClickwordFragment) adapter.getItem(selectedTab)).changeListView();
+                }
+                */
 
                 //메뉴 구성
                 invalidateOptionsMenu();
@@ -336,6 +343,96 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtras(bundle);
 
             startActivity(intent);
+        } else if (id == R.id.action_email) {
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name);
+            intent.putExtra(Intent.EXTRA_TEXT, "문제점을 적어 주세요.\n빠른 시간 안에 수정을 하겠습니다.\n감사합니다.");
+            intent.setData(Uri.parse("mailto:limsm9449@gmail.com"));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else if (id == R.id.action_backup) {
+            //layout 구성
+            LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View dialog_layout = li.inflate(R.layout.dialog_dic_manage, null);
+
+            //dialog 생성..
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setView(dialog_layout);
+            final AlertDialog alertDialog = builder.create();
+
+            final EditText et_saveName = ((EditText) dialog_layout.findViewById(R.id.my_d_dm_et_save));
+            et_saveName.setText("backup_" + DicUtils.getCurrentDate() + ".txt");
+            ((Button) dialog_layout.findViewById(R.id.my_d_dm_b_save)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String saveFileName = et_saveName.getText().toString();
+                    if ("".equals(saveFileName)) {
+                        Toast.makeText(getApplicationContext(), "저장할 파일명을 입력하세요.", Toast.LENGTH_SHORT).show();
+                    } else if (saveFileName.indexOf(".") > -1 && !"txt".equals(saveFileName.substring(saveFileName.length() - 3, saveFileName.length()).toLowerCase())) {
+                        Toast.makeText(getApplicationContext(), "확장자는 txt 입니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //디렉토리 생성
+                        String fileName = "";
+                        boolean existDir = false;
+                        File appDir = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName);
+                        if (!appDir.exists()) {
+                            existDir = appDir.mkdirs();
+                            if (saveFileName.indexOf(".") > -1) {
+                                fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName;
+                            } else {
+                                fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName + ".txt";
+                            }
+                        } else {
+                            if (saveFileName.indexOf(".") > -1) {
+                                fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName;
+                            } else {
+                                fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName + ".txt";
+                            }
+                        }
+
+                        File saveFile = new File(fileName);
+                        if (saveFile.exists()) {
+                            Toast.makeText(getApplicationContext(), "파일명이 존재합니다.", Toast.LENGTH_LONG).show();
+                        } else {
+                            DicUtils.writeNewInfoToFile(getApplicationContext(), (new DbHelper(getApplicationContext())).getWritableDatabase(), fileName);
+
+                            Toast.makeText(getApplicationContext(), "백업 데이타를 정상적으로 내보냈습니다.", Toast.LENGTH_LONG).show();
+
+                            alertDialog.dismiss();
+                        }
+                    }
+                }
+            });
+
+            ((Button) dialog_layout.findViewById(R.id.my_d_dm_b_upload)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FileChooser filechooser = new FileChooser(MainActivity.this);
+                    filechooser.setFileListener(new FileChooser.FileSelectedListener() {
+                        @Override
+                        public void fileSelected(final File file) {
+                            DicUtils.readInfoFromFile(getApplicationContext(), (new DbHelper(getApplicationContext())).getWritableDatabase(), file.getAbsolutePath());
+
+                            Toast.makeText(getApplicationContext(), "백업 데이타를 정상적으로 가져왔습니다.", Toast.LENGTH_LONG).show();
+
+                            alertDialog.dismiss();
+                        }
+                    });
+                    filechooser.setExtension("txt");
+                    filechooser.showDialog();
+                }
+            });
+
+            ((Button) dialog_layout.findViewById(R.id.my_d_dm_b_close)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alertDialog.dismiss();
+                }
+            });
+
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -344,18 +441,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         DicUtils.dicLog("onActivityResult : " + requestCode + " : " + resultCode);
         switch ( requestCode ) {
-            case CommConstants.a_other :
-                if ( resultCode == Activity.RESULT_OK && "Y".equals(data.getStringExtra("isChange")) ) {
-                    if ( selectedTab == 3 ) {
-                        ((VocabularyFragment) adapter.getItem(0)).changeListView();
-                    }
-                }
-                break;
-            case CommConstants.a_vocabulary :
-                ((VocabularyFragment) adapter.getItem(3)).changeListView();
-                break;
             case CommConstants.a_news :
-                ((VocabularyFragment) adapter.getItem(0)).changeListView();
+                ((ClickwordFragment) adapter.getItem(1)).changeListView();
                 break;
         }
     }

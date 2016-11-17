@@ -21,7 +21,7 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/my_f_dic_b_1"
+                android:id="@+id/my_f_voc_b_1"
                 android:background="@drawable/my_button"
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="5dp"
@@ -37,23 +37,7 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/my_f_dic_b_2"
-                android:background="@drawable/my_button"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="0dp"
-                android:layout_marginRight="5dp"
-                android:layout_alignParentTop="true"
-                android:textSize="14dp"
-                android:textColor="@color/textColorPrimary"
-                android:layout_marginBottom="5dp"
-                android:layout_weight="1"
-                android:text="카테고리별"
-                android:textStyle="normal" />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/my_f_dic_b_3"
+                android:id="@+id/my_f_voc_b_2"
                 android:background="@drawable/my_button"
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="0dp"

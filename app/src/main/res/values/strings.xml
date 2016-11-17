@@ -21,24 +21,16 @@
     <string name="action_bookmark">페이지 북마크</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_word_view">WordViewActivity</string>
     <string name="title_activity_webview">WebviewActivity</string>
     <string name="title_activity_study2">Study2Activity</string>
     <string name="title_activity_study4">Study4Activity</string>
     <string name="title_activity_vocabulary">VocabularyActivity</string>
-    <string name="title_activity_dic_category_view">DicKindActivity</string>
     <string name="title_activity_sentence_view">SentenceViewActivity</string>
     <string name="title_activity_study5">Study5Activity</string>
     <string name="title_activity_web_view">영어 사이트</string>
     <string name="title_activity_help">도움말</string>
-    <string name="title_activity_dic_category">DicCategoryActivity</string>
-    <string name="title_activity_grammar">GrammarActivity</string>
-    <string name="title_activity_grammar_view">GrammarViewActivity</string>
-    <string name="title_activity_ad">AdActivity</string>
     <string name="title_activity_patch">PatchActivity</string>
     <string name="title_activity_my_sample">MySampleActivity</string>
-    <string name="title_activity_main3">Main3Activity</string>
-    <string name="title_activity_daum">DaumActivity</string>
     <string name="banner_ad_unit_id">ca-app-pub-3860766380986792/2092125867</string>
 </resources>

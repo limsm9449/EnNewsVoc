@@ -23,5 +23,4 @@ public class CommConstants {
 
     public final static int a_news = 1;
     public final static int a_vocabulary = 2;
-    public final static int a_other = 3;
 }
