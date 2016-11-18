@@ -65,13 +65,6 @@ public class WebDictionaryActivity extends AppCompatActivity {
         AdRequest adRequest = new  AdRequest.Builder().build();
         av.loadAd(adRequest);
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // 상단 메뉴 구성
-        getMenuInflater().inflate(R.menu.menu_help, menu);
-
-        return true;
-    }
 
     public boolean onPrepareOptionsMenu(Menu menu){
         super.onPrepareOptionsMenu(menu);
@@ -84,13 +77,6 @@ public class WebDictionaryActivity extends AppCompatActivity {
 
         if (id == android.R.id.home) {
             finish();
-        } else if (id == R.id.action_help) {
-            Bundle bundle = new Bundle();
-            bundle.putString("SCREEN", "WEB_DICTIONARY");
-
-            Intent intent = new Intent(getApplication(), HelpActivity.class);
-            intent.putExtras(bundle);
-            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
