@@ -201,14 +201,15 @@ public class DicUtils {
         //데이타 복구
         FileInputStream fis = null;
         try {
+            //데이타 초기화
+            DicDb.initVocabulary(db);
+            DicDb.initSample(db);
+            DicDb.initClickword(db);
+            DicDb.initBookmark(db);
+
             if ( fileName == null || fileName.length() == 0 ) {
                 fis = ctx.openFileInput(CommConstants.infoFileName);
             } else {
-                //데이타 초기화
-                //DicDb.initToday(db);
-                DicDb.initVocabulary(db);
-                //DicDb.initSample(db);
-
                 fis = new FileInputStream(new File(fileName));
             }
 

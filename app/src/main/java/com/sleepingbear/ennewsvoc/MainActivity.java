@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final int MY_PERMISSIONS_REQUEST = 0;
 
+    private boolean isEditing = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //카테고리 추가 기능 구현
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.GONE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -169,16 +171,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                DicUtils.dicLog(this.getClass().toString() + " onTabSelected" + " : " + tab.getPosition());
+                DicUtils.dicLog(" onTabSelected" + " : " + tab.getPosition());
                 selectedTab = tab.getPosition();
                 //tab 변경
                 mPager.setCurrentItem(selectedTab);
 
-                /*
+                //상단 편집 버튼 갱신
+                isEditing = false;
+                invalidateOptionsMenu();
+
                 if ( selectedTab == 1 ) {
                     ((ClickwordFragment) adapter.getItem(selectedTab)).changeListView();
+                    ((ClickwordFragment) adapter.getItem(selectedTab)).changeEdit(isEditing);
+                } else if ( selectedTab == 2 ) {
+                    ((BookmarkFragment) adapter.getItem(selectedTab)).changeListView();
+                    ((BookmarkFragment) adapter.getItem(selectedTab)).changeEdit(isEditing);
                 }
-                */
 
                 //메뉴 구성
                 invalidateOptionsMenu();
@@ -242,22 +250,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //뷰의 내용이 변경되었을때...
     public void setChangeViewPaper(int position) {
         try {
-            fab.setVisibility(View.VISIBLE);
+            fab.setVisibility(View.GONE);
 
             if ( adapter.getItem(position) == null ) {
                 return;
             }
 
             if (position == 0) {
-                fab.setVisibility(View.INVISIBLE);
             } else if (position == 1) {
                 //클릭단어
-                fab.setVisibility(View.INVISIBLE);
             } else if (position == 2) {
                 //북마크
-                fab.setVisibility(View.INVISIBLE);
             } else if (position == 3) {
                 //단어장
+                fab.setVisibility(View.VISIBLE);
                 if ( ((VocabularyFragment) adapter.getItem(position)) != null ) {
                     ((VocabularyFragment) adapter.getItem(position)).changeListView();
                 }
@@ -293,8 +299,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         ((MenuItem)menu.findItem(R.id.action_delete)).setVisible(false);
+        ((MenuItem)menu.findItem(R.id.action_edit)).setVisible(false);
+        ((MenuItem)menu.findItem(R.id.action_exit)).setVisible(false);
 
-        if ( selectedTab == 3 ) {
+        if ( selectedTab == 1 || selectedTab == 2 ) {
+            if ( isEditing ) {
+                ((MenuItem)menu.findItem(R.id.action_exit)).setVisible(true);
+            } else {
+                ((MenuItem)menu.findItem(R.id.action_edit)).setVisible(true);
+            }
+
+        } else if ( selectedTab == 3 ) {
             ((MenuItem)menu.findItem(R.id.action_delete)).setVisible(true);
         }
 
@@ -433,6 +448,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.show();
+        } else if (id == R.id.action_edit) {
+            isEditing = true;
+            invalidateOptionsMenu();
+
+            if ( selectedTab == 1 ) {
+                ((ClickwordFragment) adapter.getItem(selectedTab)).changeEdit(isEditing);
+            } else if ( selectedTab == 2 ) {
+                ((BookmarkFragment) adapter.getItem(selectedTab)).changeEdit(isEditing);
+            }
+        } else if (id == R.id.action_exit) {
+            isEditing = false;
+            invalidateOptionsMenu();
+
+            if ( selectedTab == 1 ) {
+                ((ClickwordFragment) adapter.getItem(selectedTab)).changeEdit(isEditing);
+            } else if ( selectedTab == 2 ) {
+                ((BookmarkFragment) adapter.getItem(selectedTab)).changeEdit(isEditing);
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -440,11 +473,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         DicUtils.dicLog("onActivityResult : " + requestCode + " : " + resultCode);
+        /*
         switch ( requestCode ) {
             case CommConstants.a_news :
                 ((ClickwordFragment) adapter.getItem(1)).changeListView();
                 break;
         }
+        */
     }
 
     public void confirmAllDelete() {

@@ -31,6 +31,57 @@ public class HelpActivity extends AppCompatActivity {
         StringBuffer CurrentSb = new StringBuffer();
         StringBuffer tempSb = new StringBuffer();
 
+
+        tempSb.delete(0, tempSb.length());
+        tempSb.append("* 뉴스" + CommConstants.sqlCR);
+        tempSb.append("- 11개의 영문 뉴스가 있습니다. " + CommConstants.sqlCR);
+        tempSb.append(" .국내 영어뉴스는 로딩이 빠르지만 외국 영어뉴스는 로딩이 많이 느립니다. 참고하세요." + CommConstants.sqlCR);
+        tempSb.append("" + CommConstants.sqlCR);
+        if ( "NEWS".equals(b.getString("SCREEN")) ) {
+            CurrentSb.append(tempSb.toString());
+        } else {
+            allSb.append(tempSb.toString());
+        }
+
+        tempSb.delete(0, tempSb.length());
+        tempSb.append("* 뉴스 상세" + CommConstants.sqlCR);
+        tempSb.append("- 영어뉴스를 보면서 필요한 단어 검색 기능이 있습니다." + CommConstants.sqlCR);
+        tempSb.append(" .뉴스를 보다가 모르는 단어를 클릭을 하면 하단에 클릭단어의 뜻이 보입니다. " + CommConstants.sqlCR);
+        tempSb.append(" .하단 단어를 길게 클릭하시면 단어 상세를 보실 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append(" .하단 단어 옆의 (+)를 클릭하시면 바로 단어장에 등록을 하실 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append(" .뉴스의 단어를 길게 클릭하시면 단어보기, 단어검색(Naver,Daum), 문장보기, TTS, 전체TTS(4000자까지), 복사, 전체복사 기능을 사용하실 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append(" .다음에 다시 읽고 싶은 기사가 있으면 상단의 북마크를 클릭하세요. 메인의 북마크 Tab에서 내용을 확인하실 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append(" .뉴스를 보면서 클릭한 단어는 다 기록이 됩니다. 메인의 클릭단어 Tab에서 확인하실 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append("" + CommConstants.sqlCR);
+        if ( "WEB_VIEW".equals(b.getString("SCREEN")) ) {
+            CurrentSb.append(tempSb.toString());
+        } else {
+            allSb.append(tempSb.toString());
+        }
+
+        tempSb.delete(0, tempSb.length());
+        tempSb.append("* 클릭단어" + CommConstants.sqlCR);
+        tempSb.append("- 영어 뉴스를 보면서 클릭한 단어들에 대하여 관리하는 화면입니다." + CommConstants.sqlCR);
+        tempSb.append(" .상단 수정 버튼(연필모양)를 클릭하시면 단어를 선택, 삭제, 단어장에 저장, 신규 단어장에 저장할 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append(" .단어를 클릭하시면 단어상세를 보실 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append("" + CommConstants.sqlCR);
+        if ( "CLICKWORD".equals(b.getString("SCREEN")) ) {
+            CurrentSb.append(tempSb.toString());
+        } else {
+            allSb.append(tempSb.toString());
+        }
+
+        tempSb.delete(0, tempSb.length());
+        tempSb.append("* 북마크" + CommConstants.sqlCR);
+        tempSb.append("- 북마크로 등록한 뉴스를 관리하는 화면입니다." + CommConstants.sqlCR);
+        tempSb.append(" .상단 수정 버튼(연필모양)를 클릭하시면 북마크를 선택, 삭제할 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append("" + CommConstants.sqlCR);
+        if ( "BOOKMARK".equals(b.getString("SCREEN")) ) {
+            CurrentSb.append(tempSb.toString());
+        } else {
+            allSb.append(tempSb.toString());
+        }
+
         tempSb.delete(0, tempSb.length());
         tempSb.append("* 단어장" + CommConstants.sqlCR);
         tempSb.append("- 내가 등록한 단어를 보실 수 있습니다." + CommConstants.sqlCR);
@@ -49,30 +100,6 @@ public class HelpActivity extends AppCompatActivity {
         tempSb.append("- 내가 체크한 예문을 보실 수 있습니다." + CommConstants.sqlCR);
         tempSb.append("" + CommConstants.sqlCR);
         if ( "MY_SAMPLE".equals(b.getString("SCREEN")) ) {
-            CurrentSb.append(tempSb.toString());
-        } else {
-            allSb.append(tempSb.toString());
-        }
-
-        tempSb.delete(0, tempSb.length());
-        tempSb.append("* 단어장 - 카테고리별" + CommConstants.sqlCR);
-        tempSb.append("- 단어장 및 회화를 카테고리로 분리 해서 보실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append("- 단어장에 등록할 카테고리를 선택해서 길게 클릭하면 단어장에 등록하실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append("- 상단 Refresh 버튼을 클릭시 최신 정보로 갱신이 됩니다.(데이타 사용)" + CommConstants.sqlCR);
-        tempSb.append("" + CommConstants.sqlCR);
-        if ( "DIC_CATEGORY".equals(b.getString("SCREEN")) ) {
-            CurrentSb.append(tempSb.toString());
-        } else {
-            allSb.append(tempSb.toString());
-        }
-
-        tempSb.delete(0, tempSb.length());
-        tempSb.append("* 단어장 - 카테고리별 상세" + CommConstants.sqlCR);
-        tempSb.append("- 선택한 카테고리별 등록 단어를 보실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append("- 단어를 롱클릭후 단어장에 등록하실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append("- 상단 Refresh 버튼을 클릭시 최신 정보로 갱신이 됩니다.(데이타 사용)" + CommConstants.sqlCR);
-        tempSb.append("" + CommConstants.sqlCR);
-        if ( "DIC_CATEGORY_VIEW".equals(b.getString("SCREEN")) ) {
             CurrentSb.append(tempSb.toString());
         } else {
             allSb.append(tempSb.toString());
@@ -144,29 +171,6 @@ public class HelpActivity extends AppCompatActivity {
         }
 
         tempSb.delete(0, tempSb.length());
-        tempSb.append("* 사전" + CommConstants.sqlCR);
-        tempSb.append("- 영한 사전, 한영 사전을 보실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append(" .단어를 클릭하시면 단어 상세를 보실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append(" .예문을 클릭하시면 문장 상세를 보실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append("" + CommConstants.sqlCR);
-        if ( "DICTIONARY".equals(b.getString("SCREEN")) ) {
-            CurrentSb.append(tempSb.toString());
-        } else {
-            allSb.append(tempSb.toString());
-        }
-
-        tempSb.delete(0, tempSb.length());
-        tempSb.append("* 오늘의 단어" + CommConstants.sqlCR);
-        tempSb.append("- 오늘의 단어를 보실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append(" .데이타 삭제 버튼을 클릭하면 오늘의 단어를 전체 삭제하실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append("" + CommConstants.sqlCR);
-        if ( "TODAY".equals(b.getString("SCREEN")) ) {
-            CurrentSb.append(tempSb.toString());
-        } else {
-            allSb.append(tempSb.toString());
-        }
-
-        tempSb.delete(0, tempSb.length());
         tempSb.append("* 단어 상세" + CommConstants.sqlCR);
         tempSb.append("- 단어의 뜻, 발음, 상세 뜻, 예제, 기타 예제별로 단어 상세를 보실 수 있습니다." + CommConstants.sqlCR);
         tempSb.append(" .별표를 클릭하시면 Default 단어장에 추가 됩니다." + CommConstants.sqlCR);
@@ -186,29 +190,6 @@ public class HelpActivity extends AppCompatActivity {
         tempSb.append(" .별표를 클릭하시면 Default 단어장에 추가 됩니다." + CommConstants.sqlCR);
         tempSb.append("" + CommConstants.sqlCR);
         if ( "SENTENCEVIEW".equals(b.getString("SCREEN")) ) {
-            CurrentSb.append(tempSb.toString());
-        } else {
-            allSb.append(tempSb.toString());
-        }
-
-        tempSb.delete(0, tempSb.length());
-        tempSb.append("* 기타" + CommConstants.sqlCR);
-        tempSb.append("- 영어 사이트, 영어 번역, E-Mail, 어플 백업 및 복구 기능을 실행 할 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append("" + CommConstants.sqlCR);
-        if ( "OTHER".equals(b.getString("SCREEN")) ) {
-            CurrentSb.append(tempSb.toString());
-        } else {
-            allSb.append(tempSb.toString());
-        }
-
-        tempSb.delete(0, tempSb.length());
-        tempSb.append("* 영어 사이트 " + CommConstants.sqlCR);
-        tempSb.append(" .해석할 문장을 선택하여 클립보드에 복사를 하세요." + CommConstants.sqlCR);
-        tempSb.append(" .오른쪽 하단에 있는 i 버튼을 클릭하세요." + CommConstants.sqlCR);
-        tempSb.append(" .선택한 문장을 기준으로 관련 단어들을 보실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append(" .문장을 선택 안하고 i 버튼을 클릭할 경우 클립보드에 들어있는 문장을 기준으로 단어가 조회 됩니다." + CommConstants.sqlCR);
-        tempSb.append("" + CommConstants.sqlCR);
-        if ( "WEB_VIEW".equals(b.getString("SCREEN")) ) {
             CurrentSb.append(tempSb.toString());
         } else {
             allSb.append(tempSb.toString());

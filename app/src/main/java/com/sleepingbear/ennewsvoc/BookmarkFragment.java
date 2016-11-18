@@ -20,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,10 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
     private boolean isAllCheck = false;
 
     private AppCompatActivity mMainActivity;
+
+    private RelativeLayout editRl;
+
+    private boolean isEditing;
 
     public BookmarkFragment() {
     }
@@ -53,6 +58,9 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
 
         ((ImageView) mainView.findViewById(R.id.my_f_bm_all)).setOnClickListener(this);
         ((ImageView) mainView.findViewById(R.id.my_f_bm_delete)).setOnClickListener(this);
+
+        editRl = (RelativeLayout) mainView.findViewById(R.id.my_f_bookmark_rl);
+        editRl.setVisibility(View.GONE);
 
         //리스트 내용 변경
         changeListView();
@@ -80,22 +88,22 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
     AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            DicUtils.dicLog("onItemClick");
-            Cursor cur = (Cursor) adapter.getItem(position);
-            //cur.moveToPosition(position);
+            if ( !isEditing ) {
+                Cursor cur = (Cursor) adapter.getItem(position);
 
-            String kind = cur.getString(cur.getColumnIndexOrThrow("KIND"));
-            String title = cur.getString(cur.getColumnIndexOrThrow("TITLE"));
-            String url = cur.getString(cur.getColumnIndexOrThrow("URL"));
+                String kind = cur.getString(cur.getColumnIndexOrThrow("KIND"));
+                String title = cur.getString(cur.getColumnIndexOrThrow("TITLE"));
+                String url = cur.getString(cur.getColumnIndexOrThrow("URL"));
 
-            Intent intent = new Intent(getActivity().getApplication(), WebViewActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("kind", kind);
-            bundle.putString("title", title);
-            bundle.putString("url", url);
-            intent.putExtras(bundle);
+                Intent intent = new Intent(getActivity().getApplication(), WebViewActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("kind", kind);
+                bundle.putString("title", title);
+                bundle.putString("url", url);
+                intent.putExtras(bundle);
 
-            startActivity(intent);
+                startActivity(intent);
+            }
         }
     };
 
@@ -139,12 +147,25 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
                 break;
         }
     }
+
+    public void changeEdit( boolean isEditing ) {
+        this.isEditing = isEditing;
+
+        if ( isEditing ) {
+            editRl.setVisibility(View.VISIBLE);
+        } else {
+            editRl.setVisibility(View.GONE);
+        }
+
+        adapter.editChange(isEditing);
+    }
 }
 
 class BookmarkCursorAdapter extends CursorAdapter {
     private SQLiteDatabase mDb;
     public boolean[] isCheck;
     public int[] seq;
+    private boolean isEditing = false;
 
     public BookmarkCursorAdapter(Context context, Cursor cursor, SQLiteDatabase db, int flags) {
         super(context, cursor, 0);
@@ -201,6 +222,12 @@ class BookmarkCursorAdapter extends CursorAdapter {
         } else {
             ((CheckBox)view.findViewById(R.id.my_f_bi_cb_check)).setButtonDrawable(android.R.drawable.checkbox_off_background);
         }
+
+        if ( isEditing ) {
+            ((CheckBox) view.findViewById(R.id.my_f_bi_cb_check)).setVisibility(View.VISIBLE);
+        } else {
+            ((CheckBox) view.findViewById(R.id.my_f_bi_cb_check)).setVisibility(View.GONE);
+        }
     }
 
     public void allCheck(boolean chk) {
@@ -229,6 +256,11 @@ class BookmarkCursorAdapter extends CursorAdapter {
         }
 
         return rtn;
+    }
+
+    public void editChange(boolean isEditing) {
+        this.isEditing = isEditing;
+        notifyDataSetChanged();
     }
 }
 

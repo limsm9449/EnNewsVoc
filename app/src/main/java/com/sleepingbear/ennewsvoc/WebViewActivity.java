@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -69,6 +70,11 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
     private String oldUrl = "";
     private String entryId = "";
     public int mSelect = 0;
+    public int m2Select = 0;
+    private String clickWord;
+
+    private ImageButton addBtn;
+    private ImageButton searchBtn;
 
     private ProgressDialog mProgress;
 
@@ -202,6 +208,11 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         meanRl.setVisibility(View.GONE);
         meanRl.setClickable(true);  //클릭시 하단 광고가 클릭되는 문제로 rl이 클릭이 되게 해준다.
 
+        //버튼 설정
+        addBtn = (ImageButton) this.findViewById(R.id.my_c_webview_ib_add);
+        searchBtn = (ImageButton) this.findViewById(R.id.my_c_webview_ib_search);
+        searchBtn.setVisibility(View.GONE);
+
         //뜻 롱클릭시 단어 상세 보기
         mean = (TextView) this.findViewById(R.id.my_c_webview_mean);
         mean.setOnLongClickListener(new View.OnLongClickListener() {
@@ -218,7 +229,8 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        ((ImageButton) this.findViewById(R.id.my_c_webview_ib)).setOnClickListener(this);
+        ((ImageButton) this.findViewById(R.id.my_c_webview_ib_add)).setOnClickListener(this);
+        ((ImageButton) this.findViewById(R.id.my_c_webview_ib_search)).setOnClickListener(this);
 
         webView = (WebView) this.findViewById(R.id.my_c_webview_wv);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -359,6 +371,10 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                 webView.loadUrl("javascript:window.android.action('WORD', window.getSelection().toString())");
 
                 break;
+            case R.id.action_word_search:
+                webView.loadUrl("javascript:window.android.action('WORD_SEARCH', window.getSelection().toString())");
+
+                break;
             case R.id.action_sentence_view:
                 webView.loadUrl("javascript:window.android.action('SENTENCE', window.getSelection().toString())");
 
@@ -414,14 +430,14 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        if ( v.getId() == R.id.my_c_webview_ib ) {
+        if ( v.getId() == R.id.my_c_webview_ib_add ) {
             //메뉴 선택 다이얼로그 생성
             Cursor cursor = mDb.rawQuery(DicQuery.getSentenceViewContextMenu(), null);
             final String[] kindCodes = new String[cursor.getCount()];
             final String[] kindCodeNames = new String[cursor.getCount()];
 
             int idx = 0;
-            while ( cursor.moveToNext() ) {
+            while (cursor.moveToNext()) {
                 kindCodes[idx] = cursor.getString(cursor.getColumnIndexOrThrow("KIND"));
                 kindCodeNames[idx] = cursor.getString(cursor.getColumnIndexOrThrow("KIND_NAME"));
                 idx++;
@@ -441,13 +457,42 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     DicDb.insDicVoc(mDb, entryId, kindCodes[mSelect]);
-                    DicUtils. writeInfoToFile(getApplicationContext(), "MYWORD_INSERT" + ":" + kindCodes[mSelect] + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(),".") + ":" + entryId);
+                    DicUtils.writeInfoToFile(getApplicationContext(), "MYWORD_INSERT" + ":" + kindCodes[mSelect] + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".") + ":" + entryId);
 
                     Toast.makeText(getApplicationContext(), "단어장에 등록했습니다. 메인화면의 '단어장' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
                 }
             });
             dlg.show();
+        } else if ( v.getId() == R.id.my_c_webview_ib_search ) {
+            wordSearch();
         }
+    }
+
+    public void wordSearch() {
+        final String[] kindCodes = new String[]{"Naver","Daum"};
+
+        final AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+        dlg.setTitle("검색 사이트 선택");
+        dlg.setSingleChoiceItems(kindCodes, m2Select, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                m2Select = arg1;
+            }
+        });
+        dlg.setNegativeButton("취소", null);
+        dlg.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Bundle bundle = new Bundle();
+                bundle.putString("site", kindCodes[m2Select]);
+                bundle.putString("word", clickWord);
+
+                Intent intent = new Intent(getApplication(), WebDictionaryActivity.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
+        dlg.show();
     }
 
     private class NewsVo {
@@ -549,7 +594,8 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
             if (mProgress == null) {
                 mProgress = new ProgressDialog(WebViewActivity.this);
                 mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                mProgress.setMessage("페이지 로딩 및 변환 중입니다.\n로딩이 완료후 단어를 클릭하시면 뜻을 보실 수 있습니다.");
+                mProgress.setMessage("페이지 로딩 및 변환 중입니다.\n로딩이 완료후 단어를 클릭하시면 뜻을 보실 수 있습니다.\n" +
+                        "해외사이트는 로딩이 오래 걸립니다.");
                 mProgress.setCancelable(false);
                 mProgress.setButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -589,15 +635,6 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                     oldUrl = url;
                     DicUtils.dicLog("onPageFinished : " + url);
 
-                    /*
-                    // CNN은 $를 사용안하고 jQuery를 사용한다.
-                    String js1 = ".html(function(index, oldHtml) {return oldHtml.replace(/<br *\\/?>/gi, '\\n')" +
-                            ".replace(/<[^>]*>/g, '')" +
-                            ".replace(/(<br>)/g, '\\n')" + "" +
-                            ".replace(/\\b(\\w+?)\\b/g,'<span class=\"word\">$1</span>')" +
-                            ".replace(/\\n/g, '<br>')});";
-                    String js2 = "('.word').click(function(event) { window.android.setWord(event.target.innerHTML) });";
-*/
                     //html 단어 기능 변경
                     String[] changeClass = currItem.getChangeClass();
                     for (int i = 0; i < changeClass.length; i++) {
@@ -630,12 +667,23 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                 public void run() {
                     meanRl.setVisibility(View.VISIBLE);
 
+                    clickWord = arg;
+
                     HashMap info = DicDb.getMean(mDb, arg);
                     mean.setText(arg + " " + DicUtils.getString((String)info.get("SPELLING")) + " : " + DicUtils.getString((String)info.get("MEAN")));
 
                     entryId = DicUtils.getString((String)info.get("ENTRY_ID"));
                     if ( !"".equals(entryId) ) {
                         DicDb.insDicClickWord(mDb, entryId, "");
+
+                        //기록
+                        DicUtils.writeInfoToFile(getApplicationContext(), "CLICK_WORD" + ":" + entryId + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), "."));
+
+                        addBtn.setVisibility(View.VISIBLE);
+                        searchBtn.setVisibility(View.GONE);
+                    } else {
+                        addBtn.setVisibility(View.GONE);
+                        searchBtn.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -663,6 +711,9 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                         } else {
                             Toast.makeText(getApplicationContext(), "등록된 단어가 아닙니다.", Toast.LENGTH_SHORT).show();
                         }
+                    } else if ( "WORD_SEARCH".equals(kind) ) {
+                        clickWord = arg;
+                        wordSearch();
                     } else if ( "SENTENCE".equals(kind) ) {
                         Intent intent = new Intent(getApplication(), SentenceViewActivity.class);
                         Bundle bundle = new Bundle();
@@ -682,6 +733,8 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                         newsUrl = arg;
                     } else if ( "BOOKMARK".equals(kind) ) {
                         DicDb.insDicBoolmark(mDb, currItem.getKind(), arg.replaceAll("[':]",""), newsUrl, "");
+
+                        DicUtils.writeInfoToFile(getApplicationContext(), "BOOKMARK" + ":" + currItem.getKind() + ":" + arg.replaceAll("[':]","") + ":" + newsUrl + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), "."));
 
                         Toast.makeText(getApplicationContext(), "북마크에 등록했습니다. 메인화면의 '북마크' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
                     }

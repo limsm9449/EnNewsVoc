@@ -29,9 +29,9 @@ public class PatchActivity extends AppCompatActivity {
 
         StringBuffer patch = new StringBuffer();
 
-        patch.append("* 2016.10.01" + CommConstants.sqlCR);
+        patch.append("* 2016.11.18" + CommConstants.sqlCR);
         patch.append("" + CommConstants.sqlCR);
-        patch.append("- 영한 사전 및 단어장 개발" + CommConstants.sqlCR);
+        patch.append("- 영어뉴스 어플 개발" + CommConstants.sqlCR);
 
         ((TextView) this.findViewById(R.id.my_c_patch_tv1)).setText(patch.toString());
     }

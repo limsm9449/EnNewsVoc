@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,10 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
     public int mSelect = 0;
 
     private AppCompatActivity mMainActivity;
+
+    private RelativeLayout editRl;
+
+    private boolean isEditing;
 
     public ClickwordFragment() {
     }
@@ -60,6 +65,9 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
         ((ImageView) mainView.findViewById(R.id.my_f_cw_delete)).setOnClickListener(this);
         ((ImageView) mainView.findViewById(R.id.my_f_cw_save)).setOnClickListener(this);
         ((ImageView) mainView.findViewById(R.id.my_f_cw_new_save)).setOnClickListener(this);
+
+        editRl = (RelativeLayout) mainView.findViewById(R.id.my_f_clickword_rl);
+        editRl.setVisibility(View.GONE);
 
         //리스트 내용 변경
         changeListView();
@@ -84,19 +92,21 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
     AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Cursor cur = (Cursor) adapter.getItem(position);
+            if ( !isEditing ) {
+                Cursor cur = (Cursor) adapter.getItem(position);
 
-            final String entryId = cur.getString(cur.getColumnIndexOrThrow("ENTRY_ID"));
-            final String word = cur.getString(cur.getColumnIndexOrThrow("WORD"));
-            final String seq = cur.getString(cur.getColumnIndexOrThrow("_id"));
+                final String entryId = cur.getString(cur.getColumnIndexOrThrow("ENTRY_ID"));
+                final String word = cur.getString(cur.getColumnIndexOrThrow("WORD"));
+                final String seq = cur.getString(cur.getColumnIndexOrThrow("_id"));
 
-            Intent intent = new Intent(getActivity(), WordViewActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("entryId", entryId);
-            bundle.putString("seq", seq);
-            intent.putExtras(bundle);
+                Intent intent = new Intent(getActivity(), WordViewActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("entryId", entryId);
+                bundle.putString("seq", seq);
+                intent.putExtras(bundle);
 
-            startActivity(intent);
+                startActivity(intent);
+            }
         }
     };
 
@@ -227,6 +237,17 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
         }
     }
 
+    public void changeEdit( boolean isEditing ) {
+        this.isEditing = isEditing;
+
+        if ( isEditing ) {
+            editRl.setVisibility(View.VISIBLE);
+        } else {
+            editRl.setVisibility(View.GONE);
+        }
+
+        adapter.editChange(isEditing);
+    }
 }
 
 class ClickwordCursorAdapter extends CursorAdapter {
@@ -234,6 +255,7 @@ class ClickwordCursorAdapter extends CursorAdapter {
     public boolean[] isCheck;
     public int[] seq;
     public String[] entryId;
+    private boolean isEditing = false;
 
     public ClickwordCursorAdapter(Context context, Cursor cursor, SQLiteDatabase db, int flags) {
         super(context, cursor, 0);
@@ -297,6 +319,12 @@ class ClickwordCursorAdapter extends CursorAdapter {
         } else {
             ((CheckBox)view.findViewById(R.id.my_f_ci_cb_check)).setButtonDrawable(android.R.drawable.checkbox_off_background);
         }
+
+        if ( isEditing ) {
+            ((RelativeLayout) view.findViewById(R.id.my_f_ci_rl)).setVisibility(View.VISIBLE);
+        } else {
+            ((RelativeLayout) view.findViewById(R.id.my_f_ci_rl)).setVisibility(View.GONE);
+        }
     }
 
     public void allCheck(boolean chk) {
@@ -333,8 +361,12 @@ class ClickwordCursorAdapter extends CursorAdapter {
             }
         }
 
-        DicUtils.dicLog("isCheck : " + rtn);
         return rtn;
+    }
+
+    public void editChange(boolean isEditing) {
+        this.isEditing = isEditing;
+        notifyDataSetChanged();
     }
 }
 

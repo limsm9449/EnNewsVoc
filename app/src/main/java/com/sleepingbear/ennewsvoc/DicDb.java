@@ -279,4 +279,17 @@ public class DicDb {
         db.execSQL(sql.toString());
     }
 
+    public static void initClickword(SQLiteDatabase db) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("DELETE FROM DIC_CLICK_WORD" + CommConstants.sqlCR);
+        DicUtils.dicSqlLog(sql.toString());
+        db.execSQL(sql.toString());
+    }
+
+    public static void initBookmark(SQLiteDatabase db) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("DELETE FROM DIC_BOOKMARK" + CommConstants.sqlCR);
+        DicUtils.dicSqlLog(sql.toString());
+        db.execSQL(sql.toString());
+    }
 }
