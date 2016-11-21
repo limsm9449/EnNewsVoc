@@ -80,13 +80,15 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
     }
 
     public void changeListView() {
-        Cursor listCursor = db.rawQuery(DicQuery.getClickword(), null);
-        ListView listView = (ListView) mainView.findViewById(R.id.my_f_clickword_lv);
-        adapter = new ClickwordCursorAdapter(getContext(), listCursor, db, 0);
-        listView.setAdapter(adapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        listView.setOnItemClickListener(itemClickListener);
-        listView.setSelection(0);
+        if ( db != null ) {
+            Cursor listCursor = db.rawQuery(DicQuery.getClickword(), null);
+            ListView listView = (ListView) mainView.findViewById(R.id.my_f_clickword_lv);
+            adapter = new ClickwordCursorAdapter(getContext(), listCursor, db, 0);
+            listView.setAdapter(adapter);
+            listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            listView.setOnItemClickListener(itemClickListener);
+            listView.setSelection(0);
+        }
     }
 
     AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
