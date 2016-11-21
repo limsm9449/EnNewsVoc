@@ -177,6 +177,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         String currUrl = "";
         param = getIntent().getExtras();
+
         for ( int i = 0; i < enUrls.size(); i++ ) {
             DicUtils.dicLog(enUrls.get(i).getKind() + " : " + param.getString("kind"));
             if ( enUrls.get(i).getKind().equals(param.getString("kind")) ) {
@@ -185,9 +186,15 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             }
         }
+
         if ( !"".equals(DicUtils.getString(param.getString("url"))) ) {
             DicUtils.dicLog("url param");
-            currUrl = param.getString("url");
+
+            if ( currUrl.indexOf("https") > -1 ) {
+                currUrl = "https:\\" + param.getString("url");
+            } else {
+                currUrl = "http:\\" + param.getString("url");
+            }
         }
 
         DicUtils.dicLog(currUrl);
@@ -369,6 +376,10 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.action_word_view:
                 webView.loadUrl("javascript:window.android.action('WORD', window.getSelection().toString())");
+
+                break;
+            case R.id.action_translate:
+                webView.loadUrl("javascript:window.android.action('TRANSLATE', window.getSelection().toString())");
 
                 break;
             case R.id.action_word_search:
@@ -730,13 +741,44 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                             myTTS.speak(arg, TextToSpeech.QUEUE_FLUSH, null);
                         }
                     } else if ( "URL".equals(kind) ) {
-                        newsUrl = arg;
+                        newsUrl = arg.replace("http://","").replace("https://","");
+                        DicUtils.dicLog("URL : " + newsUrl);
                     } else if ( "BOOKMARK".equals(kind) ) {
                         DicDb.insDicBoolmark(mDb, currItem.getKind(), arg.replaceAll("[':]",""), newsUrl, "");
 
                         DicUtils.writeInfoToFile(getApplicationContext(), "BOOKMARK" + ":" + currItem.getKind() + ":" + arg.replaceAll("[':]","") + ":" + newsUrl + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), "."));
 
                         Toast.makeText(getApplicationContext(), "북마크에 등록했습니다. 메인화면의 '북마크' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
+                    } else if ( "TRANSLATE".equals(kind) ) {
+                        final String[] kindCodes = new String[]{"Naver","Google"};
+
+                        final AlertDialog.Builder dlg = new AlertDialog.Builder(WebViewActivity.this);
+                        dlg.setTitle("번역 사이트 선택");
+                        dlg.setSingleChoiceItems(kindCodes, m2Select, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                m2Select = arg1;
+                            }
+                        });
+                        dlg.setNegativeButton("취소", null);
+                        dlg.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //클립보드에 복사
+                                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                ClipData clip = ClipData.newPlainText("simple text", arg);
+                                clipboard.setPrimaryClip(clip);
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString("site", kindCodes[m2Select]);
+                                bundle.putString("sentence", arg);
+
+                                Intent intent = new Intent(getApplication(), WebTranslateActivity.class);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
+                            }
+                        });
+                        dlg.show();
                     }
                 }
             });

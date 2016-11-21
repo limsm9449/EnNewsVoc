@@ -255,7 +255,7 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
                     DicDb.insDicMySample(db, notHan, han, DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), "."));
 
                     // 기록..
-                    DicUtils.writeInfoToFile(getApplicationContext(), "MYSAMPLE_INSERT" + ":" + notHan + ":" + han);
+                    DicUtils.writeInfoToFile(getApplicationContext(), "MYSAMPLE_INSERT" + ":" + notHan + ":" + han + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), "."));
 
                     isChange = true;
                 }

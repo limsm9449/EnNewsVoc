@@ -9,7 +9,12 @@ android {
         targetSdkVersion 24
         versionCode 1
         versionName "1.0.1"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
+        preDexLibraries = false
     }
     buildTypes {
         release {
@@ -32,4 +37,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile files('libs/jsoup-1.7.2.jar')
     compile files('libs/microsoft-translator-java-api-0.6.2-jar-with-dependencies.jar')
+    compile 'com.android.support:multidex:1.0.0'
 }

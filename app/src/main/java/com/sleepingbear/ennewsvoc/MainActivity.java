@@ -429,7 +429,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         public void fileSelected(final File file) {
                             DicUtils.readInfoFromFile(getApplicationContext(), (new DbHelper(getApplicationContext())).getWritableDatabase(), file.getAbsolutePath());
 
+                            // 시스템 기록파일 생성
+                            DicUtils.writeNewInfoToFile(getApplicationContext(), (new DbHelper(getApplicationContext())).getWritableDatabase());
+
                             Toast.makeText(getApplicationContext(), "백업 데이타를 정상적으로 가져왔습니다.", Toast.LENGTH_LONG).show();
+
+                            changeListView();
 
                             alertDialog.dismiss();
                         }
@@ -504,6 +509,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                       }
                   })
                   .show();
+    }
+
+    public void changeListView() {
+        if ( selectedTab == 1 ) {
+            ((ClickwordFragment) adapter.getItem(selectedTab)).changeListView();
+        } else if ( selectedTab == 2 ) {
+            ((BookmarkFragment) adapter.getItem(selectedTab)).changeListView();
+        } else if ( selectedTab == 3 ) {
+            ((VocabularyFragment) adapter.getItem(selectedTab)).changeListView();
+        }
     }
 }
 

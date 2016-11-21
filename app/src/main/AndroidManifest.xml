@@ -93,6 +93,10 @@
         <activity
             android:name=".WebDictionaryActivity"
             android:label="@string/title_activity_web_dictionary"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".WebTranslateActivity"
+            android:label="@string/title_activity_web_translate"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

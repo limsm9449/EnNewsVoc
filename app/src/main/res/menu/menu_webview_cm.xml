@@ -5,6 +5,8 @@
         android:orderInCategory="100" app:showAsAction="ifRoom"/>
     <item android:id="@+id/action_word_search" android:title="@string/action_word_search"
         android:orderInCategory="100" app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_translate" android:title="@string/action_translate"
+        android:orderInCategory="100" app:showAsAction="ifRoom"/>
     <item android:id="@+id/action_sentence_view" android:title="@string/action_sentence_view"
         android:orderInCategory="100" app:showAsAction="ifRoom"/>
     <item android:id="@+id/action_tts" android:title="@string/action_tts"

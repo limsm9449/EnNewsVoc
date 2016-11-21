@@ -354,7 +354,7 @@ public class DicQuery {
         sql.append("SELECT 'CATEGORY_INSERT'||':'||A.CODE||':'||A.CODE_NAME WRITE_DATA" + CommConstants.sqlCR);
         sql.append("  FROM DIC_CODE A" + CommConstants.sqlCR);
         sql.append(" WHERE CODE_GROUP = 'MY'" + CommConstants.sqlCR);
-        sql.append("   AND KIND != 'MY0000'" + CommConstants.sqlCR);
+        sql.append("   AND CODE != 'MY0000'" + CommConstants.sqlCR);
         sql.append("UNION" + CommConstants.sqlCR);
 
         sql.append("SELECT 'MYWORD_INSERT'||':'||A.KIND||':'||A.INS_DATE||':'||A.ENTRY_ID WRITE_DATA " + CommConstants.sqlCR);
