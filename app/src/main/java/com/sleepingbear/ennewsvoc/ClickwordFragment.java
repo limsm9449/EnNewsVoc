@@ -240,6 +240,11 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
     }
 
     public void changeEdit( boolean isEditing ) {
+        //처음에 오류가 발생하는 경우가 있음
+        if ( editRl == null ) {
+            return;
+        }
+
         this.isEditing = isEditing;
 
         if ( isEditing ) {

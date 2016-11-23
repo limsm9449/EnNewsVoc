@@ -73,13 +73,15 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
     }
 
     public void changeListView() {
-        Cursor listCursor = db.rawQuery(DicQuery.getBookmark(), null);
-        ListView listView = (ListView) mainView.findViewById(R.id.my_f_bookmark_lv);
-        adapter = new BookmarkCursorAdapter(getContext(), listCursor, db, 0);
-        listView.setAdapter(adapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        listView.setOnItemClickListener(itemClickListener);
-        listView.setSelection(0);
+        if ( db != null ) {
+            Cursor listCursor = db.rawQuery(DicQuery.getBookmark(), null);
+            ListView listView = (ListView) mainView.findViewById(R.id.my_f_bookmark_lv);
+            adapter = new BookmarkCursorAdapter(getContext(), listCursor, db, 0);
+            listView.setAdapter(adapter);
+            listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            listView.setOnItemClickListener(itemClickListener);
+            listView.setSelection(0);
+        }
     }
 
     /**
@@ -149,6 +151,11 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
     }
 
     public void changeEdit( boolean isEditing ) {
+        //처음에 오류가 발생하는 경우가 있음
+        if ( editRl == null ) {
+            return;
+        }
+
         this.isEditing = isEditing;
 
         if ( isEditing ) {
