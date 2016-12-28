@@ -472,6 +472,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else if ( selectedTab == 2 ) {
                 ((BookmarkFragment) adapter.getItem(selectedTab)).changeEdit(isEditing);
             }
+        } else if (id == R.id.action_share) {
+            Intent msg = new Intent(Intent.ACTION_SEND);
+            msg.addCategory(Intent.CATEGORY_DEFAULT);
+            msg.putExtra(Intent.EXTRA_SUBJECT, "최고의 영어신문 어플");
+            msg.putExtra(Intent.EXTRA_TEXT, "영어.. 참 어렵죠? '최고의 영어신문' 어플을 사용해 보세요. https://play.google.com/store/apps/details?id=com.sleepingbear.ennewsvoc ");
+            msg.setType("text/plain");
+            startActivity(Intent.createChooser(msg, "어플 공유"));
         }
 
         return super.onOptionsItemSelected(item);
@@ -479,13 +486,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         DicUtils.dicLog("onActivityResult : " + requestCode + " : " + resultCode);
-        /*
+
         switch ( requestCode ) {
-            case CommConstants.a_news :
-                ((ClickwordFragment) adapter.getItem(1)).changeListView();
+            case CommConstants.a_vocabulary :
+                ((VocabularyFragment) adapter.getItem(3)).changeListView();
                 break;
         }
-        */
+
     }
 
     public void confirmAllDelete() {
@@ -528,6 +535,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         MultiDex.install(this);
     }
 
+    private long backKeyPressedTime = 0;
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
+            backKeyPressedTime = System.currentTimeMillis();
+            Toast.makeText(getApplicationContext(), "'뒤로'버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
+
+            return;
+        }
+        if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
+            //종료 시점에 변경 사항을 기록한다.
+            DicUtils.writeNewInfoToFile(this, db);
+
+            finish();
+        }
+    }
 }
 
 class MainPagerAdapter extends FragmentPagerAdapter {
