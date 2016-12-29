@@ -29,15 +29,13 @@ public class PatchActivity extends AppCompatActivity {
 
         StringBuffer patch = new StringBuffer();
 
-        patch.append("* 2016.12.28" + CommConstants.sqlCR);
+        patch.append("* 신규 패치" + CommConstants.sqlCR);
         patch.append("" + CommConstants.sqlCR);
         patch.append("- 단어장에서 선택을 해서 삭제하거나, 다른 단어장으로 복사, 이동하는 기능 추가" + CommConstants.sqlCR);
         patch.append("" + CommConstants.sqlCR);
         patch.append("" + CommConstants.sqlCR);
 
-        patch.append("* 2016.11.21" + CommConstants.sqlCR);
-        patch.append("" + CommConstants.sqlCR);
-        patch.append("- 영어뉴스 어플 개발" + CommConstants.sqlCR);
+        patch.append("- 2016.11.21 : 영어뉴스 어플 개발" + CommConstants.sqlCR);
 
         ((TextView) this.findViewById(R.id.my_c_patch_tv1)).setText(patch.toString());
     }
