@@ -99,6 +99,18 @@
             android:name=".WebTranslateActivity"
             android:label="@string/title_activity_web_translate"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <service android:name=".MySpeechService">
+            <intent-filter>
+                <action android:name="com.sleepingbear.ennewsvoc.MySpeechService" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".Study6Activity"
+            android:label="@string/title_activity_study6"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
