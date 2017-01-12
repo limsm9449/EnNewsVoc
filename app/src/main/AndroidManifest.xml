@@ -13,8 +13,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="android.support.multidex.MultiDexApplication">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
@@ -71,9 +70,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
         <activity
-            android:name=".LogActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".StudyActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -94,10 +90,12 @@
         <activity
             android:name=".WebDictionaryActivity"
             android:label="@string/title_activity_web_dictionary"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".WebTranslateActivity"
             android:label="@string/title_activity_web_translate"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service android:name=".MySpeechService">
