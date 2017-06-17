@@ -25,6 +25,9 @@
     <string name="action_bookmark">페이지 북마크</string>
     <string name="action_translate">번역</string>
 
+    <string name="action_settings">환경 설정</string>
+    <string name="action_no_ad">광고 제거 어플(유료)</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="title_activity_word_view">WordViewActivity</string>
     <string name="title_activity_webview">WebviewActivity</string>
@@ -41,4 +44,6 @@
     <string name="title_activity_web_dictionary">WebDictionaryActivity</string>
     <string name="title_activity_web_translate">WebTranslateActivity</string>
     <string name="title_activity_study6">Study6Activity</string>
+
+    <string name="title_activity_settings">환경 설정</string>
 </resources>

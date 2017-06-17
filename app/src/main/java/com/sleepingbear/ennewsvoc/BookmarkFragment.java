@@ -133,9 +133,9 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     adapter.delete();
-                                    changeListView();
+                                    DicUtils.setDbChange(getContext());
 
-                                    DicUtils.writeNewInfoToFile(getContext(), db);
+                                    changeListView();
                                 }
                             })
                             .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -173,10 +173,13 @@ class BookmarkCursorAdapter extends CursorAdapter {
     public boolean[] isCheck;
     public int[] seq;
     private boolean isEditing = false;
+    int fontSize = 0;
 
     public BookmarkCursorAdapter(Context context, Cursor cursor, SQLiteDatabase db, int flags) {
         super(context, cursor, 0);
         mDb = db;
+
+        fontSize = Integer.parseInt( DicUtils.getPreferencesValue( context, CommConstants.preferences_font ) );
 
         isCheck = new boolean[cursor.getCount()];
         seq = new int[cursor.getCount()];
@@ -223,6 +226,10 @@ class BookmarkCursorAdapter extends CursorAdapter {
 
         ((TextView) view.findViewById(R.id.my_f_bi_tv_bookmark)).setText(cursor.getString(cursor.getColumnIndexOrThrow("TITLE")));
         ((TextView) view.findViewById(R.id.my_f_bi_tv_date)).setText(cursor.getString(cursor.getColumnIndexOrThrow("INS_DATE")));
+
+        //사이즈 설정
+        ((TextView) view.findViewById(R.id.my_f_bi_tv_bookmark)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_f_bi_tv_date)).setTextSize(fontSize);
 
         if ( isCheck[cursor.getPosition()] ) {
             ((CheckBox)view.findViewById(R.id.my_f_bi_cb_check)).setButtonDrawable(android.R.drawable.checkbox_on_background);

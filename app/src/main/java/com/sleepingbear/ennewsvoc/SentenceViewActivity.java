@@ -49,6 +49,7 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
     public String notHan;
     public boolean isMySample = false;
     public boolean isChange = false;
+    int fontSize = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,8 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
         ab.setTitle("문장 상세");
         ab.setHomeButtonEnabled(true);
         ab.setDisplayHomeAsUpEnabled(true);
+
+        fontSize = Integer.parseInt( DicUtils.getPreferencesValue( getApplicationContext(), CommConstants.preferences_font ) );
 
         dbHelper = new DbHelper(this);
         db = dbHelper.getWritableDatabase();
@@ -153,6 +156,10 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
         ((TextView) findViewById(R.id.my_c_sv_tv_foreign)).setText(notHan);
         ((TextView) findViewById(R.id.my_c_sv_tv_han)).setText(han);
 
+        //사이즈 설정
+        ((TextView) findViewById(R.id.my_c_sv_tv_foreign)).setTextSize(fontSize);
+        ((TextView) findViewById(R.id.my_c_sv_tv_han)).setTextSize(fontSize);
+
         StringBuffer sql = new StringBuffer();
         if ( "".equals(word) ) {
             sql.append("SELECT DISTINCT SEQ _id, 1 ORD,  WORD, MEAN, ENTRY_ID, SPELLING, (SELECT COUNT(*) FROM DIC_VOC WHERE ENTRY_ID = A.ENTRY_ID) MY_VOC FROM DIC A WHERE ENTRY_ID = 'xxxxxxxx'" + CommConstants.sqlCR);
@@ -207,8 +214,8 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         DicDb.insDicVoc(db, entryId, kindCodes[mSelect]);
+                        DicUtils.setDbChange(getApplicationContext());
                         sentenceViewAdapter.dataChange();
-                        DicUtils. writeInfoToFile(getApplicationContext(), "MYWORD_INSERT" + ":" + kindCodes[mSelect] + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(),".") + ":" + entryId);
                     }
                 });
                 dlg.show();
@@ -243,9 +250,7 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
                     mySample.setImageResource(android.R.drawable.star_off);
 
                     DicDb.delDicMySample(db, notHan);
-
-                    // 기록..
-                    DicUtils.writeInfoToFile(getApplicationContext(), "MYSAMPLE_DELETE" + ":" + notHan);
+                    DicUtils.setDbChange(getApplicationContext());
 
                     isChange = true;
                 } else {
@@ -253,9 +258,7 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
                     mySample.setImageResource(android.R.drawable.star_on);
 
                     DicDb.insDicMySample(db, notHan, han, DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), "."));
-
-                    // 기록..
-                    DicUtils.writeInfoToFile(getApplicationContext(), "MYSAMPLE_INSERT" + ":" + notHan + ":" + han + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), "."));
+                    DicUtils.setDbChange(getApplicationContext());
 
                     isChange = true;
                 }
@@ -330,6 +333,7 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
 class SentenceViewCursorAdapter extends CursorAdapter {
     private SQLiteDatabase mDb;
     private Cursor mCursor;
+    int fontSize = 0;
 
     static class ViewHolder {
         protected String entryId;
@@ -343,6 +347,8 @@ class SentenceViewCursorAdapter extends CursorAdapter {
         super(context, cursor, 0);
         mCursor = cursor;
         mDb = ((SentenceViewActivity)context).db;
+
+        fontSize = Integer.parseInt( DicUtils.getPreferencesValue( context, CommConstants.preferences_font ) );
     }
 
     public void dataChange() {
@@ -366,14 +372,10 @@ class SentenceViewCursorAdapter extends CursorAdapter {
 
                 if ( viewHolder.isMyVoc ) {
                     DicDb.delDicVocAll(mDb, viewHolder.entryId);
-
-                    // 기록..
-                    DicUtils.writeInfoToFile(context, "MYWORD_DELETE_ALL" + ":" + viewHolder.entryId);
+                    DicUtils.setDbChange(context);
                 } else {
                     DicDb.insDicVoc(mDb, viewHolder.entryId, "MY0000");
-
-                    // 기록..
-                    DicUtils.writeInfoToFile(context, "MYWORD_INSERT" + ":" + "MY0000" + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".") + ":" + viewHolder.entryId);
+                    DicUtils.setDbChange(context);
                 }
 
                 dataChange();
@@ -405,5 +407,10 @@ class SentenceViewCursorAdapter extends CursorAdapter {
             ib_myvoc.setImageResource(android.R.drawable.star_off);
             viewHolder.isMyVoc = false;
         }
+
+        //사이즈 설정
+        ((TextView) view.findViewById(R.id.my_c_svi_word)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_c_svi_spelling)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_c_svi_mean)).setTextSize(fontSize);
     }
 }

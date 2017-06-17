@@ -19,7 +19,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="wrap_content"
                 android:text="New Text"
                 android:id="@+id/my_c_s1i_tv_question"
                 android:layout_alignParentTop="true"

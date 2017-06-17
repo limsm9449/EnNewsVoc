@@ -15,8 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:screenOrientation="portrait">
+            android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,7 +30,6 @@
         <activity
             android:name=".WordViewActivity"
             android:label="@string/title_activity_word_view"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Study1Activity"
@@ -39,48 +37,38 @@
         <activity
             android:name=".Study2Activity"
             android:label="@string/title_activity_study2"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
         <activity
-            android:name=".Study3Activity"
-            android:screenOrientation="portrait" />
+            android:name=".Study3Activity" />
         <activity
             android:name=".Study4Activity"
             android:label="@string/title_activity_study4"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
         <activity
             android:name=".VocabularyActivity"
             android:label="@string/title_activity_vocabulary"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
         <activity
             android:name=".SentenceViewActivity"
             android:label="@string/title_activity_sentence_view"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
         <activity
             android:name=".Study5Activity"
             android:label="@string/title_activity_study5"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
         <activity
             android:name=".HelpActivity"
             android:label="@string/title_activity_help"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
         <activity
-            android:name=".StudyActivity"
-            android:screenOrientation="portrait" />
+            android:name=".StudyActivity" />
         <activity
             android:name=".PatchActivity"
             android:label="@string/title_activity_patch"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
         <activity
             android:name=".MySampleActivity"
             android:label="@string/title_activity_my_sample"
-            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme" />
 
         <meta-data
@@ -90,12 +78,10 @@
         <activity
             android:name=".WebDictionaryActivity"
             android:label="@string/title_activity_web_dictionary"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".WebTranslateActivity"
             android:label="@string/title_activity_web_translate"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service android:name=".MySpeechService">
@@ -107,8 +93,10 @@
         <activity
             android:name=".Study6Activity"
             android:label="@string/title_activity_study6"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" />
     </application>
 
 </manifest>

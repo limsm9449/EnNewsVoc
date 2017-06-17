@@ -468,7 +468,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     DicDb.insDicVoc(mDb, entryId, kindCodes[mSelect]);
-                    DicUtils.writeInfoToFile(getApplicationContext(), "MYWORD_INSERT" + ":" + kindCodes[mSelect] + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), ".") + ":" + entryId);
+                    DicUtils.setDbChange(getApplicationContext());
 
                     Toast.makeText(getApplicationContext(), "단어장에 등록했습니다. 메인화면의 '단어장' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
                 }
@@ -686,9 +686,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                     entryId = DicUtils.getString((String)info.get("ENTRY_ID"));
                     if ( !"".equals(entryId) ) {
                         DicDb.insDicClickWord(mDb, entryId, "");
-
-                        //기록
-                        DicUtils.writeInfoToFile(getApplicationContext(), "CLICK_WORD" + ":" + entryId + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), "."));
+                        DicUtils.setDbChange(getApplicationContext());
 
                         addBtn.setVisibility(View.VISIBLE);
                         searchBtn.setVisibility(View.GONE);
@@ -745,8 +743,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                         DicUtils.dicLog("URL : " + newsUrl);
                     } else if ( "BOOKMARK".equals(kind) ) {
                         DicDb.insDicBoolmark(mDb, currItem.getKind(), arg.replaceAll("[':]",""), newsUrl, "");
-
-                        DicUtils.writeInfoToFile(getApplicationContext(), "BOOKMARK" + ":" + currItem.getKind() + ":" + arg.replaceAll("[':]","") + ":" + newsUrl + ":" + DicUtils.getDelimiterDate(DicUtils.getCurrentDate(), "."));
+                        DicUtils.setDbChange(getApplicationContext());
 
                         Toast.makeText(getApplicationContext(), "북마크에 등록했습니다. 메인화면의 '북마크' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
                     } else if ( "TRANSLATE".equals(kind) ) {

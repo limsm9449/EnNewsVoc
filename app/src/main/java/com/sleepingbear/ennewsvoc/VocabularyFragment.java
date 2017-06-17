@@ -71,230 +71,228 @@ public class VocabularyFragment extends Fragment implements View.OnClickListener
     }
 
     public void changeListView() {
-        DicUtils.dicLog(this.getClass().toString() + " changeListView");
+        if ( mDb != null ) {
+            DicUtils.dicLog(this.getClass().toString() + " changeListView");
 
-        Cursor cursor = mDb.rawQuery(DicQuery.getVocabularyCategoryCount(), null);
+            Cursor cursor = mDb.rawQuery(DicQuery.getVocabularyCategoryCount(), null);
 
-        ListView listView = (ListView) mainView.findViewById(R.id.my_a_cat_lv_category);
-        adapter = new VocabularyFlagmentCursorAdapter(getContext(), cursor, 0, this, mDb, getFragmentManager(), mScreenKind);
-        listView.setAdapter(adapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if ( ((MainActivity)getActivity()).checkPermission() == false ) {
-                    return true;
-                }
-				
-				final Cursor cur = (Cursor) adapter.getItem(position);
-
-                //layout 구성
-                final View dialog_layout = mInflater.inflate(R.layout.dialog_category_iud, null);
-
-                //dialog 생성..
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setView(dialog_layout);
-                final AlertDialog alertDialog = builder.create();
-
-                ((TextView) dialog_layout.findViewById(R.id.my_d_category_tv_category)).setText("단어장 관리");
-
-                final EditText et_upd = ((EditText) dialog_layout.findViewById(R.id.my_d_category_et_upd));
-                et_upd.setText(cur.getString(cur.getColumnIndexOrThrow("KIND_NAME")));
-
-                ((Button) dialog_layout.findViewById(R.id.my_d_category_b_upd)).setTag(cur.getString(cur.getColumnIndexOrThrow("KIND")));
-                ((Button) dialog_layout.findViewById(R.id.my_d_category_b_upd)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if ("".equals(et_upd.getText().toString())) {
-                            Toast.makeText(getContext(), "단어장 이름을 입력하세요.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            alertDialog.dismiss();
-
-                            mDb.execSQL(DicQuery.getUpdCategory("MY", (String) v.getTag(), et_upd.getText().toString()));
-
-                            //기록...
-                            DicUtils.writeInfoToFile(getContext(), "CATEGORY_UPDATE" + ":" + (String) v.getTag() + ":" + et_upd.getText().toString());
-
-                            changeListView();
-
-                            Toast.makeText(getContext(), "단어장 이름을 수정하였습니다.", Toast.LENGTH_SHORT).show();
-                        }
+            ListView listView = (ListView) mainView.findViewById(R.id.my_a_cat_lv_category);
+            adapter = new VocabularyFlagmentCursorAdapter(getContext(), cursor, 0, this, mDb, getFragmentManager(), mScreenKind);
+            listView.setAdapter(adapter);
+            listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (((MainActivity) getActivity()).checkPermission() == false) {
+                        return true;
                     }
-                });
 
-                ((Button) dialog_layout.findViewById(R.id.my_d_category_b_del)).setTag(cur.getString(cur.getColumnIndexOrThrow("KIND")));
-                ((Button) dialog_layout.findViewById(R.id.my_d_category_b_del)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final String code = (String) v.getTag();
+                    final Cursor cur = (Cursor) adapter.getItem(position);
 
-                        if ("MY0000".equals(code)) {
-                            Toast.makeText(getContext(), "기본 단어장은 삭제할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                            alertDialog.dismiss();
-                        } else {
-                            new AlertDialog.Builder(getActivity())
-                                    .setTitle("알림")
-                                    .setMessage("삭제된 데이타는 복구할 수 없습니다. 삭제하시겠습니까?")
-                                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            alertDialog.dismiss();
+                    //layout 구성
+                    final View dialog_layout = mInflater.inflate(R.layout.dialog_category_iud, null);
 
-                                            mDb.execSQL(DicQuery.getDelCategory("MY", code));
-                                            mDb.execSQL(DicQuery.getDelDicVoc(code));
+                    //dialog 생성..
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setView(dialog_layout);
+                    final AlertDialog alertDialog = builder.create();
 
-                                            //기록...
-                                            //DicUtils.writeInfoToFile(getContext(), "CATEGORY_DELETE" + ":" + code);
-                                            DicUtils.writeNewInfoToFile(getContext(), mDb);
-                                            changeListView();
+                    ((TextView) dialog_layout.findViewById(R.id.my_d_category_tv_category)).setText("단어장 관리");
 
-                                            Toast.makeText(getContext(), "단어장을 삭제하였습니다.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                        }
-                                    })
-                                    .show();
-                        }
-                    }
-                });
+                    final EditText et_upd = ((EditText) dialog_layout.findViewById(R.id.my_d_category_et_upd));
+                    et_upd.setText(cur.getString(cur.getColumnIndexOrThrow("KIND_NAME")));
 
-                final EditText et_saveName = ((EditText) dialog_layout.findViewById(R.id.my_dc_et_voc_name));
-                et_saveName.setText(cur.getString(cur.getColumnIndexOrThrow("KIND_NAME")));
-                ((Button) dialog_layout.findViewById(R.id.my_dc__b_save)).setTag(cur.getString(cur.getColumnIndexOrThrow("KIND")));
-                ((Button) dialog_layout.findViewById(R.id.my_dc__b_save)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final String code = (String) v.getTag();
-
-                        String saveFileName = et_saveName.getText().toString();
-                        if ("".equals(saveFileName)) {
-                            Toast.makeText(getContext(), "저장할 파일명을 입력하세요.", Toast.LENGTH_SHORT).show();
-                        } else if (saveFileName.indexOf(".") > -1 && !"txt".equals(saveFileName.substring(saveFileName.length() - 3, saveFileName.length()).toLowerCase())) {
-                            Toast.makeText(getContext(), "확장자는 txt 입니다.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            String fileName = "";
-
-                            File appDir = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName);
-                            if (!appDir.exists()) {
-                                appDir.mkdirs();
-
-                                if (saveFileName.indexOf(".") > -1) {
-                                    fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName;
-                                } else {
-                                    fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName + ".txt";
-                                }
+                    ((Button) dialog_layout.findViewById(R.id.my_d_category_b_upd)).setTag(cur.getString(cur.getColumnIndexOrThrow("KIND")));
+                    ((Button) dialog_layout.findViewById(R.id.my_d_category_b_upd)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if ("".equals(et_upd.getText().toString())) {
+                                Toast.makeText(getContext(), "단어장 이름을 입력하세요.", Toast.LENGTH_SHORT).show();
                             } else {
-                                if (saveFileName.indexOf(".") > -1) {
-                                    fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName;
-                                } else {
-                                    fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName + ".txt";
-                                }
-                            }
-
-                            File saveFile = new File(fileName);
-                            if (saveFile.exists()) {
-                                Toast.makeText(getContext(), "파일명이 존재합니다.", Toast.LENGTH_SHORT).show();
-                                ;
-                            } else {
-                                try {
-                                    saveFile.createNewFile();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                } finally {
-                                }
-
-                                BufferedWriter bw = null;
-                                try {
-                                    bw = new BufferedWriter(new FileWriter(saveFile, true));
-
-                                    Cursor cursor = mDb.rawQuery(DicQuery.getSaveVocabulary(code), null);
-                                    while (cursor.moveToNext()) {
-                                        bw.write(cursor.getString(cursor.getColumnIndexOrThrow("WORD")) + ": " + cursor.getString(cursor.getColumnIndexOrThrow("SPELLING")) + " -> " + cursor.getString(cursor.getColumnIndexOrThrow("MEAN")));
-                                        bw.newLine();
-                                    }
-
-                                    bw.flush();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    if (bw != null) try {
-                                        bw.close();
-                                    } catch (IOException ioe2) {
-                                    }
-                                }
-
-                                Toast.makeText(getContext(), "단어장을 정상적으로 내보냈습니다.", Toast.LENGTH_SHORT).show();
-
                                 alertDialog.dismiss();
+
+                                mDb.execSQL(DicQuery.getUpdCategory("MY", (String) v.getTag(), et_upd.getText().toString()));
+                                DicUtils.setDbChange(getContext());
+
+                                changeListView();
+
+                                Toast.makeText(getContext(), "단어장 이름을 수정하였습니다.", Toast.LENGTH_SHORT).show();
                             }
                         }
-                    }
-                });
+                    });
 
-                ((Button) dialog_layout.findViewById(R.id.my_d_category_b_upload)).setTag(cur.getString(cur.getColumnIndexOrThrow("KIND")));
-                ((Button) dialog_layout.findViewById(R.id.my_d_category_b_upload)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final String code = (String) v.getTag();
+                    ((Button) dialog_layout.findViewById(R.id.my_d_category_b_del)).setTag(cur.getString(cur.getColumnIndexOrThrow("KIND")));
+                    ((Button) dialog_layout.findViewById(R.id.my_d_category_b_del)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final String code = (String) v.getTag();
 
-                        FileChooser filechooser = new FileChooser(getActivity());
-                        filechooser.setFileListener(new FileChooser.FileSelectedListener() {
-                            @Override
-                            public void fileSelected(final File file) {
-                                FileInputStream fis = null;
-                                try {
-                                    fis = new FileInputStream(new File(file.getAbsolutePath()));
-                                    InputStreamReader isr = new InputStreamReader(fis);
-                                    BufferedReader buffreader = new BufferedReader(isr);
+                            if ("MY0000".equals(code)) {
+                                Toast.makeText(getContext(), "기본 단어장은 삭제할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                                alertDialog.dismiss();
+                            } else {
+                                new AlertDialog.Builder(getActivity())
+                                        .setTitle("알림")
+                                        .setMessage("삭제된 데이타는 복구할 수 없습니다. 삭제하시겠습니까?")
+                                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                alertDialog.dismiss();
 
-                                    String readString = buffreader.readLine();
-                                    while (readString != null) {
-                                        String[] dicInfo = readString.split(":");
-                                        String entryId = DicDb.getEntryIdForWord(mDb, dicInfo[0]);
-                                        DicDb.insDicVoc(mDb, entryId, code);
+                                                mDb.execSQL(DicQuery.getDelCategory("MY", code));
+                                                mDb.execSQL(DicQuery.getDelDicVoc(code));
+                                                DicUtils.setDbChange(getContext());
 
-                                        readString = buffreader.readLine();
+                                                changeListView();
+
+                                                Toast.makeText(getContext(), "단어장을 삭제하였습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                            }
+                                        })
+                                        .show();
+                            }
+                        }
+                    });
+
+                    final EditText et_saveName = ((EditText) dialog_layout.findViewById(R.id.my_dc_et_voc_name));
+                    et_saveName.setText(cur.getString(cur.getColumnIndexOrThrow("KIND_NAME")));
+                    ((Button) dialog_layout.findViewById(R.id.my_dc__b_save)).setTag(cur.getString(cur.getColumnIndexOrThrow("KIND")));
+                    ((Button) dialog_layout.findViewById(R.id.my_dc__b_save)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final String code = (String) v.getTag();
+
+                            String saveFileName = et_saveName.getText().toString();
+                            if ("".equals(saveFileName)) {
+                                Toast.makeText(getContext(), "저장할 파일명을 입력하세요.", Toast.LENGTH_SHORT).show();
+                            } else if (saveFileName.indexOf(".") > -1 && !"txt".equals(saveFileName.substring(saveFileName.length() - 3, saveFileName.length()).toLowerCase())) {
+                                Toast.makeText(getContext(), "확장자는 txt 입니다.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                String fileName = "";
+
+                                File appDir = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName);
+                                if (!appDir.exists()) {
+                                    appDir.mkdirs();
+
+                                    if (saveFileName.indexOf(".") > -1) {
+                                        fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName;
+                                    } else {
+                                        fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName + ".txt";
                                     }
-                                    isr.close();
+                                } else {
+                                    if (saveFileName.indexOf(".") > -1) {
+                                        fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName;
+                                    } else {
+                                        fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName + ".txt";
+                                    }
+                                }
 
-                                    DicUtils.writeNewInfoToFile(getContext(), mDb);
+                                File saveFile = new File(fileName);
+                                if (saveFile.exists()) {
+                                    Toast.makeText(getContext(), "파일명이 존재합니다.", Toast.LENGTH_SHORT).show();
+                                    ;
+                                } else {
+                                    try {
+                                        saveFile.createNewFile();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                    }
 
-                                    changeListView();
+                                    BufferedWriter bw = null;
+                                    try {
+                                        bw = new BufferedWriter(new FileWriter(saveFile, true));
 
-                                    Toast.makeText(getContext(), "단어장을 정상적으로 가져왔습니다.", Toast.LENGTH_SHORT).show();
+                                        Cursor cursor = mDb.rawQuery(DicQuery.getSaveVocabulary(code), null);
+                                        while (cursor.moveToNext()) {
+                                            bw.write(cursor.getString(cursor.getColumnIndexOrThrow("WORD")) + ": " + cursor.getString(cursor.getColumnIndexOrThrow("SPELLING")) + " -> " + cursor.getString(cursor.getColumnIndexOrThrow("MEAN")));
+                                            bw.newLine();
+                                        }
+
+                                        bw.flush();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        if (bw != null) try {
+                                            bw.close();
+                                        } catch (IOException ioe2) {
+                                        }
+                                    }
+
+                                    Toast.makeText(getContext(), "단어장을 정상적으로 내보냈습니다.", Toast.LENGTH_SHORT).show();
 
                                     alertDialog.dismiss();
-
-                                    changeListView();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
                                 }
                             }
-                        });
-                        filechooser.setExtension("txt");
-                        filechooser.showDialog();
-                    }
-                });
+                        }
+                    });
 
-                ((Button) dialog_layout.findViewById(R.id.my_d_category_b_close)).setOnClickListener(new View.OnClickListener() {
-                                                                                                         @Override
-                                                                                                         public void onClick(View v) {
-                                                                                                             alertDialog.dismiss();
+                    ((Button) dialog_layout.findViewById(R.id.my_d_category_b_upload)).setTag(cur.getString(cur.getColumnIndexOrThrow("KIND")));
+                    ((Button) dialog_layout.findViewById(R.id.my_d_category_b_upload)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final String code = (String) v.getTag();
+
+                            FileChooser filechooser = new FileChooser(getActivity());
+                            filechooser.setFileListener(new FileChooser.FileSelectedListener() {
+                                @Override
+                                public void fileSelected(final File file) {
+                                    FileInputStream fis = null;
+                                    try {
+                                        fis = new FileInputStream(new File(file.getAbsolutePath()));
+                                        InputStreamReader isr = new InputStreamReader(fis);
+                                        BufferedReader buffreader = new BufferedReader(isr);
+
+                                        String readString = buffreader.readLine();
+                                        while (readString != null) {
+                                            String[] dicInfo = readString.split(":");
+                                            String entryId = DicDb.getEntryIdForWord(mDb, dicInfo[0]);
+                                            DicDb.insDicVoc(mDb, entryId, code);
+
+                                            readString = buffreader.readLine();
+                                        }
+                                        isr.close();
+
+                                        DicUtils.setDbChange(getContext());
+
+                                        changeListView();
+
+                                        Toast.makeText(getContext(), "단어장을 정상적으로 가져왔습니다.", Toast.LENGTH_SHORT).show();
+
+                                        alertDialog.dismiss();
+
+                                        changeListView();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            filechooser.setExtension("txt");
+                            filechooser.showDialog();
+                        }
+                    });
+
+                    ((Button) dialog_layout.findViewById(R.id.my_d_category_b_close)).setOnClickListener(new View.OnClickListener() {
+                                                                                                             @Override
+                                                                                                             public void onClick(View v) {
+                                                                                                                 alertDialog.dismiss();
+                                                                                                             }
                                                                                                          }
-                                                                                                     }
-                );
+                    );
 
-                alertDialog.setCanceledOnTouchOutside(false);
-                alertDialog.show();
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.show();
 
-                return true;
-            }
-        });
+                    return true;
+                }
+            });
 
-        listView.setSelection(0);
+            listView.setSelection(0);
+        }
     }
 
     @Override
@@ -318,6 +316,7 @@ class VocabularyFlagmentCursorAdapter extends CursorAdapter {
     private Cursor mCursor;
     private FragmentManager mFragmentManager;
     private int mScreenKind;
+    int fontSize = 0;
 
     private Context mContext;
 
@@ -335,6 +334,8 @@ class VocabularyFlagmentCursorAdapter extends CursorAdapter {
 
         mFragmentManager = fm;
         mScreenKind = screenKind;
+
+        fontSize = Integer.parseInt( DicUtils.getPreferencesValue( context, CommConstants.preferences_font ) );
     }
 
     @Override
@@ -377,5 +378,9 @@ class VocabularyFlagmentCursorAdapter extends CursorAdapter {
 
         TextView tv_cnt = (TextView) view.findViewById(R.id.my_f_cat_tv_cnt);
         tv_cnt.setText(String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow("CNT"))));
+
+        //사이즈 설정
+        ((TextView) view.findViewById(R.id.my_c_s1i_tv_question)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_f_cat_tv_cnt)).setTextSize(fontSize);
     }
 }

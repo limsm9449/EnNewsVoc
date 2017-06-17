@@ -264,6 +264,7 @@ class Study2CursorAdapter extends CursorAdapter {
     private Activity mActivity;
     private SQLiteDatabase mDb;
     private Cursor mCursor;
+    int fontSize = 0;
 
     private int mSelect;
 
@@ -294,6 +295,8 @@ class Study2CursorAdapter extends CursorAdapter {
         mWordMean = wordMean;
 
         mAnswerAl = answerAl;
+
+        fontSize = Integer.parseInt( DicUtils.getPreferencesValue( context, CommConstants.preferences_font ) );
     }
 
     @Override
@@ -485,19 +488,11 @@ class Study2CursorAdapter extends CursorAdapter {
             cb_memorization.setChecked(false);
         }
 
-        //UI 수정
-        if ( "WORD".equals(mWordMean) ) {
-            ((TextView)view.findViewById(R.id.my_c_s2i_tv_question)).setTextSize(15);
-            ((RadioButton)view.findViewById(R.id.my_c_s2i_rb_answer1)).setTextSize(13);
-            ((RadioButton)view.findViewById(R.id.my_c_s2i_rb_answer2)).setTextSize(13);
-            ((RadioButton)view.findViewById(R.id.my_c_s2i_rb_answer3)).setTextSize(13);
-            ((RadioButton)view.findViewById(R.id.my_c_s2i_rb_answer4)).setTextSize(13);
-        } else {
-            ((TextView)view.findViewById(R.id.my_c_s2i_tv_question)).setTextSize(13);
-            ((RadioButton)view.findViewById(R.id.my_c_s2i_rb_answer1)).setTextSize(15);
-            ((RadioButton)view.findViewById(R.id.my_c_s2i_rb_answer2)).setTextSize(15);
-            ((RadioButton)view.findViewById(R.id.my_c_s2i_rb_answer3)).setTextSize(15);
-            ((RadioButton)view.findViewById(R.id.my_c_s2i_rb_answer4)).setTextSize(15);
-        }
+        //사이즈 설정
+        ((TextView) view.findViewById(R.id.my_c_s2i_tv_question)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_c_s2i_rb_answer1)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_c_s2i_rb_answer2)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_c_s2i_rb_answer3)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_c_s2i_rb_answer4)).setTextSize(fontSize);
     }
 }

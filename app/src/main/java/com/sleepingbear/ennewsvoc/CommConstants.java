@@ -24,4 +24,8 @@ public class CommConstants {
 
     public final static int a_news = 1;
     public final static int a_vocabulary = 2;
+    public final static int a_setting = 3;
+
+    public static String flag_dbChange = "DB_CHANGE";
+    public static String preferences_font = "key_fontSize";
 }

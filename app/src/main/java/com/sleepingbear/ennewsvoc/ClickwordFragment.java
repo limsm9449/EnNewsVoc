@@ -88,6 +88,8 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
             listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             listView.setOnItemClickListener(itemClickListener);
             listView.setSelection(0);
+
+            changeEdit(isEditing);
         }
     }
 
@@ -135,9 +137,9 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     adapter.delete();
-                                    changeListView();
+                                    DicUtils.setDbChange(getContext());
 
-                                    DicUtils.writeNewInfoToFile(getContext(), db);
+                                    changeListView();
                                 }
                             })
                             .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -176,9 +178,9 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
                                 db.execSQL(DicQuery.getInsNewCategory("MY", insCategoryCode, et_ins.getText().toString()));
 
                                 adapter.save(insCategoryCode);
-                                changeListView();
+                                DicUtils.setDbChange(getContext());
 
-                                DicUtils.writeNewInfoToFile(getContext(), db);
+                                changeListView();
 
                                 Toast.makeText(getContext(), "단어장에 추가하였습니다.", Toast.LENGTH_SHORT).show();
                             }
@@ -226,9 +228,9 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             adapter.save(kindCodes[mSelect]);
-                            changeListView();
+                            DicUtils.setDbChange(getContext());
 
-                            DicUtils.writeNewInfoToFile(getContext(), db);
+                            changeListView();
 
                             Toast.makeText(getContext(), "단어장에 추가하였습니다.", Toast.LENGTH_SHORT).show();
                         }
@@ -263,10 +265,13 @@ class ClickwordCursorAdapter extends CursorAdapter {
     public int[] seq;
     public String[] entryId;
     private boolean isEditing = false;
+    int fontSize = 0;
 
     public ClickwordCursorAdapter(Context context, Cursor cursor, SQLiteDatabase db, int flags) {
         super(context, cursor, 0);
         mDb = db;
+
+        fontSize = Integer.parseInt( DicUtils.getPreferencesValue( context, CommConstants.preferences_font ) );
 
         isCheck = new boolean[cursor.getCount()];
         seq = new int[cursor.getCount()];
@@ -320,6 +325,12 @@ class ClickwordCursorAdapter extends CursorAdapter {
         ((TextView) view.findViewById(R.id.my_f_ci_tv_spelling)).setText(cursor.getString(cursor.getColumnIndexOrThrow("SPELLING")));
         ((TextView) view.findViewById(R.id.my_f_ci_tv_date)).setText(cursor.getString(cursor.getColumnIndexOrThrow("INS_DATE")));
         ((TextView) view.findViewById(R.id.my_f_ci_tv_mean)).setText(cursor.getString(cursor.getColumnIndexOrThrow("MEAN")));
+
+        //사이즈 설정
+        ((TextView) view.findViewById(R.id.my_f_ci_tv_word)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_f_ci_tv_spelling)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_f_ci_tv_date)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_f_ci_tv_mean)).setTextSize(fontSize);
 
         if ( isCheck[cursor.getPosition()] ) {
             ((CheckBox)view.findViewById(R.id.my_f_ci_cb_check)).setButtonDrawable(android.R.drawable.checkbox_on_background);

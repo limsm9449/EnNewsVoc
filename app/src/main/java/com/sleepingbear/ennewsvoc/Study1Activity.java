@@ -201,6 +201,7 @@ class Study1CursorAdapter extends CursorAdapter {
     private Activity mActivity;
     private SQLiteDatabase mDb;
     private Cursor mCursor;
+    int fontSize = 0;
 
     boolean[] isItemView;
 
@@ -226,6 +227,8 @@ class Study1CursorAdapter extends CursorAdapter {
         for ( int i = 0; i < isItemView.length; i++ ) {
             isItemView[i] = false;
         }
+
+        fontSize = Integer.parseInt( DicUtils.getPreferencesValue( context, CommConstants.preferences_font ) );
     }
 
     @Override
@@ -336,13 +339,8 @@ class Study1CursorAdapter extends CursorAdapter {
             cb_memorization.setChecked(false);
         }
 
-        //UI 수정
-        if ( "WORD".equals(mWordMean) ) {
-            ((TextView) view.findViewById(R.id.my_c_s1i_tv_question)).setTextSize(15);
-            ((TextView) view.findViewById(R.id.my_c_s1i_tv_answer)).setTextSize(13);
-        } else {
-            ((TextView) view.findViewById(R.id.my_c_s1i_tv_question)).setTextSize(13);
-            ((TextView) view.findViewById(R.id.my_c_s1i_tv_answer)).setTextSize(15);
-        }
+        //사이즈 설정
+        ((TextView) view.findViewById(R.id.my_c_s1i_tv_question)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_c_s1i_tv_answer)).setTextSize(fontSize);
     }
 }

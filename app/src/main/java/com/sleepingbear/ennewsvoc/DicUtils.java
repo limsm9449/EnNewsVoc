@@ -1,9 +1,11 @@
 package com.sleepingbear.ennewsvoc;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -465,4 +467,41 @@ public class DicUtils {
         }
     }
 
+    public static void setDbChange(Context mContext) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(CommConstants.flag_dbChange, "Y");
+        editor.commit();
+
+        dicLog(DicUtils.class.toString() + " setDbChange : " + "Y");
+    }
+
+    public static String getDbChange(Context mContext) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        return prefs.getString(CommConstants.flag_dbChange, "N");
+    }
+
+    public static void clearDbChange(Context mContext) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(CommConstants.flag_dbChange, "N");
+        editor.commit();
+    }
+
+    public static String getPreferencesValue(Context context, String preference) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+
+        String rtn = sharedPref.getString( preference, "" );
+        if ( "".equals( rtn ) ) {
+            if ( preference.equals(CommConstants.preferences_font) ) {
+                rtn = "17";
+            } else {
+                rtn = "";
+            }
+        }
+
+        DicUtils.dicLog(rtn);
+
+        return rtn;
+    }
 }

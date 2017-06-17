@@ -280,8 +280,12 @@ public class WordViewActivity extends AppCompatActivity implements View.OnClickL
 }
 
 class WordViewActivityCursorAdapter extends CursorAdapter {
+    int fontSize = 0;
+
     public WordViewActivityCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, 0);
+
+        fontSize = Integer.parseInt( DicUtils.getPreferencesValue( context, CommConstants.preferences_font ) );
     }
 
     @Override
@@ -300,5 +304,8 @@ class WordViewActivityCursorAdapter extends CursorAdapter {
         tv_foriegn.setText((cursor.getPosition() + 1) + ". " + sentence1);
         tv_han.setText("   " + sentence2);
 
+        //사이즈 설정
+        ((TextView) view.findViewById(R.id.my_tv_foriegn)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_tv_han)).setTextSize(fontSize);
     }
 }

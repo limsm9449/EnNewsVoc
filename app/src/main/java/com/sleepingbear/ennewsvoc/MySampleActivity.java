@@ -116,9 +116,7 @@ public class MySampleActivity extends AppCompatActivity {
                             Cursor cur = (Cursor) adapter.getItem(pos);
                             cur.moveToPosition(pos);
                             DicDb.delDicMySample(db, cur.getString(cur.getColumnIndexOrThrow("SENTENCE1")));
-
-                            // 기록..
-                            DicUtils.writeInfoToFile(getApplicationContext(), "MYSAMPLE_DELETE" + ":" + cur.getString(cur.getColumnIndexOrThrow("SENTENCE1")));
+                            DicUtils.setDbChange(getApplicationContext());
 
                             changeListView();
                         }
@@ -148,8 +146,12 @@ public class MySampleActivity extends AppCompatActivity {
 
 class MySampleCursorAdapter extends CursorAdapter {
 
+    int fontSize = 0;
+
     public MySampleCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
+
+        fontSize = Integer.parseInt( DicUtils.getPreferencesValue( context, CommConstants.preferences_font ) );
     }
 
     @Override
@@ -162,5 +164,10 @@ class MySampleCursorAdapter extends CursorAdapter {
         ((TextView) view.findViewById(R.id.my_c_msi_tv_foreign)).setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("SENTENCE1"))));
         ((TextView) view.findViewById(R.id.my_c_msi_tv_han)).setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("SENTENCE2"))));
         ((TextView) view.findViewById(R.id.my_c_msi_tv_date)).setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("TODAY"))));
+
+        //사이즈 설정
+        ((TextView) view.findViewById(R.id.my_c_msi_tv_foreign)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_c_msi_tv_han)).setTextSize(fontSize);
+        ((TextView) view.findViewById(R.id.my_c_msi_tv_date)).setTextSize(fontSize);
     }
 }

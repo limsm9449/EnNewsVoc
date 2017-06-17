@@ -7,21 +7,23 @@
     <item android:id="@+id/action_exit" android:title="@string/action_exit"
         android:orderInCategory="300" app:showAsAction="ifRoom"
         android:icon="@mipmap/ic_exit_to_app_white_24dp"/>
+    <item android:id="@+id/action_share" android:title="@string/action_share"
+        android:orderInCategory="400" app:showAsAction="never"/>
     <item android:id="@+id/action_patch" android:title="@string/action_patch"
         android:orderInCategory="300" app:showAsAction="never"
         android:icon="@mipmap/ic_delete_forever_white_24dp"/>
-    <item android:id="@+id/action_delete" android:title="@string/action_delete"
-        android:orderInCategory="300" app:showAsAction="never"
         android:icon="@mipmap/ic_delete_forever_white_24dp"/>
-    <item android:id="@+id/action_email" android:title="@string/action_email"
-        android:orderInCategory="300" app:showAsAction="never"
-        android:icon="@mipmap/ic_delete_forever_white_24dp"/>
-    <item android:id="@+id/action_backup" android:title="@string/action_backup"
-        android:orderInCategory="300" app:showAsAction="never"
-        android:icon="@mipmap/ic_delete_forever_white_24dp"/>
-    <item android:id="@+id/action_share" android:title="@string/action_share"
-        android:orderInCategory="400" app:showAsAction="never"/>
     <item android:id="@+id/action_help" android:title="@string/action_help"
         android:orderInCategory="400" app:showAsAction="never"
         android:icon="@mipmap/ic_help_outline_white_24dp"/>
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="500"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_no_ad"
+        android:orderInCategory="600"
+        android:title="@string/action_no_ad"
+        app:showAsAction="never" />
 </menu>

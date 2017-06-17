@@ -115,9 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             String insCategoryCode = DicQuery.getInsCategoryCode(db);
                             db.execSQL(DicQuery.getInsNewCategory("MY", insCategoryCode, et_ins.getText().toString()));
-
-                            //기록
-                            DicUtils.writeInfoToFile(getApplicationContext(), "CATEGORY_INSERT" + ":" + insCategoryCode + ":" + et_ins.getText().toString());
+                            DicUtils.setDbChange(getApplicationContext());
 
                             ((VocabularyFragment) adapter.getItem(selectedTab)).changeListView();
 
@@ -299,7 +297,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        ((MenuItem)menu.findItem(R.id.action_delete)).setVisible(false);
         ((MenuItem)menu.findItem(R.id.action_edit)).setVisible(false);
         ((MenuItem)menu.findItem(R.id.action_exit)).setVisible(false);
 
@@ -309,9 +306,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 ((MenuItem)menu.findItem(R.id.action_edit)).setVisible(true);
             }
-
-        } else if ( selectedTab == 3 ) {
-            ((MenuItem)menu.findItem(R.id.action_delete)).setVisible(true);
         }
 
         return super.onPrepareOptionsMenu(menu);
@@ -320,25 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_delete) {
-            if (selectedTab == 3) {
-                new AlertDialog.Builder(this)
-                        .setTitle("알림")
-                        .setMessage("단어장을 초기화 하시겠습니까?")
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                confirmAllDelete();
-                            }
-                        })
-                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .show();
-            }
-        } else if (id == R.id.action_help) {
+        if (id == R.id.action_help) {
             Bundle bundle = new Bundle();
             if ( selectedTab == 0 ) {
                 bundle.putString("SCREEN", "NEWS");
@@ -359,101 +335,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtras(bundle);
 
             startActivity(intent);
-        } else if (id == R.id.action_email) {
-            Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name);
-            intent.putExtra(Intent.EXTRA_TEXT, "문제점을 적어 주세요.\n빠른 시간 안에 수정을 하겠습니다.\n감사합니다.");
-            intent.setData(Uri.parse("mailto:limsm9449@gmail.com"));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        } else if (id == R.id.action_backup) {
-            //layout 구성
-            LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View dialog_layout = li.inflate(R.layout.dialog_dic_manage, null);
-
-            //dialog 생성..
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setView(dialog_layout);
-            final AlertDialog alertDialog = builder.create();
-
-            final EditText et_saveName = ((EditText) dialog_layout.findViewById(R.id.my_d_dm_et_save));
-            et_saveName.setText("backup_" + DicUtils.getCurrentDate() + ".txt");
-            ((Button) dialog_layout.findViewById(R.id.my_d_dm_b_save)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String saveFileName = et_saveName.getText().toString();
-                    if ("".equals(saveFileName)) {
-                        Toast.makeText(getApplicationContext(), "저장할 파일명을 입력하세요.", Toast.LENGTH_SHORT).show();
-                    } else if (saveFileName.indexOf(".") > -1 && !"txt".equals(saveFileName.substring(saveFileName.length() - 3, saveFileName.length()).toLowerCase())) {
-                        Toast.makeText(getApplicationContext(), "확장자는 txt 입니다.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        //디렉토리 생성
-                        String fileName = "";
-                        boolean existDir = false;
-                        File appDir = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName);
-                        if (!appDir.exists()) {
-                            existDir = appDir.mkdirs();
-                            if (saveFileName.indexOf(".") > -1) {
-                                fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName;
-                            } else {
-                                fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName + ".txt";
-                            }
-                        } else {
-                            if (saveFileName.indexOf(".") > -1) {
-                                fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName;
-                            } else {
-                                fileName = Environment.getExternalStorageDirectory().getAbsoluteFile() + CommConstants.folderName + "/" + saveFileName + ".txt";
-                            }
-                        }
-
-                        File saveFile = new File(fileName);
-                        if (saveFile.exists()) {
-                            Toast.makeText(getApplicationContext(), "파일명이 존재합니다.", Toast.LENGTH_LONG).show();
-                        } else {
-                            DicUtils.writeNewInfoToFile(getApplicationContext(), (new DbHelper(getApplicationContext())).getWritableDatabase(), fileName);
-
-                            Toast.makeText(getApplicationContext(), "백업 데이타를 정상적으로 내보냈습니다.", Toast.LENGTH_LONG).show();
-
-                            alertDialog.dismiss();
-                        }
-                    }
-                }
-            });
-
-            ((Button) dialog_layout.findViewById(R.id.my_d_dm_b_upload)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FileChooser filechooser = new FileChooser(MainActivity.this);
-                    filechooser.setFileListener(new FileChooser.FileSelectedListener() {
-                        @Override
-                        public void fileSelected(final File file) {
-                            DicUtils.readInfoFromFile(getApplicationContext(), (new DbHelper(getApplicationContext())).getWritableDatabase(), file.getAbsolutePath());
-
-                            // 시스템 기록파일 생성
-                            DicUtils.writeNewInfoToFile(getApplicationContext(), (new DbHelper(getApplicationContext())).getWritableDatabase());
-
-                            Toast.makeText(getApplicationContext(), "백업 데이타를 정상적으로 가져왔습니다.", Toast.LENGTH_LONG).show();
-
-                            changeListView();
-
-                            alertDialog.dismiss();
-                        }
-                    });
-                    filechooser.setExtension("txt");
-                    filechooser.showDialog();
-                }
-            });
-
-            ((Button) dialog_layout.findViewById(R.id.my_d_dm_b_close)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    alertDialog.dismiss();
-                }
-            });
-
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.show();
         } else if (id == R.id.action_edit) {
             isEditing = true;
             invalidateOptionsMenu();
@@ -479,6 +360,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             msg.putExtra(Intent.EXTRA_TEXT, "영어.. 참 어렵죠? '최고의 영어신문' 어플을 사용해 보세요. https://play.google.com/store/apps/details?id=com.sleepingbear.ennewsvoc ");
             msg.setType("text/plain");
             startActivity(Intent.createChooser(msg, "어플 공유"));
+        } else if (id == R.id.action_settings) {
+            startActivityForResult(new Intent(getApplication(), SettingsActivity.class), CommConstants.a_setting);
+
+            return true;
+        } else if (id == R.id.action_no_ad) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.sleepingbear.pennewsvoc")));
         }
 
         return super.onOptionsItemSelected(item);
@@ -491,32 +378,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case CommConstants.a_vocabulary :
                 ((VocabularyFragment) adapter.getItem(3)).changeListView();
                 break;
+            case CommConstants.a_setting :
+                ((VocabularyFragment) adapter.getItem(3)).changeListView();
+                break;
         }
-
-    }
-
-    public void confirmAllDelete() {
-          new AlertDialog.Builder(this)
-                  .setTitle("알림")
-                  .setMessage("초기화 후에는 데이타를 복구할 수 없습니다.")
-                  .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                      @Override
-                      public void onClick(DialogInterface dialog, int which) {
-                          if (selectedTab == 3) {
-                              DicDb.initVocabulary(db);
-
-                              DicUtils.writeNewInfoToFile(getApplicationContext(), db);
-
-                              ((VocabularyFragment) adapter.getItem(selectedTab)).changeListView();
-                          }
-                      }
-                  })
-                  .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                      @Override
-                      public void onClick(DialogInterface dialog, int which) {
-                      }
-                  })
-                  .show();
     }
 
     public void changeListView() {
@@ -538,6 +403,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private long backKeyPressedTime = 0;
     @Override
     public void onBackPressed() {
+        //종료 시점에 변경 사항을 기록한다.
+        if ( "Y".equals(DicUtils.getDbChange(getApplicationContext())) ) {
+            DicUtils.writeNewInfoToFile(this, db, "");
+            DicUtils.clearDbChange(this);
+        }
+
         if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
             backKeyPressedTime = System.currentTimeMillis();
             Toast.makeText(getApplicationContext(), "'뒤로'버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
@@ -545,9 +416,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
         if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
-            //종료 시점에 변경 사항을 기록한다.
-            DicUtils.writeNewInfoToFile(this, db);
-
             finish();
         }
     }
