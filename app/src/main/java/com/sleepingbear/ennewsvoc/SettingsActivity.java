@@ -28,6 +28,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     private SQLiteDatabase db;
     private PreferenceScreen screen;
     private ListPreference mFontSize;
+    private ListPreference mWordView;
 
 
 
@@ -39,14 +40,13 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         screen = getPreferenceScreen();
 
         mFontSize = (ListPreference) screen.findPreference("key_fontSize");
+        mFontSize.setOnPreferenceChangeListener(this);
+
+        mWordView = (ListPreference) screen.findPreference("key_wordView");
+        mWordView.setOnPreferenceChangeListener(this);
 
         dbHelper = new DbHelper(this);
         db = dbHelper.getWritableDatabase();
-
-        //변화 이벤트가 일어났을 시 동작
-        mFontSize.setOnPreferenceChangeListener(this);
-
-
     }
 
     @Override
@@ -182,6 +182,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             ListPreference listPreference = (ListPreference) preference;
             int index = listPreference.findIndexOfValue(value);
             mFontSize.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
+        } else if ( preference == mWordView ) {
+            ListPreference listPreference = (ListPreference) preference;
+            int index = listPreference.findIndexOfValue(value);
+            mWordView.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
         }
         return true;
     }
@@ -189,5 +193,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     private void updateSummary(){
         mFontSize.setSummary(mFontSize.getEntry());
+        mWordView.setSummary(mWordView.getEntry());
     }
 }

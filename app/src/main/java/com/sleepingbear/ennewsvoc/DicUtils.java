@@ -495,6 +495,8 @@ public class DicUtils {
         if ( "".equals( rtn ) ) {
             if ( preference.equals(CommConstants.preferences_font) ) {
                 rtn = "17";
+            } else if ( preference.equals(CommConstants.preferences_wordView) ) {
+                rtn = "0";
             } else {
                 rtn = "";
             }

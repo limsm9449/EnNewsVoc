@@ -28,4 +28,5 @@ public class CommConstants {
 
     public static String flag_dbChange = "DB_CHANGE";
     public static String preferences_font = "key_fontSize";
+    public static String preferences_wordView = "key_wordView";
 }
