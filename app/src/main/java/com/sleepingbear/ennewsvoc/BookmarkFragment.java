@@ -229,7 +229,6 @@ class BookmarkCursorAdapter extends CursorAdapter {
 
         //사이즈 설정
         ((TextView) view.findViewById(R.id.my_f_bi_tv_bookmark)).setTextSize(fontSize);
-        ((TextView) view.findViewById(R.id.my_f_bi_tv_date)).setTextSize(fontSize);
 
         if ( isCheck[cursor.getPosition()] ) {
             ((CheckBox)view.findViewById(R.id.my_f_bi_cb_check)).setButtonDrawable(android.R.drawable.checkbox_on_background);

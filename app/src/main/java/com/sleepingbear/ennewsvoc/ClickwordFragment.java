@@ -329,7 +329,6 @@ class ClickwordCursorAdapter extends CursorAdapter {
         //사이즈 설정
         ((TextView) view.findViewById(R.id.my_f_ci_tv_word)).setTextSize(fontSize);
         ((TextView) view.findViewById(R.id.my_f_ci_tv_spelling)).setTextSize(fontSize);
-        ((TextView) view.findViewById(R.id.my_f_ci_tv_date)).setTextSize(fontSize);
         ((TextView) view.findViewById(R.id.my_f_ci_tv_mean)).setTextSize(fontSize);
 
         if ( isCheck[cursor.getPosition()] ) {
