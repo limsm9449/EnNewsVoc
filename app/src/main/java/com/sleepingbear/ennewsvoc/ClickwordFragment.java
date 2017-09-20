@@ -130,7 +130,7 @@ public class ClickwordFragment extends Fragment implements View.OnClickListener 
                 if ( !adapter.isCheck() ) {
                     Toast.makeText(getContext(), "선택된 데이타가 없습니다.", Toast.LENGTH_SHORT).show();
                 } else {
-                    new android.app.AlertDialog.Builder(getActivity())
+                    new android.support.v7.app.AlertDialog.Builder(getActivity())
                             .setTitle("알림")
                             .setMessage("삭제하시겠습니까?")
                             .setPositiveButton("확인", new DialogInterface.OnClickListener() {

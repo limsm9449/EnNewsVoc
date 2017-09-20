@@ -107,7 +107,7 @@ public class MySampleActivity extends AppCompatActivity {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
             final int pos = position;
-            new AlertDialog.Builder(MySampleActivity.this)
+            new android.support.v7.app.AlertDialog.Builder(MySampleActivity.this)
                     .setTitle("알림")
                     .setMessage("삭제 하시겠습니까?")
                     .setPositiveButton("확인", new DialogInterface.OnClickListener() {

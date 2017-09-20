@@ -1,6 +1,6 @@
 package com.sleepingbear.ennewsvoc;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -211,7 +211,7 @@ public class StudyActivity extends AppCompatActivity implements View.OnClickList
             Cursor cursor = db.rawQuery(DicQuery.getVocabularyCount(), null);
             if ( cursor.moveToNext() ) {
                 if ( cursor.getInt(cursor.getColumnIndexOrThrow("CNT")) == 0 ) {
-                    new AlertDialog.Builder(this)
+                    new android.support.v7.app.AlertDialog.Builder(this)
                             .setTitle("알림")
                             .setMessage("단어장에 등록된 단어가 없습니다.")
                             .setPositiveButton("확인", new DialogInterface.OnClickListener() {
