@@ -82,6 +82,7 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
             notHan = b.getString("foreign");
             han = b.getString("han");
 
+            /*
             if ( "".equals(han) ) {
                 new Thread() {
                     public void run() {
@@ -103,8 +104,9 @@ public class SentenceViewActivity extends AppCompatActivity implements View.OnCl
                     }
                 }.start();
             } else {
-                changeListView();
             }
+            */
+            changeListView();
         }
 
         ImageButton mySample = (ImageButton) findViewById(R.id.my_c_sv_ib_mysample);
