@@ -65,9 +65,7 @@ public class BookmarkFragment extends Fragment implements View.OnClickListener {
         //리스트 내용 변경
         changeListView();
 
-        AdView av = (AdView)mainView.findViewById(R.id.adView);
-        AdRequest adRequest = new  AdRequest.Builder().build();
-        av.loadAd(adRequest);
+        DicUtils.setAdViewForFragment(this.getActivity(), mainView);
 
         return mainView;
     }

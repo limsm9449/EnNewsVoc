@@ -7,8 +7,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+
+import com.fsn.cauly.CaulyAdInfo;
+import com.fsn.cauly.CaulyAdInfoBuilder;
+import com.fsn.cauly.CaulyAdView;
+import com.fsn.cauly.Logger;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -506,4 +515,42 @@ public class DicUtils {
 
         return rtn;
     }
+
+    public static void setAdView(AppCompatActivity app) {
+        CaulyAdView av = (CaulyAdView)app.findViewById(R.id.adView);
+        if ( CommConstants.isFreeApp ) {
+            CaulyAdInfo adInfo = new CaulyAdInfoBuilder(app.getApplication().getString(R.string.banner_ad_unit_id)).effect("LeftSlide").reloadInterval(1).build();
+            av.setAdInfo(adInfo);
+        } else {
+            av.setVisibility(View.GONE);
+        }
+    }
+
+    public static void setAdViewForFragment(FragmentActivity app, View view) {
+        CaulyAdView av = (CaulyAdView)view.findViewById(R.id.adView);
+        if ( CommConstants.isFreeApp ) {
+            CaulyAdInfo adInfo = new CaulyAdInfoBuilder(app.getApplication().getString(R.string.banner_ad_unit_id))
+                    .effect("LeftSlide")
+                    .dynamicReloadInterval(true)
+                    .reloadInterval(20)
+                    .build();
+            av.setAdInfo(adInfo);
+        } else {
+            av.setVisibility(View.GONE);
+        }
+    }
+
+    public static String getCurrentDateTime() {
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int min = c.get(Calendar.MINUTE);
+        int sec = c.get(Calendar.SECOND);
+
+        return year + "." + (month + 1 > 9 ? "" : "0") + (month + 1) + "." + (day > 9 ? "" : "0") + day + " " + (hour > 9 ? "" : "0") + hour + ":" + (min > 9 ? "" : "0") + min + ":" + (sec > 9 ? "" : "0") + sec;
+    }
+
 }

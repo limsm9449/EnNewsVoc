@@ -60,9 +60,7 @@ public class VocabularyFragment extends Fragment implements View.OnClickListener
 
         changeListView();
 
-        AdView av = (AdView)mainView.findViewById(R.id.adView);
-        AdRequest adRequest =new  AdRequest.Builder().build();
-        av.loadAd(adRequest);
+        DicUtils.setAdViewForFragment(this.getActivity(), mainView);
 
         ((Button) mainView.findViewById(R.id.my_f_voc_b_1)).setOnClickListener(this);
         ((Button) mainView.findViewById(R.id.my_f_voc_b_2)).setOnClickListener(this);

@@ -27,6 +27,8 @@
 
     <string name="action_settings">환경 설정</string>
     <string name="action_no_ad">광고 제거 어플(유료)</string>
+    <string name="action_click_type">클릭유형</string>
+    <string name="action_web_dictionary">웹사전</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="title_activity_word_view">WordViewActivity</string>
@@ -40,7 +42,8 @@
     <string name="title_activity_help">도움말</string>
     <string name="title_activity_patch">PatchActivity</string>
     <string name="title_activity_my_sample">MySampleActivity</string>
-    <string name="banner_ad_unit_id">ca-app-pub-3860766380986792/2092125867</string>
+    <!--string name="banner_ad_unit_id">qaP4ySEl</string-->
+    <string name="banner_ad_unit_id">CAULY</string>
     <string name="title_activity_web_dictionary">WebDictionaryActivity</string>
     <string name="title_activity_web_translate">WebTranslateActivity</string>
     <string name="title_activity_study6">Study6Activity</string>

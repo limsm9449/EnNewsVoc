@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fsn.cauly.CaulyAdView;
+import com.fsn.cauly.CaulyAdViewListener;
+import com.fsn.cauly.CaulyInterstitialAd;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -27,6 +31,7 @@ public class NewsFragment extends Fragment {
     private View  mainView;
     private ListView listView;
     private NewsAdapter adapter;
+
 
     public NewsFragment() {
     }
@@ -56,9 +61,7 @@ public class NewsFragment extends Fragment {
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setOnItemClickListener(itemClickListener);
 
-        AdView av = (AdView)mainView.findViewById(R.id.adView);
-        AdRequest adRequest = new  AdRequest.Builder().build();
-        av.loadAd(adRequest);
+        DicUtils.setAdViewForFragment(this.getActivity(), mainView);
 
         return mainView;
     }
@@ -137,5 +140,6 @@ public class NewsFragment extends Fragment {
             return v;
         }
     }
+
 
 }

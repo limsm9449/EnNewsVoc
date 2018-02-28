@@ -50,14 +50,14 @@
             android:layout_below="@+id/my_f_bookmark_ll"
             android:layout_above="@+id/adView" />
 
-        <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
+        <com.fsn.cauly.CaulyAdView
+            xmlns:app="http://schemas.android.com/apk/res/com.sleepingbear.ennewsvoc"
             android:id="@+id/adView"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            ads:adSize="BANNER"
-            ads:adUnitId="@string/banner_ad_unit_id"
-            android:layout_alignParentBottom="true" />
+            android:layout_alignParentBottom="true"
+            app:appcode="@string/banner_ad_unit_id">
+        </com.fsn.cauly.CaulyAdView>
     </RelativeLayout>
 
 </FrameLayout>

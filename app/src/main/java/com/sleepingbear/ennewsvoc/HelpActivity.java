@@ -46,11 +46,13 @@ public class HelpActivity extends AppCompatActivity {
         tempSb.delete(0, tempSb.length());
         tempSb.append("* 뉴스 상세" + CommConstants.sqlCR);
         tempSb.append("- 영어뉴스를 보면서 필요한 단어 검색 기능이 있습니다." + CommConstants.sqlCR);
-        tempSb.append(" .뉴스를 보다가 모르는 단어를 클릭을 하면 하단에 클릭단어의 뜻이 보입니다. " + CommConstants.sqlCR);
-        tempSb.append(" .클릭단어의 뜻이 없을경우 하단 오른쪽의 검색 버튼을 클릭하면 Naver,Daum에서 단어 검색을 할 수 있습니다. " + CommConstants.sqlCR);
-        tempSb.append(" .하단 단어를 길게 클릭하시면 단어 상세를 보실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append(" .하단 단어 옆의 (+)를 클릭하시면 바로 단어장에 등록을 하실 수 있습니다." + CommConstants.sqlCR);
-        tempSb.append(" .뉴스의 단어를 길게 클릭하시면 단어보기, 단어검색(Naver,Daum), 번역, 문장보기, TTS, 전체TTS(4000자까지), 복사, 전체복사 기능을 사용하실 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append(" .상단에 있는 단어선택/문장 선택을 선택해주세요." + CommConstants.sqlCR);
+        tempSb.append(" .단어 선택 : 모르는 단어를 길게 클릭하시면 하단에 뜻이 보입니다." + CommConstants.sqlCR);
+        tempSb.append("             하단 단어를 길게 클릭하시면 사용한 예제나 Naver, Daum 의 사전을 검색 할 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append("             하단 단어 뜻의 오른쪽 + 버튼을 클릭하시면 단어장에 추가하실 수 있습니다." + CommConstants.sqlCR);
+        tempSb.append("             클릭단어의 뜻이 없을경우 하단 오른쪽의 검색 버튼을 클릭하면 Naver,Daum에서 단어 검색을 할 수 있습니다. " + CommConstants.sqlCR);
+        tempSb.append(" .문장 선택 : 단어를 길게 클릭하시면 단어가 들어가 있는 전체 문장이 하단에 보입니다." + CommConstants.sqlCR);
+        tempSb.append("              하단의 오른쪽에 있는 TTS, 문장 단어 검색, 번역 기능을 이용하실 수 있습니다." + CommConstants.sqlCR);
         tempSb.append(" .다음에 다시 읽고 싶은 기사가 있으면 상단의 북마크를 클릭하세요. 메인의 북마크 Tab에서 내용을 확인하실 수 있습니다." + CommConstants.sqlCR);
         tempSb.append(" .뉴스를 보면서 클릭한 단어는 다 기록이 됩니다. 메인의 클릭단어 Tab에서 확인하실 수 있습니다." + CommConstants.sqlCR);
         tempSb.append("" + CommConstants.sqlCR);

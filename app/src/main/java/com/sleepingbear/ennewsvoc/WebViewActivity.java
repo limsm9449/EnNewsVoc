@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -42,11 +44,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fsn.cauly.CaulyAdInfo;
+import com.fsn.cauly.CaulyAdInfoBuilder;
+import com.fsn.cauly.CaulyAdView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -67,16 +73,17 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
     private TextView mean;
     private RelativeLayout meanRl;
     private Bundle param;
-    private String oldUrl = "";
     private String entryId = "";
     public int mSelect = 0;
-    public int m2Select = 0;
+    public int m2Select = 1;
     private String clickWord;
 
     private ImageButton addBtn;
     private ImageButton searchBtn;
-
-    private ProgressDialog mProgress;
+    private ImageButton ttsBtn;
+    private ImageButton listBtn;
+    private ImageButton transBtn;
+    private LinearLayout sentenceLl;
 
     private ActionMode mActionMode = null;
 
@@ -84,7 +91,8 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
     private ArrayList<NewsVo> enUrls;
     private NewsVo currItem;
-    private String newsUrl;
+
+    private int clickType = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,84 +104,19 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         myTTS = new TextToSpeech(this, this);
 
-        String js1 = ".html(function(index, oldHtml) {return oldHtml.replace(/<br *\\/?>/gi, '\\n')" +
-                ".replace(/<[^>]*>/g, '')" +
-                ".replace(/(<br>)/g, '\\n')" + "" +
-                ".replace(/\\b(\\w+?)\\b/g,'<span class=\"word\">$1</span>')" +
-                ".replace(/\\n/g, '<br>')});";
-        String js2 = "('.word').click(function(event) { window.android.setWord(event.target.innerHTML) });";
-
         // 영자신문 정보
         enUrls = new ArrayList<>();
-        enUrls.add(new NewsVo("E001", "Chosun","http://english.chosun.com/m/",
-                new String[]{   "$('.art_headline')" + js1 + "$" + js2,
-                                "$('.news_body .par')" + js1 + "$" + js2},
-                new String[]{},
-                "$('.art_headline').text()",
-                "$('.news_body').text()"));
-        enUrls.add(new NewsVo("E002", "Joongang Daily","http://mengnews.joins.com/",
-                new String[]{   "$($('h4')[0])" + js1 + "$" + js2,
-                                "$('.en')" + js1 + "$" + js2},
-                new String[]{   "$('.ad_h50').html('')",
-                                "$('.ad_320x250').html('')",
-                                "$('.share_article').html('')"},
-                "$($('h4')[0]).text()",
-                "$('div.en').text()"));
-        enUrls.add(new NewsVo("E003", "Korea Herald","http://m.koreaherald.com/",
-                new String[]{   "$($('#detail h2')[0])" + js1 + "$" + js2,
-                                "$('.article')" + js1 + "$" + js2},
-                new String[]{   "$('.DetailBottom').html('')"},
-                "$($('#detail h2')[0]).text()",
-                "$('div.article').text()"));
-        enUrls.add(new NewsVo("E004", "The Korea Times","http://m.koreatimes.co.kr/phone/",
-                new String[]{   "$('#first_big_news strong .english_mode')" + js1 + "$" + js2,
-                                "$('#startts div .english_mode')" + js1 + "$" + js2},
-                new String[]{   "$('div#wp_wrap').html('')"},
-                "$('#first_big_news strong .english_mode').text()",
-                "$('div.english_mode').text()"));
-        enUrls.add(new NewsVo("E005", "ABC","http://abcnews.go.com",
-                new String[]{   "$('.container .article-header h1')" + js1 + "$" + js2,
-                                "$('.container .article-body')" + js1 + "$" + js2},
-                new String[]{},
-                "$('.container .article-header h1').text()",
-                "$('div.article-body').text()"));
-        enUrls.add(new NewsVo("E006", "BBC","http://www.bbc.com/news",
-                new String[]{   "$('.story-body .story-body__h1')" + js1 + "$" + js2,
-                                "$('.story-body .story-body__inner p')" + js1 + "$" + js2},
-                new String[]{},
-                "$('.story-body .story-body__h1').text()",
-                "$('div.story-body').text()"));
-        enUrls.add(new NewsVo("E007", "CNN","http://edition.cnn.com",
-                new String[]{   "jQuery('.pg-headline')" + js1 + "jQuery" + js2,
-                                "jQuery('.l-container .zn-body__paragraph')" + js1 + "jQuery" + js2},
-                new String[]{   "jQuery('div.user-msg.headerless.user-msg-flexbox').css('display','none')"},
-                "jQuery('.pg-headline').text()",
-                "jQuery('div.zn-body__paragraph').text()"));
-        enUrls.add(new NewsVo("E008", "Los Angeles Times","http://www.latimes.com",
-                new String[]{   "$('.trb_ar_hl_t')" + js1 + "$" + js2,
-                                "$('.trb_ar_page p')" + js1 + "$" + js2},
-                new String[]{   "$('div.trb_bnn').html('')",
-                                "$('div.met-promo').css('display','none')"},
-                "$('.trb_ar_hl_t').text()",
-                "$('div.trb_ar_page p').text()"));
-        enUrls.add(new NewsVo("E009", "The New Work Times","http://mobile.nytimes.com/?referer=",
-                new String[]{   "$('.headline')" + js1 + "$" + js2,
-                                "$('.article-body p')" + js1 + "$" + js2},
-                new String[]{},
-                "$('.headline').text()",
-                "$('.article-body p').text()"));
-        enUrls.add(new NewsVo("E010", "Reuters","http://mobile.reuters.com/",
-                new String[]{   "$('.article-info h1')" + js1 + "$" + js2,
-                                "$('#articleText p')" + js1 + "$" + js2},
-                new String[]{},
-                "$('.article-info h1').text()",
-                "$('#articleText p').text()"));
-        enUrls.add(new NewsVo("E011", "Washingtone Post","https://www.washingtonpost.com",
-                new String[]{   "$('#topper-headline-wrapper h1')" + js1 + "$" + js2,
-                                "$('#article-body article p')" + js1 + "$" + js2},
-                new String[]{},
-                "$('#topper-headline-wrapper h1').text()",
-                "$('article p').text()"));
+        enUrls.add(new NewsVo("E001", "Chosun","http://english.chosun.com/m/"));
+        enUrls.add(new NewsVo("E002", "Joongang Daily","http://mengnews.joins.com/"));
+        enUrls.add(new NewsVo("E003", "Korea Herald","http://m.koreaherald.com/"));
+        enUrls.add(new NewsVo("E004", "The Korea Times","http://m.koreatimes.co.kr/phone/"));
+        enUrls.add(new NewsVo("E005", "ABC","http://abcnews.go.com"));
+        enUrls.add(new NewsVo("E006", "BBC","http://www.bbc.com/news"));
+        enUrls.add(new NewsVo("E007", "CNN","http://edition.cnn.com"));
+        enUrls.add(new NewsVo("E008", "Los Angeles Times","http://www.latimes.com"));
+        enUrls.add(new NewsVo("E009", "The New Work Times","http://mobile.nytimes.com/?referer="));
+        enUrls.add(new NewsVo("E010", "Reuters","http://mobile.reuters.com/"));
+        enUrls.add(new NewsVo("E011", "Washingtone Post","https://www.washingtonpost.com"));
 
         String currUrl = "";
         param = getIntent().getExtras();
@@ -190,11 +133,14 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         if ( !"".equals(DicUtils.getString(param.getString("url"))) ) {
             DicUtils.dicLog("url param");
 
+            /*
             if ( currUrl.indexOf("https") > -1 ) {
                 currUrl = "https:\\" + param.getString("url");
             } else {
                 currUrl = "http:\\" + param.getString("url");
             }
+            */
+            currUrl = param.getString("url");
         }
 
         DicUtils.dicLog(currUrl);
@@ -217,20 +163,29 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         //버튼 설정
         addBtn = (ImageButton) this.findViewById(R.id.my_c_webview_ib_add);
+        addBtn.setVisibility(View.GONE);
         searchBtn = (ImageButton) this.findViewById(R.id.my_c_webview_ib_search);
         searchBtn.setVisibility(View.GONE);
+
+        sentenceLl = (LinearLayout) this.findViewById(R.id.my_nwv_ll_1);
+        sentenceLl.setVisibility(View.GONE);
+        ttsBtn = (ImageButton) this.findViewById(R.id.my_c_webview_ib_tts);
+        listBtn = (ImageButton) this.findViewById(R.id.my_c_webview_ib_list);
+        transBtn = (ImageButton) this.findViewById(R.id.my_c_webview_ib_trans);
 
         //뜻 롱클릭시 단어 상세 보기
         mean = (TextView) this.findViewById(R.id.my_c_webview_mean);
         mean.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Intent intent = new Intent(getApplication(), WordViewActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("entryId", entryId);
-                intent.putExtras(bundle);
+                if ( clickType == 0 ) {
+                    Intent intent = new Intent(getApplication(), WordViewActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("entryId", entryId);
+                    intent.putExtras(bundle);
 
-                startActivity(intent);
+                    startActivity(intent);
+                }
 
                 return false;
             }
@@ -238,6 +193,9 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         ((ImageButton) this.findViewById(R.id.my_c_webview_ib_add)).setOnClickListener(this);
         ((ImageButton) this.findViewById(R.id.my_c_webview_ib_search)).setOnClickListener(this);
+        ((ImageButton) this.findViewById(R.id.my_c_webview_ib_tts)).setOnClickListener(this);
+        ((ImageButton) this.findViewById(R.id.my_c_webview_ib_list)).setOnClickListener(this);
+        ((ImageButton) this.findViewById(R.id.my_c_webview_ib_trans)).setOnClickListener(this);
 
         webView = (WebView) this.findViewById(R.id.my_c_webview_wv);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -252,9 +210,9 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         //registerForContextMenu(webView);
 
-        AdView av = (AdView)this.findViewById(R.id.adView);
-        AdRequest adRequest = new  AdRequest.Builder().build();
-        av.loadAd(adRequest);
+        Toast.makeText(getApplicationContext(), "모르는 단어를 길게 클릭하시면 하단에 단어의 뜻이나 문장을 볼 수 있습니다.", Toast.LENGTH_LONG).show();
+
+        DicUtils.setAdView(this);
     }
 
 
@@ -262,6 +220,30 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onCreateOptionsMenu(Menu menu) {
         // 상단 메뉴 구성
         getMenuInflater().inflate(R.menu.menu_webview, menu);
+
+        MenuItem item = menu.findItem(R.id.action_click_type);
+        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.clickType, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                clickType = parent.getSelectedItemPosition();
+
+                meanRl.setVisibility(View.GONE);
+
+                webView.reload();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+
+        spinner.setSelection(0);
 
         return true;
     }
@@ -277,6 +259,12 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         if (id == android.R.id.home) {
             finish();
+        } else if (id == R.id.action_web_dictionary) {
+            Bundle bundle = new Bundle();
+
+            Intent webIntent = new Intent(getApplication(), WebDictionaryActivity.class);
+            webIntent.putExtras(bundle);
+            startActivity(webIntent);
         } else if (id == R.id.action_help) {
             Bundle bundle = new Bundle();
             bundle.putString("SCREEN", "WEB_VIEW");
@@ -285,7 +273,10 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
             intent.putExtras(bundle);
             startActivity(intent);
         } else if (id == R.id.action_bookmark) {
-            webView.loadUrl("javascript:window.android.action('BOOKMARK',  " + currItem.getTitleClass() + ")");
+            DicDb.insDicBoolmark(mDb, currItem.getKind(), DicUtils.getCurrentDateTime() + " : " + currItem.getName(), webView.getUrl(), "");
+            DicUtils.setDbChange(getApplicationContext());
+
+            Toast.makeText(getApplicationContext(), "북마크에 등록했습니다. 메인화면의 '북마크' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -299,6 +290,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                     myTTS.shutdown();
 
                     if ( webView.canGoBack() ) {
+                        meanRl.setVisibility(View.GONE);
                         webView.goBack();
                     } else {
                         finish();
@@ -309,6 +301,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         return super.onKeyDown(keyCode, event);
     }
 
+    /*
     private void getUrlSource(final String site)  {
         DicUtils.dicLog(site);
 
@@ -333,6 +326,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
             }
         }).start();
     }
+    */
 
     @Override
     public void onActionModeStarted(ActionMode mode) {
@@ -344,6 +338,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
             // Remove the default menu items (select all, copy, paste, search)
             menu.clear();
 
+            /*
             // Inflate your own menu items
             mode.getMenuInflater().inflate(R.menu.menu_webview_cm, menu);
 
@@ -358,48 +353,20 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
             for (int i = 0, n = menu.size(); i < n; i++) {
                 menu.getItem(i).setOnMenuItemClickListener(listener);
             }
+            */
+
+            mActionMode.finish();
         }
 
         super.onActionModeStarted(mode);
     }
 
+    /*
     public void onContextualMenuItemClicked(MenuItem item) {
         DicUtils.dicLog("onContextualMenuItemClicked");
         switch (item.getItemId()) {
             case R.id.action_copy:
-                webView.loadUrl("javascript:window.android.action('COPY', window.getSelection().toString())");
-
-                break;
-            case R.id.action_all_copy:
-                webView.loadUrl("javascript:window.android.action('COPY', " + currItem.getBodyClass() + ")");
-
-                break;
-            case R.id.action_word_view:
-                webView.loadUrl("javascript:window.android.action('WORD', window.getSelection().toString())");
-
-                break;
-            case R.id.action_translate:
-                webView.loadUrl("javascript:window.android.action('TRANSLATE', window.getSelection().toString())");
-
-                break;
-            case R.id.action_word_search:
-                webView.loadUrl("javascript:window.android.action('WORD_SEARCH', window.getSelection().toString())");
-
-                break;
-            case R.id.action_sentence_view:
-                webView.loadUrl("javascript:window.android.action('SENTENCE', window.getSelection().toString())");
-
-                break;
-            case R.id.action_tts_all:
-                webView.loadUrl("javascript:window.android.action('TTS', " + currItem.getBodyClass() + ")");
-
-                break;
-            case R.id.action_tts:
-                webView.loadUrl("javascript:window.android.action('TTS', window.getSelection().toString())");
-
-                break;
-            case R.id.action_bookmark:
-                webView.loadUrl("javascript:window.android.action('BOOKMARK',  " + currItem.getTitleClass() + ")");
+                //webView.loadUrl("javascript:window.android.action('COPY', window.getSelection().toString())");
 
                 break;
             default:
@@ -412,6 +379,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
             mActionMode.finish();
         }
     }
+    */
 
     public void onInit(int status) {
         Locale loc = new Locale("en");
@@ -436,6 +404,78 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
     public void onActionModeFinished(ActionMode mode) {
         DicUtils.dicLog("onActionModeFinished");
         mActionMode = null;
+
+        StringBuffer script = new StringBuffer();
+
+        if ( clickType == 0 ) {
+            script.append("var selection = window.getSelection();");
+            script.append("if (selection.focusNode) {");
+            script.append("    var fullStr = selection.focusNode.nodeValue;");
+
+            //클릭한 곳의 단어의 위치를 찾는다.
+            script.append("    var s = 0;");
+            script.append("    var e = 0;");
+            script.append("    for ( var i = selection.focusOffset - 1; i >= 0; i-- ) {");
+            script.append("        if ( fullStr.substring(i, i+1) == \" \" ) {");
+            script.append("            s = i;");
+            script.append("            break;");
+            script.append("        }");
+            script.append("    }");
+            script.append("    for ( var i = selection.focusOffset; i < fullStr.length; i++ ) {");
+            script.append("        if ( fullStr.substring(i, i+1) == \" \" ) {");
+            script.append("            e = i;");
+            script.append("            break;");
+            script.append("        }");
+            script.append("    }");
+            //다시 클릭시 단어만 나와서 마지막 길이를 구해줌.
+            script.append("    if ( s == 0 && e == 0 ) {");
+            script.append("        e = selection.focusNode.length;");
+            script.append("    }");
+
+            script.append("    var returnStr = fullStr.substring(s, e);");
+
+            //단어를 선택한다.
+            script.append("    var rangeToSelect = document.createRange();");
+            script.append("    rangeToSelect.setStart(selection.focusNode, s);");
+            script.append("    rangeToSelect.setEnd(selection.focusNode, e);");
+            script.append("    selection.removeAllRanges();");
+            script.append("    selection.addRange(rangeToSelect);");
+
+            //글자색 변경
+            script.append("    var tr = selection.getRangeAt(0);");
+            script.append("    var span = document.createElement(\"span\");");
+            script.append("    span.style.cssText = \"color:#ff0000\";");
+            script.append("    tr.surroundContents(span);");
+            //선택 해제
+            script.append("    selection.removeAllRanges();");
+
+            script.append("    window.android.action('SEL', returnStr);");
+            script.append("}");
+        } else {
+            script.append("var selection = window.getSelection();");
+            script.append("if (selection.focusNode) {");
+            script.append("    var returnStr = selection.focusNode.nodeValue;");
+
+            //클릭한 곳의 전체 문장을 선택
+            script.append("    var rangeToSelect = document.createRange();");
+            script.append("    rangeToSelect.selectNode(selection.focusNode);");
+            script.append("    selection.removeAllRanges();");
+            script.append("    selection.addRange(rangeToSelect);");
+
+            //글자색 변경
+            script.append("    var tr = selection.getRangeAt(0);");
+            script.append("    var span = document.createElement(\"span\");");
+            script.append("    span.style.cssText = \"color:#ff0000\";");
+            script.append("    tr.surroundContents(span);");
+            //선택 해제
+            script.append("    selection.removeAllRanges();");
+
+            script.append("    window.android.action('SEL', returnStr);");
+            script.append("}");
+        }
+
+        webView.loadUrl("javascript:" + script.toString());
+
         super.onActionModeFinished(mode);
     }
 
@@ -468,7 +508,8 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     DicDb.insDicVoc(mDb, entryId, kindCodes[mSelect]);
-                    DicUtils.setDbChange(getApplicationContext());
+
+                    DicUtils.setDbChange(getApplicationContext());  //DB 변경 체크
 
                     Toast.makeText(getApplicationContext(), "단어장에 등록했습니다. 메인화면의 '단어장' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
                 }
@@ -476,6 +517,49 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
             dlg.show();
         } else if ( v.getId() == R.id.my_c_webview_ib_search ) {
             wordSearch();
+        } else if ( v.getId() == R.id.my_c_webview_ib_tts ) {
+            myTTS.speak(clickWord, TextToSpeech.QUEUE_FLUSH, null);
+        } else if ( v.getId() == R.id.my_c_webview_ib_list ) {
+            Intent intent = new Intent(getApplication(), SentenceViewActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("foreign", clickWord);
+            bundle.putString("han", "");
+            bundle.putString("sampleSeq", "");
+            bundle.putString("onlyWordList", "Y");
+            intent.putExtras(bundle);
+
+            startActivity(intent);
+        } else if ( v.getId() == R.id.my_c_webview_ib_trans ) {
+            final String[] kindCodes = new String[]{"Naver","Google"};
+
+            final AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+            dlg.setTitle("번역 사이트 선택");
+            dlg.setSingleChoiceItems(kindCodes, m2Select, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    m2Select = arg1;
+                }
+            });
+            dlg.setNegativeButton("취소", null);
+            dlg.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //클립보드에 복사
+                    /*
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("simple text", clickWord);
+                    clipboard.setPrimaryClip(clip);
+*/
+                    Bundle bundle = new Bundle();
+                    bundle.putString("site", kindCodes[m2Select]);
+                    bundle.putString("sentence", clickWord);
+
+                    Intent intent = new Intent(getApplication(), WebTranslateActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            });
+            dlg.show();
         }
     }
 
@@ -510,19 +594,11 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         private String kind;
         private String name;
         private String url;
-        private String[] changeClass;
-        private String[] removeClass;
-        private String titleClass;
-        private String bodyClass;
 
-        public NewsVo(String kind, String name, String url, String[] changeClass, String[] removeClass, String titleClass, String bodyClass) {
+        public NewsVo(String kind, String name, String url) {
             this.kind = kind;
             this.name = name;
             this.url = url;
-            this.changeClass = changeClass;
-            this.removeClass = removeClass;
-            this.titleClass = titleClass;
-            this.bodyClass = bodyClass;
         }
 
         public String getKind() {
@@ -548,38 +624,6 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         public void setUrl(String url) {
             this.url = url;
         }
-
-        public String[] getChangeClass() {
-            return changeClass;
-        }
-
-        public void setChangeClass(String[] changeClass) {
-            this.changeClass = changeClass;
-        }
-
-        public String[] getRemoveClass() {
-            return removeClass;
-        }
-
-        public void setRemoveClass(String[] removeClass) {
-            this.removeClass = removeClass;
-        }
-
-        public String getTitleClass() {
-            return titleClass;
-        }
-
-        public void setTitleClass(String titleClass) {
-            this.titleClass = titleClass;
-        }
-
-        public String getBodyClass() {
-            return bodyClass;
-        }
-
-        public void setBodyClass(String bodyClass) {
-            this.bodyClass = bodyClass;
-        }
     }
 
     private class MyWebViewClient extends WebViewClient {
@@ -602,22 +646,6 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
 
-            if (mProgress == null) {
-                mProgress = new ProgressDialog(WebViewActivity.this);
-                mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                mProgress.setMessage("페이지 로딩 및 변환 중입니다.\n로딩이 완료후 단어를 클릭하시면 뜻을 보실 수 있습니다.\n" +
-                        "해외사이트는 로딩이 오래 걸립니다.");
-                mProgress.setCancelable(false);
-                mProgress.setButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        mProgress.dismiss();
-                        mProgress = null;
-                    }
-                });
-                mProgress.show();
-            }
-
             DicUtils.dicLog("onPageStarted : " + url);
         }
 
@@ -625,10 +653,6 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             super.onReceivedError(view, request, error);
 
-            if (mProgress != null && mProgress.isShowing()) {
-                mProgress.dismiss();
-                mProgress = null;
-            }
 
             DicUtils.dicLog("onReceivedError : " + error.toString());
         }
@@ -637,145 +661,44 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             DicUtils.dicLog("onPageFinished : " + url);
-
-            //중복으로 호출이 되지 않도록
-            if ( oldUrl.equals(url) ) {
-                return;
-            } else {
-                if ( !"data:text/html,".equals(url) ) {
-                    oldUrl = url;
-                    DicUtils.dicLog("onPageFinished : " + url);
-
-                    //html 단어 기능 변경
-                    String[] changeClass = currItem.getChangeClass();
-                    for (int i = 0; i < changeClass.length; i++) {
-                        webView.loadUrl("javascript:" + changeClass[i]);
-                        DicUtils.dicLog("javascript:" + changeClass[i]);
-                    }
-
-                    //광고 제거
-                    String[] removeClass = currItem.getRemoveClass();
-                    for (int i = 0; i < removeClass.length; i++) {
-                        webView.loadUrl("javascript:" + removeClass[i]);
-                        DicUtils.dicLog("javascript:" + removeClass[i]);
-                    }
-
-                    webView.loadUrl("javascript:window.android.action('URL', window.location.href)");
-
-                    if (mProgress != null && mProgress.isShowing()) {
-                        mProgress.dismiss();
-                        mProgress = null;
-                    }
-                }
-            }
         }
     }
 
     private class AndroidBridge {
         @JavascriptInterface
-        public void setWord(final String arg) { // must be final
-            handler.post(new Runnable() {
-                public void run() {
-                    meanRl.setVisibility(View.VISIBLE);
-
-                    clickWord = arg;
-
-                    HashMap info = DicDb.getMean(mDb, arg);
-                    mean.setText(arg + " " + DicUtils.getString((String)info.get("SPELLING")) + " : " + DicUtils.getString((String)info.get("MEAN")));
-
-                    entryId = DicUtils.getString((String)info.get("ENTRY_ID"));
-                    if ( !"".equals(entryId) ) {
-                        DicDb.insDicClickWord(mDb, entryId, "");
-                        DicUtils.setDbChange(getApplicationContext());
-
-                        addBtn.setVisibility(View.VISIBLE);
-                        searchBtn.setVisibility(View.GONE);
-                    } else {
-                        addBtn.setVisibility(View.GONE);
-                        searchBtn.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
-
-        @JavascriptInterface
         public void action(final String kind, final String arg) { // must be final
             handler.post(new Runnable() {
                 public void run() {
                     DicUtils.dicLog(arg);
-                    if ( "COPY".equals(kind) ) {
-                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("simple text", arg);
-                        clipboard.setPrimaryClip(clip);
-                    } else if ( "WORD".equals(kind) ) {
-                        HashMap info = DicDb.getMean(mDb, arg);
+                    if ( "SEL".equals(kind) ) {
+                        DicUtils.dicLog("SEL : " + arg);
+                        meanRl.setVisibility(View.VISIBLE);
 
-                        if ( info.containsKey("ENTRY_ID") ) {
-                            Intent intent = new Intent(getApplication(), WordViewActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("entryId", (String) info.get("ENTRY_ID"));
-                            intent.putExtras(bundle);
+                        clickWord = arg.trim();
 
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "등록된 단어가 아닙니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    } else if ( "WORD_SEARCH".equals(kind) ) {
-                        clickWord = arg;
-                        wordSearch();
-                    } else if ( "SENTENCE".equals(kind) ) {
-                        Intent intent = new Intent(getApplication(), SentenceViewActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("foreign", arg);
-                        bundle.putString("han", "");
-                        intent.putExtras(bundle);
+                        if ( clickType == 0 ) {
+                            HashMap info = DicDb.getMean(mDb, clickWord.replaceAll("[\"“”.,]",""));
+                            mean.setText(clickWord.replaceAll("[\"“”.,]","") + " " + DicUtils.getString((String) info.get("SPELLING")) + " : " + DicUtils.getString((String) info.get("MEAN")));
 
-                        startActivity(intent);
-                    } else if ( "TTS".equals(kind) ) {
-                        if ( arg.length() > 4000 ) {
-                            Toast.makeText(getApplicationContext(), "TTS는 4,000자 까지만 가능합니다.", Toast.LENGTH_SHORT).show();
-                            myTTS.speak(arg.substring(0, 3900), TextToSpeech.QUEUE_FLUSH, null);
-                        } else {
-                            myTTS.speak(arg, TextToSpeech.QUEUE_FLUSH, null);
-                        }
-                    } else if ( "URL".equals(kind) ) {
-                        newsUrl = arg.replace("http://","").replace("https://","");
-                        DicUtils.dicLog("URL : " + newsUrl);
-                    } else if ( "BOOKMARK".equals(kind) ) {
-                        DicDb.insDicBoolmark(mDb, currItem.getKind(), arg.replaceAll("[':]",""), newsUrl, "");
-                        DicUtils.setDbChange(getApplicationContext());
+                            entryId = DicUtils.getString((String) info.get("ENTRY_ID"));
+                            if (!"".equals(entryId)) {
+                                DicDb.insDicClickWord(mDb, entryId, "");
 
-                        Toast.makeText(getApplicationContext(), "북마크에 등록했습니다. 메인화면의 '북마크' 탭에서 내용을 확인하세요.", Toast.LENGTH_SHORT).show();
-                    } else if ( "TRANSLATE".equals(kind) ) {
-                        final String[] kindCodes = new String[]{"Naver","Google"};
+                                DicUtils.setDbChange(getApplicationContext());  //DB 변경 체크
 
-                        final AlertDialog.Builder dlg = new AlertDialog.Builder(WebViewActivity.this);
-                        dlg.setTitle("번역 사이트 선택");
-                        dlg.setSingleChoiceItems(kindCodes, m2Select, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                m2Select = arg1;
+                                addBtn.setVisibility(View.VISIBLE);
+                                searchBtn.setVisibility(View.GONE);
+                            } else {
+                                addBtn.setVisibility(View.GONE);
+                                searchBtn.setVisibility(View.VISIBLE);
                             }
-                        });
-                        dlg.setNegativeButton("취소", null);
-                        dlg.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //클립보드에 복사
-                                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData clip = ClipData.newPlainText("simple text", arg);
-                                clipboard.setPrimaryClip(clip);
-
-                                Bundle bundle = new Bundle();
-                                bundle.putString("site", kindCodes[m2Select]);
-                                bundle.putString("sentence", arg);
-
-                                Intent intent = new Intent(getApplication(), WebTranslateActivity.class);
-                                intent.putExtras(bundle);
-                                startActivity(intent);
-                            }
-                        });
-                        dlg.show();
+                            sentenceLl.setVisibility(View.GONE);
+                        } else {
+                            mean.setText(clickWord);
+                            sentenceLl.setVisibility(View.VISIBLE);
+                            addBtn.setVisibility(View.GONE);
+                            searchBtn.setVisibility(View.GONE);
+                        }
                     }
                 }
             });
@@ -787,3 +710,4 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 /*
 webView.loadUrl("javascript:window.HybridApp.setMessage(window.getSelection().toString())");
  */
+

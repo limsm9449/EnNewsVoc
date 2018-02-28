@@ -15,10 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -26,7 +26,8 @@
             android:name=".WebViewActivity"
             android:label="@string/title_activity_webview"
             android:screenOrientation="portrait"
-            android:theme="@style/MyMaterialTheme" />
+            android:theme="@style/MyMaterialTheme"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".WordViewActivity"
             android:label="@string/title_activity_word_view"
