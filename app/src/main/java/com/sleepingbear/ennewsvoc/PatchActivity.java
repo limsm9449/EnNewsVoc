@@ -32,6 +32,7 @@ public class PatchActivity extends AppCompatActivity {
         patch.append("* 신규 패치" + CommConstants.sqlCR);
         patch.append("" + CommConstants.sqlCR);
         patch.append("- 영어 뉴스 기능 개선" + CommConstants.sqlCR);
+        patch.append("- 기존 광고가 차단이 되어 다른 광고로 변경" + CommConstants.sqlCR);
         patch.append("" + CommConstants.sqlCR);
         patch.append("" + CommConstants.sqlCR);
 
