@@ -42,8 +42,8 @@
     <string name="title_activity_help">도움말</string>
     <string name="title_activity_patch">PatchActivity</string>
     <string name="title_activity_my_sample">MySampleActivity</string>
-    <!--string name="banner_ad_unit_id">qaP4ySEl</string-->
-    <string name="banner_ad_unit_id">CAULY</string>
+    <string name="banner_ad_unit_id">qaP4ySEl</string>
+    <!--string name="banner_ad_unit_id">CAULY</string-->
     <string name="title_activity_web_dictionary">WebDictionaryActivity</string>
     <string name="title_activity_web_translate">WebTranslateActivity</string>
     <string name="title_activity_study6">Study6Activity</string>
