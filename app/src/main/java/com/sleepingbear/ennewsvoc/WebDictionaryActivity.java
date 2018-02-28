@@ -34,10 +34,20 @@ public class WebDictionaryActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         String word = getIntent().getExtras().getString("word");
+        if ( word == null ) {
+            word = "";
+        }
         String site = getIntent().getExtras().getString("site");
+        if ( site == null ) {
+            site = "Naver";
+        }
 
         ActionBar ab = (ActionBar) getSupportActionBar();
-        ab.setTitle(getIntent().getExtras().getString("word") + " 검색");
+        if ( "".equals(word) ) {
+            ab.setTitle("웹 검색");
+        } else {
+            ab.setTitle(getIntent().getExtras().getString("word") + " 검색");
+        }
         ab.setHomeButtonEnabled(true);
         ab.setDisplayHomeAsUpEnabled(true);
 
