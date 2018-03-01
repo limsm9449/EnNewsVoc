@@ -106,17 +106,45 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
 
         // 영자신문 정보
         enUrls = new ArrayList<>();
+        enUrls.add(new NewsVo("E027", "Arirang","http://www.arirang.co.kr/News/News_Index.asp"));
         enUrls.add(new NewsVo("E001", "Chosun","http://english.chosun.com/m/"));
         enUrls.add(new NewsVo("E002", "Joongang Daily","http://mengnews.joins.com/"));
         enUrls.add(new NewsVo("E003", "Korea Herald","http://m.koreaherald.com/"));
         enUrls.add(new NewsVo("E004", "The Korea Times","http://m.koreatimes.co.kr/phone/"));
         enUrls.add(new NewsVo("E005", "ABC","http://abcnews.go.com"));
+        enUrls.add(new NewsVo("E022", "AudioEnglish","https://www.audioenglish.org/"));
         enUrls.add(new NewsVo("E006", "BBC","http://www.bbc.com/news"));
+        enUrls.add(new NewsVo("E038", "Cambridge News","https://www.cambridge-news.co.uk/"));
+        enUrls.add(new NewsVo("E031", "CBS News","https://www.cbsnews.com/"));
+        enUrls.add(new NewsVo("E028", "Channel News Asia","https://www.channelnewsasia.com/news/international"));
+        enUrls.add(new NewsVo("E032", "Chicago Tribune","http://www.chicagotribune.com/"));
         enUrls.add(new NewsVo("E007", "CNN","http://edition.cnn.com"));
+        enUrls.add(new NewsVo("E015", "Fast Company","https://www.fastcompany.com/"));
+        enUrls.add(new NewsVo("E034", "Guardian","https://www.theguardian.com/international"));
+        enUrls.add(new NewsVo("E037", "Herald","http://www.heraldscotland.com/"));
+        enUrls.add(new NewsVo("E035", "Independent","http://www.independent.co.uk/"));
+        enUrls.add(new NewsVo("E026", "KBS World radio","http://world.kbs.co.kr/english/"));
         enUrls.add(new NewsVo("E008", "Los Angeles Times","http://www.latimes.com"));
-        enUrls.add(new NewsVo("E009", "The New Work Times","http://mobile.nytimes.com/?referer="));
+        enUrls.add(new NewsVo("E036", "Metro","http://metro.co.uk/"));
+        enUrls.add(new NewsVo("E013", "National Geographic","https://www.nationalgeographic.com/"));
+        enUrls.add(new NewsVo("E033", "NewYork Post","https://nypost.com/"));
+        enUrls.add(new NewsVo("E018", "People","http://people.com/"));
+        enUrls.add(new NewsVo("E014", "Reader's digest","https://www.rd.com/magazine/"));
+        enUrls.add(new NewsVo("E024", "Repeat after us","http://www.repeatafterus.com/"));
         enUrls.add(new NewsVo("E010", "Reuters","http://mobile.reuters.com/"));
+        enUrls.add(new NewsVo("E020", "ShortList","https://www.shortlist.com/"));
+        enUrls.add(new NewsVo("E021", "Sunset","https://www.sunset.com/"));
+        enUrls.add(new NewsVo("E029", "The Economist","https://www.economist.com/"));
+        enUrls.add(new NewsVo("E009", "The New Work Times","http://mobile.nytimes.com/?referer="));
+        enUrls.add(new NewsVo("E025", "The Wall Street Journal","https://www.wsj.com/asia"));
+        enUrls.add(new NewsVo("E016", "Time","http://time.com/"));
+        enUrls.add(new NewsVo("E017", "Time for kids","https://www.timeforkids.com/"));
+        enUrls.add(new NewsVo("E030", "USA Today","https://www.usatoday.com/"));
+        enUrls.add(new NewsVo("E039", "Sunday People","https://www.mirror.co.uk/all-about/sunday-people"));
+        enUrls.add(new NewsVo("E023", "VOA","https://learningenglish.voanews.com/"));
+        enUrls.add(new NewsVo("E019", "Vogue","https://www.vogue.com/magazine"));
         enUrls.add(new NewsVo("E011", "Washingtone Post","https://www.washingtonpost.com"));
+        enUrls.add(new NewsVo("E012", "ZDNet","http://www.zdnet.com/"));
 
         String currUrl = "";
         param = getIntent().getExtras();
@@ -398,6 +426,7 @@ public class WebViewActivity extends AppCompatActivity implements View.OnClickLi
     protected void onDestroy() {
         super.onDestroy();
         myTTS.shutdown();
+        webView.stopLoading();
     }
 
     @Override
